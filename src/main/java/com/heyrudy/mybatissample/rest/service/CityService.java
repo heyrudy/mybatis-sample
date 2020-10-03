@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -31,8 +32,8 @@ public class CityService {
      */
     public void save(CityDto dto) {
         final String message = "A new city is created";
-        log.info(message);
         repository.insertCity(mapper.cityDtoToCity(dto));
+        log.info(message);
     }
 
     /**
@@ -40,11 +41,16 @@ public class CityService {
      * @return A required information about a city
      */
     public CityDto findCityById(long id) {
-        final String message = format("A city was found by it's %d id", id);
-        log.info(message);
-        return repository.findCityById(id)
-                .map(mapper::cityToCityDto)
-                .orElseThrow(() -> new ApiRequestException(format("City with %d not found", id)));
+        final String messageRequestSucceed = format("A city with id %d is found", id);
+        Optional<CityDto> cityDtoOptional = repository.findCityById(id)
+                .map(mapper::cityToCityDto);
+        if (cityDtoOptional.isPresent()) {
+            log.info(messageRequestSucceed);
+            return cityDtoOptional.get();
+        } else {
+            final String messageRequestFailed = format("City with %d was not found", id);
+            throw new ApiRequestException(messageRequestFailed);
+        }
     }
 
     /**
@@ -52,10 +58,11 @@ public class CityService {
      */
     public List<CityDto> findCities() {
         final String message = "All cities was found";
-        log.info(message);
-        return repository.findAllCities()
+        final List<CityDto> cityDtoList = repository.findAllCities()
                 .stream()
                 .map(mapper::cityToCityDto)
                 .collect(Collectors.toList());
+        log.info(message);
+        return cityDtoList;
     }
 }
