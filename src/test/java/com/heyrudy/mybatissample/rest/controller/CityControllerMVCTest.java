@@ -48,7 +48,7 @@ class CityControllerMVCTest {
     }
 
     @Test
-    @DisplayName("find city given its id endpoint")
+    @DisplayName("find city by its id first usecase")
     void findCities() throws Exception {
         // Arrange
         Matcher<String> matcher = Matchers.containsString("[]");
@@ -64,7 +64,7 @@ class CityControllerMVCTest {
     }
 
     @Test
-    @DisplayName("find all cities endpoint")
+    @DisplayName("find a city by its id second usecase")
     void findCityById() throws Exception {
         // Arrange
         CityDto cityDto = new CityDto();
