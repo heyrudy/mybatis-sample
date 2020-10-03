@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "db-protocol",
+      "type": "java.lang.String",
+      "description": "Description for db-protocol."
+    },
+    {
+      "name": "db-host",
+      "type": "java.lang.String",
+      "description": "Description for db-host."
+    },
+    {
+      "name": "db-port",
+      "type": "java.lang.String",
+      "description": "Description for db-port."
+    },
+    {
+      "name": "db-schema",
+      "type": "java.lang.String",
+      "description": "Description for db-schema."
+    }
+  ] }
