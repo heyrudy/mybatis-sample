@@ -2,7 +2,6 @@ package com.heyrudy.mybatissample.rest.controller;
 
 import com.heyrudy.mybatissample.dto.CityDto;
 import com.heyrudy.mybatissample.rest.service.CityService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ public class CityController {
 
     private final CityService service;
 
-    @Autowired
     public CityController(CityService service) {
         this.service = service;
     }

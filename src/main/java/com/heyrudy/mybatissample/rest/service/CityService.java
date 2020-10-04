@@ -5,7 +5,6 @@ import com.heyrudy.mybatissample.dto.mapper.CityMapper;
 import com.heyrudy.mybatissample.exception.ApiRequestException;
 import com.heyrudy.mybatissample.repositories.CityRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public class CityService {
     private final CityRepository repository;
     private final CityMapper mapper;
 
-    @Autowired
     public CityService(CityRepository repository, CityMapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
