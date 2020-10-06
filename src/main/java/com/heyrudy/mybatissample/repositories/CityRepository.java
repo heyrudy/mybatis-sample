@@ -12,7 +12,6 @@ import java.util.Optional;
 public interface CityRepository {
 
     @Insert("INSERT INTO CITY (NAME, STATE, COUNTRY) VALUES(#{name}, #{state}, #{country})")
-    @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertCity(City city);
 
     @Select("SELECT ID, NAME, STATE, COUNTRY FROM CITY WHERE ID = #{id}")
