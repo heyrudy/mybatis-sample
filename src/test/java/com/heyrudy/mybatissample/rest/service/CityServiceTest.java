@@ -35,13 +35,13 @@ class CityServiceTest {
     @DisplayName("find city by id usecase")
     void testFindCityById() {
         // Arrange
-        CityDto cityDto = new CityDto();
+        CityDto expected = new CityDto();
         City city = new City();
-        when(cityMapper.cityToCityDto(or(isA(City.class), isNull()))).thenReturn(cityDto);
+        when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(expected);
         when(cityRepository.findCityById(anyLong())).thenReturn(Optional.of(city));
         // Act
         // Assert
-        assertSame(cityDto, cityService.findCityById(123L));
+        assertSame(expected, cityService.findCityById(123L));
     }
 
     @Test
@@ -50,7 +50,7 @@ class CityServiceTest {
         // Arrange
         long cityId = 123L;
         City city = new City();
-        when(cityMapper.cityToCityDto(or(isA(City.class), isNull()))).thenReturn(null);
+        when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(null);
         when(cityRepository.findCityById(anyLong())).thenReturn(Optional.of(city));
         // Act
         // Assert
@@ -75,11 +75,11 @@ class CityServiceTest {
         CityDto cityDto = new CityDto();
         City city = new City();
         ArrayList<City> cities = new ArrayList<>();
-        when(this.cityMapper.cityToCityDto(or(isA(City.class), isNull()))).thenReturn(cityDto);
+        when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(cityDto);
         cities.add(city);
-        when(this.cityRepository.findAllCities()).thenReturn(cities);
+        when(cityRepository.findAllCities()).thenReturn(cities);
         // Act
         // Assert
-        assertEquals(1, this.cityService.findCities().size());
+        assertEquals(1, cityService.findCities().size());
     }
 }

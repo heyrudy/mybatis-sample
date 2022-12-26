@@ -4,6 +4,9 @@ import com.heyrudy.mybatissample.dto.CityDto;
 import com.heyrudy.mybatissample.dto.mapper.CityMapper;
 import com.heyrudy.mybatissample.exception.ApiRequestException;
 import com.heyrudy.mybatissample.repositories.CityRepository;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,25 +15,21 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 @Service
 public class CityService {
 
-    private final CityRepository repository;
-    private final CityMapper mapper;
-
-    public CityService(CityRepository repository, CityMapper mapper) {
-        this.repository = repository;
-        this.mapper = mapper;
-    }
+    CityRepository repository;
+    CityMapper mapper;
 
     /**
      * @param dto city to persist in database
      */
     public void save(CityDto dto) {
         final String message = "A new city is created";
-        repository.insertCity(mapper.cityDtoToCity(dto));
+        repository.insertCity(mapper.toCity(dto));
         log.info(message);
     }
 
@@ -41,7 +40,7 @@ public class CityService {
     public CityDto findCityById(long id) {
         final String messageRequestSucceed = format("A city with id %d is found", id);
         Optional<CityDto> cityDtoOptional = repository.findCityById(id)
-                .map(mapper::cityToCityDto);
+                .map(mapper::toCityDto);
         if (cityDtoOptional.isPresent()) {
             log.info(messageRequestSucceed);
             return cityDtoOptional.get();
@@ -58,7 +57,7 @@ public class CityService {
         final String message = "All cities was found";
         final List<CityDto> cityDtoList = repository.findAllCities()
                 .stream()
-                .map(mapper::cityToCityDto)
+                .map(mapper::toCityDto)
                 .collect(Collectors.toList());
         log.info(message);
         return cityDtoList;
