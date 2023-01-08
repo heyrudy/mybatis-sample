@@ -47,6 +47,7 @@ class CityRepositoryIntegrationTest {
                 .isPresent()
                 .hasValueSatisfying(actual -> assertThat(actual)
                         .extracting(City::getState)
-                        .isEqualTo(expectedState));
+                        .isEqualTo(expectedState)
+                );
     }
 }
