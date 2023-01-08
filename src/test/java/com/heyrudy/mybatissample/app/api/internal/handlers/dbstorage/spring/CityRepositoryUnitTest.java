@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
@@ -92,17 +91,14 @@ class CityRepositoryUnitTest {
     @DisplayName("fetch all cities details from database")
     void shouldFindAllCities() {
         // Arrange
-        City city = new City();
+        City cityZero = City.builder().build();
         City cityOne = City.builder()
                 .id(1L)
                 .name("Paris")
                 .country("France")
                 .state("Paris75")
                 .build();
-        ArrayList<City> cities = new ArrayList<>();
-        cities.add(city);
-        cities.add(cityOne);
-        when(repository.findAll()).thenReturn(cities);
+        when(repository.findAll()).thenReturn(List.of(cityZero, cityOne));
         // Act
         List<City> actual = StreamSupport.stream(repository.findAll().spliterator(), false).toList();
         // Assert

@@ -8,12 +8,12 @@ import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.enti
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,24 +25,22 @@ import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CityService.class, CityMapper.class, CityRepository.class})
 class CityServiceTest {
 
-    @MockBean
-    private CityMapper cityMapper;
-    @MockBean
-    private CityRepository cityRepository;
-    @Autowired
+    @InjectMocks
     private CityService cityService;
+    @Mock
+    private CityMapper cityMapper;
+    @Mock
+    private CityRepository cityRepository;
 
     @Test
     @DisplayName("find city by id usecase")
     void testFindCityById() {
         // Arrange
-        CityDto expected = new CityDto();
-        City city = new City();
+        CityDto expected = CityDto.builder().build();
         when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(expected);
-        when(cityRepository.findById(anyLong())).thenReturn(Optional.of(city));
+        when(cityRepository.findById(anyLong())).thenReturn(Optional.of(City.builder().build()));
         // Act
         // Assert
         assertThat(cityService.findCityById(123L))
@@ -53,22 +51,20 @@ class CityServiceTest {
     @DisplayName("find city by id usecase (2)")
     void testFindCityById2() {
         // Arrange
-        long cityId = 123L;
-        City city = new City();
+        long expectedId = 123L;
         when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(null);
-        when(cityRepository.findById(anyLong())).thenReturn(Optional.of(city));
+        when(cityRepository.findById(anyLong())).thenReturn(Optional.of(City.builder().build()));
         // Act
         // Assert
         assertThatExceptionOfType(ApiRequestException.class)
-                .isThrownBy(() -> cityService.findCityById(cityId));
+                .isThrownBy(() -> cityService.findCityById(expectedId));
     }
 
     @Test
     @DisplayName("find all cities usecase (1)")
     void testFindCities() {
         // Arrange
-        ArrayList<City> cities = new ArrayList<>();
-        when(cityRepository.findAll()).thenReturn(cities);
+        when(cityRepository.findAll()).thenReturn(Collections.emptyList());
         // Act
         // Assert
         assertThat(cityService.findCities())
@@ -80,12 +76,8 @@ class CityServiceTest {
     @DisplayName("find all cities usecase (2)")
     void testFindCities2() {
         // Arrange
-        CityDto cityDto = new CityDto();
-        City city = new City();
-        ArrayList<City> cities = new ArrayList<>();
-        when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(cityDto);
-        cities.add(city);
-        when(cityRepository.findAll()).thenReturn(cities);
+        when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(CityDto.builder().build());
+        when(cityRepository.findAll()).thenReturn(List.of(City.builder().build()));
         // Act
         // Assert
         assertThat( cityService.findCities())
