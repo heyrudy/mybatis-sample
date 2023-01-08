@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(initializers = ContainerInit.class)
+@ContextConfiguration(initializers = {ContainerInit.class})
 class CityRepositoryIntegrationTest {
 
     @Autowired
