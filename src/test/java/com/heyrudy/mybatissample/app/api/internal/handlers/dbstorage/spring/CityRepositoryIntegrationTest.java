@@ -11,12 +11,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.ContainerInit.postgres11TC;
+import static com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.PostgresContainerInit.postgres11Container;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(initializers = {ContainerInit.class})
+@ContextConfiguration(initializers = {PostgresContainerInit.class})
 @Testcontainers
 class CityRepositoryIntegrationTest {
 
@@ -29,7 +29,7 @@ class CityRepositoryIntegrationTest {
         // Arrange
         // Act
         // Assert
-        assertThat(postgres11TC.isRunning())
+        assertThat(postgres11Container.isRunning())
                 .isTrue();
     }
 

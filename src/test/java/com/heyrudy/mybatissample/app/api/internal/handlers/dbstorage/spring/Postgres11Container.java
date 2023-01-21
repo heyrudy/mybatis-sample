@@ -2,17 +2,17 @@ package com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 
-public class Postgres11TC extends PostgreSQLContainer<Postgres11TC> {
+public class Postgres11Container extends PostgreSQLContainer<Postgres11Container> {
 
     public static final Integer POSTGRESQL_PORT = PostgreSQLContainer.POSTGRESQL_PORT;
-    private static final Postgres11TC TC = new Postgres11TC();
+    private static final Postgres11Container POSTGRES_11_CONTAINER = new Postgres11Container();
 
-    private Postgres11TC() {
+    private Postgres11Container() {
         super(ContainerConfig.DB_DOCKER_IMAGE_NAME);
     }
 
-    public static Postgres11TC getInstance() {
-        return TC.withUsername(ContainerConfig.DB_USER_NAME)
+    public static Postgres11Container getInstance() {
+        return POSTGRES_11_CONTAINER.withUsername(ContainerConfig.DB_USER_NAME)
                 .withPassword(ContainerConfig.DB_USER_PASSWORD)
                 .withDatabaseName(ContainerConfig.DB_SCHEMA_NAME);
     }

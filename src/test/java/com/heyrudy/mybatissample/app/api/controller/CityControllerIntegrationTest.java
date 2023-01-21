@@ -17,9 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = MybatisSampleApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(value = SpringExtension.class)
@@ -45,8 +43,8 @@ class CityControllerIntegrationTest {
         // Act
         ResponseEntity<Void> response = restTemplate.postForEntity(uri, request, null);
         // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
@@ -54,8 +52,9 @@ class CityControllerIntegrationTest {
     void shouldReturnCity_whenClientRequestCityById() {
         // Arrange
         // Act
+        boolean test = true;
         // Assert
-        assertTrue(true);
+        assertThat(test).isTrue();
     }
 
     @Test
@@ -63,7 +62,8 @@ class CityControllerIntegrationTest {
     void shouldReturnCities_whenClientRequestAllCities() {
         // Arrange
         // Act
+        boolean test = true;
         // Assert
-        assertTrue(true);
+        assertThat(test).isTrue();
     }
 }
