@@ -3,7 +3,7 @@ package com.heyrudy.mybatissample.app.api.service;
 import com.heyrudy.mybatissample.app.api.exception.ApiRequestException;
 import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.CityRepository;
 import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.City;
-import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.dto.CityDto;
+import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.dto.CityResponseDto;
 import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.dto.mapper.CityMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,8 +38,8 @@ class CityServiceTest {
     @DisplayName("find city by id usecase")
     void testFindCityById() {
         // Arrange
-        CityDto expected = CityDto.builder().build();
-        when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(expected);
+        CityResponseDto expected = CityResponseDto.builder().build();
+        when(cityMapper.toDto(or(isA(City.class), isNull()))).thenReturn(expected);
         when(cityRepository.findById(anyLong())).thenReturn(Optional.of(City.builder().build()));
         // Act
         // Assert
@@ -52,7 +52,7 @@ class CityServiceTest {
     void testFindCityById2() {
         // Arrange
         long expectedId = 123L;
-        when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(null);
+        when(cityMapper.toDto(or(isA(City.class), isNull()))).thenReturn(null);
         when(cityRepository.findById(anyLong())).thenReturn(Optional.of(City.builder().build()));
         // Act
         // Assert
@@ -76,7 +76,7 @@ class CityServiceTest {
     @DisplayName("find all cities usecase (2)")
     void testFindCities2() {
         // Arrange
-        when(cityMapper.toCityDto(or(isA(City.class), isNull()))).thenReturn(CityDto.builder().build());
+        when(cityMapper.toDto(or(isA(City.class), isNull()))).thenReturn(CityResponseDto.builder().build());
         when(cityRepository.findAll()).thenReturn(List.of(City.builder().build()));
         // Act
         // Assert

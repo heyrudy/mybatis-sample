@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.app.api.controller;
 
 import com.heyrudy.mybatissample.MybatisSampleApplication;
-import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.dto.CityDto;
+import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.dto.CityResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +40,8 @@ class CityControllerIntegrationTest {
         String localhost = "http://localhost:";
         String baseUrl = localhost + randomServerPort + CITY_ENDPOINT;
         URI uri = new URI(baseUrl);
-        CityDto cityDto = new CityDto("Epinay", "Seine-Saint-Denis", "France");
-        HttpEntity<CityDto> request = new HttpEntity<>(cityDto);
+        CityResponseDto cityResponseDto = new CityResponseDto("Epinay", "Seine-Saint-Denis", "France");
+        HttpEntity<CityResponseDto> request = new HttpEntity<>(cityResponseDto);
         // Act
         ResponseEntity<Void> response = restTemplate.postForEntity(uri, request, null);
         // Assert

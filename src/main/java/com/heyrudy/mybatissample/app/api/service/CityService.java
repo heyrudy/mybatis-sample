@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.app.api.service;
 
-import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.dto.CityDto;
+import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.dto.CityResponseDto;
 import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.entity.dto.mapper.CityMapper;
 import com.heyrudy.mybatissample.app.api.exception.ApiRequestException;
 import com.heyrudy.mybatissample.app.api.internal.handlers.dbstorage.spring.CityRepository;
@@ -25,23 +25,23 @@ public class CityService {
     CityMapper mapper;
 
     /**
-     * @param dto city to persist in database
+     * @param dto city to persist in the database
      */
-    public void save(CityDto dto) {
+    public void save(CityResponseDto dto) {
         final String message = "A new city is created";
-        repository.save(mapper.toCity(dto));
+        repository.save(mapper.toEntity(dto));
         log.info(message);
     }
 
     /**
-     * @param id city's id to fetch from database
+     * @param id city's id to fetch from the database
      * @return A required information about a city
      */
-    public CityDto findCityById(long id) {
-        final String messageRequestSucceed = format("A city with id %d is found", id);
-        Optional<CityDto> cityDtoOptional = repository.findById(id)
-                .map(mapper::toCityDto);
+    public CityResponseDto findCityById(long id) {
+        Optional<CityResponseDto> cityDtoOptional = repository.findById(id)
+                .map(mapper::toDto);
         if (cityDtoOptional.isPresent()) {
+            final String messageRequestSucceed = format("A city with id %d is found", id);
             log.info(messageRequestSucceed);
             return cityDtoOptional.get();
         } else {
@@ -51,15 +51,15 @@ public class CityService {
     }
 
     /**
-     * @return All cities fetch from database
+     * @return All cities fetch from the database
      */
-    public List<CityDto> findCities() {
-        final String message = "All cities was found";
-        final List<CityDto> cityDtoList = StreamSupport
+    public List<CityResponseDto> findCities() {
+        final List<CityResponseDto> cityResponseDtoList = StreamSupport
                 .stream(repository.findAll().spliterator(), false)
-                .map(mapper::toCityDto)
+                .map(mapper::toDto)
                 .toList();
+        final String message = "All cities was found";
         log.info(message);
-        return cityDtoList;
+        return cityResponseDtoList;
     }
 }

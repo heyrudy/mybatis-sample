@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 CityController.class
         }
 )
-class CityControllerMVCTest {
+class CityControllerWebLayerTest {
 
     private static final String CITIES_API_V_1_ENDPOINT = "/api/v1/cities";
 
