@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -22,30 +22,55 @@
         <project-build-sourceEncoding>UTF-8</project-build-sourceEncoding>
         <project-reporting-encoding>UTF-8</project-reporting-encoding>
         <java.version>17</java.version>
-        <org.posgresql.version>42.5.1</org.posgresql.version>
-        <org.lombok.version>1.18.24</org.lombok.version>
+        <org.liquibase.version>4.20.0</org.liquibase.version>
+        <org.posgresql.version>42.5.4</org.posgresql.version>
+        <org.lombok.version>1.18.26</org.lombok.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
-        <testcontainers.version>1.17.6</testcontainers.version>
+        <org.testcontainers.version>1.17.6</org.testcontainers.version>
+        <org.springboot.version>3.0.4</org.springboot.version>
+        <org.springsecurity.version>6.0.2</org.springsecurity.version>
+        <org.instancio.version>2.11.0</org.instancio.version>
+        <org.springdoc.version>1.6.15</org.springdoc.version>
+        <jpastreamer-core.version>1.1.4</jpastreamer-core.version>
+        <vavr.version>0.10.4</vavr.version>
     </properties>
 
     <dependencies>
         <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${org.springdoc.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>3.0.1</version>
+            <version>${org.springboot.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>4.18.0</version>
+            <version>${org.liquibase.version}</version>
             <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>3.0.1</version>
+            <version>${org.springboot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.speedment.jpastreamer</groupId>
+            <artifactId>jpastreamer-core</artifactId>
+            <version>${jpastreamer-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.speedment.jpastreamer.integration.spring</groupId>
+            <artifactId>spring-boot-jpastreamer-autoconfigure</artifactId>
+            <version>${jpastreamer-core.version}</version>
         </dependency>
 
         <dependency>
@@ -55,28 +80,21 @@
         </dependency>
 
         <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>${vavr.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
+            <version>${org.lombok.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>3.0.1</version>
+            <version>${org.springboot.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -87,27 +105,37 @@
         </dependency>
 
         <dependency>
+            <groupId>org.instancio</groupId>
+            <artifactId>instancio-core</artifactId>
+            <version>${org.instancio.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
+            <version>3.24.2</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <version>${org.springsecurity.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>${testcontainers.version}</version>
+            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${testcontainers.version}</version>
+            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -117,27 +145,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${org.lombok.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
             </plugin>
         </plugins>
     </build>
