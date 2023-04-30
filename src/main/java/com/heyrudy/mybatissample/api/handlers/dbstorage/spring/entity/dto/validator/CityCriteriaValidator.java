@@ -1,0 +1,19 @@
+package com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.validator;
+
+import com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.CityCriteriaDTO;
+import io.vavr.control.Validation;
+
+public class CityCriteriaValidator {
+
+    private static final int INCORRECT_CITY_ID = -1;
+
+    public static Validation<String, CityCriteriaDTO> validateCityCriteria(long cityId) {
+        return validateCityId(cityId).map(CityCriteriaDTO::new);
+    }
+
+    private static Validation<String, Long> validateCityId(long cityId) {
+        return cityId <= INCORRECT_CITY_ID
+                ? Validation.invalid("ID must be greater than " + INCORRECT_CITY_ID)
+                : Validation.valid(cityId);
+    }
+}
