@@ -66,7 +66,9 @@ public class CityController {
         log.info("All cities were found");
         return ResponseEntity.ok()
                 .body(
-                        List.ofAll(service.findCities()).map(responseMapper::toDto).toJavaList()
+                        List.ofAll(service.findCities())
+                                .map(responseMapper::toDto)
+                                .toJavaList()
                 );
     }
 
