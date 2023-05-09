@@ -1,23 +1,28 @@
 package com.heyrudy.mybatissample.api.controller;
 
-import com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.CityCriteriaDTO;
-import com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.CityRequestDTO;
-import com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.CityResponseDTO;
-import com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.mapper.CityRequestMapper;
-import com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.mapper.CityResponseMapper;
-import com.heyrudy.mybatissample.api.service.CityService;
+import com.heyrudy.mybatissample.api.controller.dto.CityRequestDTO;
+import com.heyrudy.mybatissample.api.controller.dto.CityResponseDTO;
+import com.heyrudy.mybatissample.api.controller.dto.mapper.CityRequestMapper;
+import com.heyrudy.mybatissample.api.controller.dto.mapper.CityResponseMapper;
+import com.heyrudy.mybatissample.api.controller.dto.validator.CityCriteriaValidator;
+import com.heyrudy.mybatissample.api.controller.dto.validator.CityRequestDTOValidator;
+import com.heyrudy.mybatissample.api.service.CityServiceAPI;
 import io.vavr.collection.List;
-import io.vavr.control.Option;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import static com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.validator.CityCriteriaValidator.validateCityCriteria;
-import static com.heyrudy.mybatissample.api.handlers.dbstorage.spring.entity.dto.validator.CityRequestDTOValidator.validateCityRequestDTO;
 import static java.lang.String.format;
 
 @RestController
@@ -29,17 +34,26 @@ public class CityController {
 
     CityRequestMapper requestMapper;
     CityResponseMapper responseMapper;
-    CityService service;
+    CityServiceAPI service;
 
     @PostMapping(value = "/cities")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseEntity<?> createCity(@RequestBody final CityRequestDTO dto) {
-        return validateCityRequestDTO(dto.name(), dto.state(), dto.country())
+    public ResponseEntity<Object> createCity(@RequestBody final CityRequestDTO dto) {
+        return CityRequestDTOValidator.validateCityRequestDTO(dto.name(), dto.state(), dto.country())
                 .map(requestMapper::toEntity)
                 .map(service::createCity)
                 .map(responseMapper::toDto)
                 .fold(
-                        error -> ResponseEntity.badRequest().body(error.toStream().reduce((f, s) -> f.equals(s) ? f : s)),
+                        validationErrorMessages -> {
+                            String validationErrorMessageReduced =
+                                    validationErrorMessages.toStream()
+                                            .reduce((f, s) -> f.equals(s) ? f : s);
+                            log.info(validationErrorMessageReduced);
+                            return ResponseEntity.badRequest()
+                                    .body(
+                                            validationErrorMessageReduced
+                                    );
+                        },
                         cityResponseDTO -> {
                             log.info("A new city is created");
                             return ResponseEntity.ok().body(cityResponseDTO);
@@ -48,27 +62,49 @@ public class CityController {
     }
 
     @GetMapping(value = "/cities")
-    public ResponseEntity<List<CityResponseDTO>> findCities() {
+    public ResponseEntity<java.util.List<CityResponseDTO>> findCities() {
         log.info("All cities were found");
         return ResponseEntity.ok()
                 .body(
-                        List.ofAll(service.findCities()).map(responseMapper::toDto)
+                        List.ofAll(service.findCities()).map(responseMapper::toDto).toJavaList()
                 );
     }
 
-    @GetMapping(value = "/cities")
-    public ResponseEntity<?> findCityById(final CityCriteriaDTO cityCriteriaDTO) {
-        return validateCityCriteria(cityCriteriaDTO.cityId())
+    @GetMapping(value = "/cities/{cityId}")
+    public ResponseEntity<Object> findCityById(@PathVariable(value = "cityId") long id) {
+        return CityCriteriaValidator.validateCityCriteria(id)
                 .map(service::findCityById)
-                .map(Option::get)
-                .map(responseMapper::toDto)
                 .fold(
-                        error -> ResponseEntity.badRequest().body(error),
-                        cityResponseDto -> {
-                            log.info(format("A city with id %d is found", cityCriteriaDTO.cityId()));
-                            return ResponseEntity.ok().body(cityResponseDto);
-                        }
+                        validationErrorMessage -> {
+                            log.error(validationErrorMessage);
+                            return ResponseEntity.badRequest()
+                                    .body(
+                                            ErrorResponse.builder()
+                                                    .reason(validationErrorMessage)
+                                                    .build()
+                                    );
+                        },
+                        cityNotFoundErrorCityEntityEither ->
+                                cityNotFoundErrorCityEntityEither.fold(
+                                        cityNotFoundError -> {
+                                            log.error(cityNotFoundError.getMessage());
+                                            return ResponseEntity.badRequest()
+                                                    .body(
+                                                            ErrorResponse.builder()
+                                                                    .reason(cityNotFoundError.getMessage())
+                                                                    .build()
+                                                    );
+                                        },
+                                        cityEntity -> {
+                                            log.info(format("A city with id %d is found", id));
+                                            return ResponseEntity.ok().body(cityEntity);
+                                        }
+                                )
                 );
+    }
+
+    @Builder
+    public record ErrorResponse(String reason) {
     }
 
 }
