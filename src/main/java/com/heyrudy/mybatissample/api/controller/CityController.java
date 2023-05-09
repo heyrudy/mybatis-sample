@@ -56,7 +56,8 @@ public class CityController {
                         },
                         cityResponseDTO -> {
                             log.info("A new city is created");
-                            return ResponseEntity.ok().body(cityResponseDTO);
+                            return ResponseEntity.ok()
+                                    .body(cityResponseDTO);
                         }
                 );
     }
@@ -99,7 +100,8 @@ public class CityController {
                                         },
                                         cityEntity -> {
                                             log.info(format("A city with id %d is found", id));
-                                            return ResponseEntity.ok().body(cityEntity);
+                                            return ResponseEntity.ok()
+                                                    .body(cityEntity);
                                         }
                                 )
                 );
