@@ -87,8 +87,8 @@ public class CityController {
                                                     .build()
                                     );
                         },
-                        cityNotFoundErrorCityEntityEither ->
-                                cityNotFoundErrorCityEntityEither.fold(
+                        cityNotFoundErrorCityEither ->
+                                cityNotFoundErrorCityEither.fold(
                                         cityNotFoundError -> {
                                             log.error(cityNotFoundError.getMessage());
                                             return ResponseEntity.badRequest()
@@ -98,10 +98,10 @@ public class CityController {
                                                                     .build()
                                                     );
                                         },
-                                        cityEntity -> {
+                                        city -> {
                                             log.info(format("A city with id %d is found", id));
                                             return ResponseEntity.ok()
-                                                    .body(cityEntity);
+                                                    .body(city);
                                         }
                                 )
                 );
