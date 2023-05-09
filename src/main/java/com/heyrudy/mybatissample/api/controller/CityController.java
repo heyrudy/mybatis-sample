@@ -101,7 +101,7 @@ public class CityController {
                                         city -> {
                                             log.info(format("A city with id %d is found", id));
                                             return ResponseEntity.ok()
-                                                    .body(city);
+                                                    .body(responseMapper.toDto(city));
                                         }
                                 )
                 );
