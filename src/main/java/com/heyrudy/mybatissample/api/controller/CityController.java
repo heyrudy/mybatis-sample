@@ -37,7 +37,6 @@ public class CityController {
     CityServiceAPI service;
 
     @PostMapping(value = "/cities")
-    @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<Object> createCity(@RequestBody final CityRequestDTO dto) {
         return CityRequestDTOValidator.validateCityRequestDTO(dto.name(), dto.state(), dto.country())
                 .map(requestMapper::toEntity)
@@ -56,7 +55,7 @@ public class CityController {
                         },
                         cityResponseDTO -> {
                             log.info("A new city is created");
-                            return ResponseEntity.ok()
+                            return ResponseEntity.status(HttpStatus.CREATED)
                                     .body(cityResponseDTO);
                         }
                 );
