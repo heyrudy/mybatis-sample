@@ -44,7 +44,9 @@ public class CityController {
                             log.info(validationErrorMessageReduced);
                             return ResponseEntity.badRequest()
                                     .body(
-                                            validationErrorMessageReduced
+                                            ErrorResponse.builder()
+                                                    .reason(validationErrorMessageReduced)
+                                                    .build()
                                     );
                         },
                         cityResponseDTO -> {
