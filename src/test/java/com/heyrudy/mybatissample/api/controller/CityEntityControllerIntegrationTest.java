@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.api.controller;
 
 import com.heyrudy.mybatissample.MybatisSampleApplication;
-import com.heyrudy.mybatissample.api.controller.dto.CityResponseDTO;
+import com.heyrudy.mybatissample.entrypoint.rest.dto.CityResponseDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,11 @@
 package com.heyrudy.mybatissample.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heyrudy.mybatissample.api.controller.dto.CityCriteriaDTO;
-import com.heyrudy.mybatissample.api.controller.dto.CityResponseDTO;
-import com.heyrudy.mybatissample.api.service.CityServiceAPI;
-import com.heyrudy.mybatissample.core.model.City;
+import com.heyrudy.mybatissample.entrypoint.rest.dto.CityCriteriaDTO;
+import com.heyrudy.mybatissample.entrypoint.rest.dto.CityResponseDTO;
+import com.heyrudy.mybatissample.entrypoint.rest.CityController;
+import com.heyrudy.mybatissample.core.service.CityService;
+import com.heyrudy.mybatissample.core.model.city.City;
 import io.vavr.control.Either;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -39,7 +40,7 @@ class CityEntityControllerWebLayerTest {
     private static final String CITIES_API_V_1_ENDPOINT = "/api/v1/cities";
 
     @MockBean
-    private CityServiceAPI restService;
+    private CityService restService;
 
     @Autowired
     private MockMvc mockMvc;
