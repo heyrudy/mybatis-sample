@@ -2,8 +2,8 @@ package com.heyrudy.mybatissample.entrypoint.rest;
 
 import com.heyrudy.mybatissample.entrypoint.rest.dto.CityRequestDTO;
 import com.heyrudy.mybatissample.entrypoint.rest.dto.CityResponseDTO;
-import com.heyrudy.mybatissample.entrypoint.rest.mapper.CityRequestMapper;
-import com.heyrudy.mybatissample.entrypoint.rest.mapper.CityResponseMapper;
+import com.heyrudy.mybatissample.entrypoint.rest.dto.mapper.CityRequestMapper;
+import com.heyrudy.mybatissample.entrypoint.rest.dto.mapper.CityResponseMapper;
 import com.heyrudy.mybatissample.entrypoint.rest.dto.validator.CityCriteriaValidator;
 import com.heyrudy.mybatissample.entrypoint.rest.dto.validator.CityRequestDTOValidator;
 import com.heyrudy.mybatissample.core.service.CityService;

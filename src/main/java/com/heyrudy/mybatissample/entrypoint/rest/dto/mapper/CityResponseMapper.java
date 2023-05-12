@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.entrypoint.rest.mapper;
+package com.heyrudy.mybatissample.entrypoint.rest.dto.mapper;
 
 import com.heyrudy.mybatissample.entrypoint.rest.dto.CityResponseDTO;
 import com.heyrudy.mybatissample.core.model.city.City;
