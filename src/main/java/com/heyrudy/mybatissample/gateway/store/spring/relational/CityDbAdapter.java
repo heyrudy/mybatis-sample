@@ -23,15 +23,15 @@ public class CityDbAdapter implements ICityDbSPI {
 
     @Override
     public City save(City city) {
-        CityEntity cityEntity = entityMapper.toCityEntity(city);
+        CityEntity cityEntity = entityMapper.toEntity(city);
         CityEntity cityEntitySaved = cityRepository.save(cityEntity);
-        return entityMapper.toCity(cityEntitySaved);
+        return entityMapper.toModel(cityEntitySaved);
     }
 
     @Override
     public Optional<City> findCityById(long id) {
         return cityRepository.findById(id)
-                .map(entityMapper::toCity);
+                .map(entityMapper::toModel);
     }
 
 
@@ -39,7 +39,7 @@ public class CityDbAdapter implements ICityDbSPI {
     public List<City> findCities() {
         return StreamSupport
                 .stream(cityRepository.findAll().spliterator(), false)
-                .map(entityMapper::toCity)
+                .map(entityMapper::toModel)
                 .toList();
     }
 }
