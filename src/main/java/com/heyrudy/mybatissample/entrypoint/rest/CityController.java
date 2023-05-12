@@ -31,14 +31,14 @@ import static java.lang.String.format;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CityController {
 
-    CityRequestMapper requestMapper;
-    CityResponseMapper responseMapper;
+    static CityRequestMapper requestMapper = CityRequestMapper.CITY_RESQUEST_MAPPER;
+    static CityResponseMapper responseMapper = CityResponseMapper.CITY_RESPONSE_MAPPER;
     CityService service;
 
     @PostMapping(value = "/cities")
     public ResponseEntity<Object> createCity(@RequestBody final CityRequestDTO dto) {
         return CityRequestDTOValidator.validateCityRequestDTO(dto.name(), dto.state(), dto.country())
-                .map(requestMapper::toEntity)
+                .map(requestMapper::toModel)
                 .map(service::createCity)
                 .map(responseMapper::toDto)
                 .fold(

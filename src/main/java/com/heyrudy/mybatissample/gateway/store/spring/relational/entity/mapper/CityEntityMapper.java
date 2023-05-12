@@ -1,0 +1,26 @@
+package com.heyrudy.mybatissample.gateway.store.spring.relational.entity.mapper;
+
+import com.heyrudy.mybatissample.core.model.city.City;
+import com.heyrudy.mybatissample.gateway.store.spring.relational.entity.CityEntity;
+
+public class CityEntityMapper {
+
+    public static final CityEntityMapper CITY_ENTITY_MAPPER = new CityEntityMapper();
+
+    public CityEntity toCityEntity(City city) {
+        return CityEntity.builder()
+                .name(city.getName())
+                .state(city.getState())
+                .country(city.getCountry())
+                .build();
+    }
+
+    public City toCity(CityEntity city) {
+        return City.builder()
+                .name(city.getName())
+                .state(city.getState())
+                .country(city.getCountry())
+                .build();
+    }
+
+}

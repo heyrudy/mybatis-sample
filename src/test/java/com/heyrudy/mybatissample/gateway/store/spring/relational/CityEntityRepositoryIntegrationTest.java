@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.gateway.store.spring.relational;
 
-import com.heyrudy.mybatissample.core.model.city.City;
 import com.heyrudy.mybatissample.gateway.store.spring.relational.config.PostgresContainerInit;
+import com.heyrudy.mybatissample.gateway.store.spring.relational.entity.CityEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CityEntityRepositoryIntegrationTest {
 
     @Autowired
-    private CityDbAdapter repository;
+    private CityRepository repository;
 
     @Test
     @DisplayName("Test postgresql container liveness")
@@ -47,10 +47,10 @@ class CityEntityRepositoryIntegrationTest {
         repository.updateCityById(expectedId, expectedState);
 
         // ASSERT - verify the result or output using assert statements
-        assertThat(repository.findCityById(expectedId))
+        assertThat(repository.findById(expectedId))
                 .isPresent()
                 .hasValueSatisfying(actual -> assertThat(actual)
-                        .extracting(City::getState)
+                        .extracting(CityEntity::getState)
                         .isEqualTo(expectedState)
                 );
     }

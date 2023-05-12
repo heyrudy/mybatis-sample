@@ -1,14 +1,13 @@
 package com.heyrudy.mybatissample.entrypoint.rest.mapper;
 
 import com.heyrudy.mybatissample.entrypoint.rest.dto.CityResponseDTO;
-import com.heyrudy.mybatissample.entrypoint.utils.Mapper;
 import com.heyrudy.mybatissample.core.model.city.City;
-import org.springframework.stereotype.Component;
 
-@Component
-public class CityResponseMapper implements Mapper<City, CityResponseDTO> {
+public class CityResponseMapper {
 
-    public City toEntity(CityResponseDTO dto) {
+    public static final CityResponseMapper CITY_RESPONSE_MAPPER = new CityResponseMapper();
+
+    public City toModel(CityResponseDTO dto) {
         return City.builder()
                 .name(dto.name())
                 .state(dto.state())
