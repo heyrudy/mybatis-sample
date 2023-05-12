@@ -49,7 +49,7 @@ public class CityController {
                             log.info(validationErrorMessageReduced);
                             return ResponseEntity.badRequest()
                                     .body(
-                                            ErrorResponse.builder()
+                                            ApiErrorResponse.builder()
                                                     .reason(validationErrorMessageReduced)
                                                     .build()
                                     );
@@ -82,7 +82,7 @@ public class CityController {
                             log.error(validationErrorMessage);
                             return ResponseEntity.badRequest()
                                     .body(
-                                            ErrorResponse.builder()
+                                            ApiErrorResponse.builder()
                                                     .reason(validationErrorMessage)
                                                     .build()
                                     );
@@ -93,7 +93,7 @@ public class CityController {
                                             log.error(cityNotFoundError.getMessage());
                                             return ResponseEntity.badRequest()
                                                     .body(
-                                                            ErrorResponse.builder()
+                                                            ApiErrorResponse.builder()
                                                                     .reason(cityNotFoundError.getMessage())
                                                                     .build()
                                                     );
@@ -108,7 +108,7 @@ public class CityController {
     }
 
     @Builder
-    public record ErrorResponse(String reason) {
+    public record ApiErrorResponse(String reason) {
     }
 
 }
