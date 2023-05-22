@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.gateway.store.spring.relational;
 
-import com.heyrudy.mybatissample.core.model.city.City;
+import com.heyrudy.mybatissample.domain.model.city.City;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

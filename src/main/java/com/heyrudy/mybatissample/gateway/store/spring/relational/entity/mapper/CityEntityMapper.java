@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.gateway.store.spring.relational.entity.mapper;
 
-import com.heyrudy.mybatissample.core.model.city.City;
+import com.heyrudy.mybatissample.domain.model.city.City;
 import com.heyrudy.mybatissample.gateway.store.spring.relational.entity.CityEntity;
 
 public class CityEntityMapper {

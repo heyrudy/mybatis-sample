@@ -1,12 +1,12 @@
 package com.heyrudy.mybatissample.api.service;
 
-import com.heyrudy.mybatissample.entrypoint.rest.dto.CityCriteriaDTO;
-import com.heyrudy.mybatissample.core.service.CityService;
-import com.heyrudy.mybatissample.core.model.error.CityNotFoundError;
-import com.heyrudy.mybatissample.core.model.city.City;
-import com.heyrudy.mybatissample.core.interactor.CreateCity;
-import com.heyrudy.mybatissample.core.interactor.FindCities;
-import com.heyrudy.mybatissample.core.interactor.FindCityById;
+import com.heyrudy.mybatissample.controller.rest.dto.CityCriteriaDTO;
+import com.heyrudy.mybatissample.domain.service.CityService;
+import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
+import com.heyrudy.mybatissample.domain.model.city.City;
+import com.heyrudy.mybatissample.domain.interactor.CreateCity;
+import com.heyrudy.mybatissample.domain.interactor.FindCities;
+import com.heyrudy.mybatissample.domain.interactor.FindCityById;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.DisplayName;
