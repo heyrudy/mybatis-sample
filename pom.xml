@@ -27,7 +27,7 @@
         <org.lombok.version>1.18.26</org.lombok.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <org.testcontainers.version>1.17.6</org.testcontainers.version>
-        <org.springboot.version>3.0.4</org.springboot.version>
+        <org.springboot.version>3.1.0</org.springboot.version>
         <org.springsecurity.version>6.0.2</org.springsecurity.version>
         <org.instancio.version>2.11.0</org.instancio.version>
         <org.springdoc.version>1.6.15</org.springdoc.version>
