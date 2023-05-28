@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.spi.store;
+package com.heyrudy.mybatissample.domain.spi;
 
 import com.heyrudy.mybatissample.domain.model.city.City;
 

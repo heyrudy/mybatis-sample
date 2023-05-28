@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.CityCriteriaDTO;
 import com.heyrudy.mybatissample.controller.rest.dto.CityResponseDTO;
 import com.heyrudy.mybatissample.controller.rest.CityController;
-import com.heyrudy.mybatissample.domain.service.CityService;
+import com.heyrudy.mybatissample.domain.api.CityServiceAPI;
 import com.heyrudy.mybatissample.domain.model.city.City;
 import io.vavr.control.Either;
 import org.hamcrest.Matcher;
@@ -40,7 +40,7 @@ class CityEntityControllerWebLayerTest {
     private static final String CITIES_API_V_1_ENDPOINT = "/api/v1/cities";
 
     @MockBean
-    private CityService restService;
+    private CityServiceAPI restService;
 
     @Autowired
     private MockMvc mockMvc;

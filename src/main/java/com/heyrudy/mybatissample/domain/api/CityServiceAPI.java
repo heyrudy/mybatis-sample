@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.service;
+package com.heyrudy.mybatissample.domain.api;
 
 import com.heyrudy.mybatissample.controller.rest.dto.CityCriteriaDTO;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
@@ -20,7 +20,7 @@ import static java.lang.String.format;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
-public class CityService {
+public class CityServiceAPI {
 
     CreateCity createCity;
 

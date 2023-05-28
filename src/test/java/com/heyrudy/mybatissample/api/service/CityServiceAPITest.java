@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.api.service;
 
 import com.heyrudy.mybatissample.controller.rest.dto.CityCriteriaDTO;
-import com.heyrudy.mybatissample.domain.service.CityService;
+import com.heyrudy.mybatissample.domain.api.CityServiceAPI;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.city.City;
 import com.heyrudy.mybatissample.domain.interactor.CreateCity;
@@ -22,12 +22,12 @@ import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class CityServiceTest {
+class CityServiceAPITest {
 
     private final CreateCity createCity = mock(CreateCity.class);
     private final FindCityById findCityById = mock(FindCityById.class);
     private final FindCities findCities = mock(FindCities.class);
-    private final CityService cityService = new CityService(createCity, findCityById, findCities);
+    private final CityServiceAPI cityServiceAPI = new CityServiceAPI(createCity, findCityById, findCities);
 
     @Test
     @DisplayName("find city by id usecase")
@@ -38,7 +38,7 @@ class CityServiceTest {
         when(findCityById.execute(anyLong())).thenReturn(Optional.of(City.builder().build()));
 
         // ACT - action or behavior that we are going test
-        Either<CityNotFoundError, City> actual = cityService.findCityById(cityCriteria);
+        Either<CityNotFoundError, City> actual = cityServiceAPI.findCityById(cityCriteria);
 
         // ASSERT - verify the result or output using assert statements
         VavrAssertions.assertThat(actual)
@@ -61,7 +61,7 @@ class CityServiceTest {
         when(findCityById.execute(anyLong())).thenReturn(Optional.empty());
 
         // ACT - action or behavior that we are going test
-        Either<CityNotFoundError, City> actual = cityService.findCityById(cityCriteria);
+        Either<CityNotFoundError, City> actual = cityServiceAPI.findCityById(cityCriteria);
 
         // ASSERT - verify the result or output using assert statements
         VavrAssertions.assertThat(actual)
@@ -82,7 +82,7 @@ class CityServiceTest {
         when(findCities.execute()).thenReturn(Collections.emptyList());
 
         // ACT - action or behavior that we are going test
-        List<City> actual = cityService.findCities();
+        List<City> actual = cityServiceAPI.findCities();
 
         // ASSERT - verify the result or output using assert statements
         assertThat(actual)
@@ -97,7 +97,7 @@ class CityServiceTest {
         when(findCities.execute()).thenReturn(List.of(City.builder().build()));
 
         // ACT - action or behavior that we are going test
-        List<City> actual = cityService.findCities();
+        List<City> actual = cityServiceAPI.findCities();
 
         // ASSERT - verify the result or output using assert statements
         assertThat(actual)

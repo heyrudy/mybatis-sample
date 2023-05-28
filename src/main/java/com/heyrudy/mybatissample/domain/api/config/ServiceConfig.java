@@ -1,6 +1,6 @@
-package com.heyrudy.mybatissample.domain.service.config;
+package com.heyrudy.mybatissample.domain.api.config;
 
-import com.heyrudy.mybatissample.domain.spi.store.ICityDbSPI;
+import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import com.heyrudy.mybatissample.domain.interactor.CreateCity;
 import com.heyrudy.mybatissample.domain.interactor.FindCities;
 import com.heyrudy.mybatissample.domain.interactor.FindCityById;

@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.domain.interactor;
 
-import com.heyrudy.mybatissample.domain.spi.store.ICityDbSPI;
+import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import com.heyrudy.mybatissample.domain.model.city.City;
 
 import java.util.Optional;

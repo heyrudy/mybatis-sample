@@ -5,8 +5,7 @@ import com.heyrudy.mybatissample.controller.rest.dto.CityResponseDTO;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityRequestMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityResponseMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.validator.CityCriteriaValidator;
-import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOValidator;
-import com.heyrudy.mybatissample.domain.service.CityService;
+import com.heyrudy.mybatissample.domain.api.CityServiceAPI;
 import io.vavr.collection.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,12 +14,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static java.lang.String.format;
 
@@ -31,16 +25,18 @@ import static java.lang.String.format;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CityController {
 
-    static CityRequestMapper requestMapper = CityRequestMapper.CITY_RESQUEST_MAPPER;
-    static CityResponseMapper responseMapper = CityResponseMapper.CITY_RESPONSE_MAPPER;
-    CityService service;
+    public static final CityRequestDTOValidator CITY_REQUEST_DTO_VALIDATOR = CityRequestDTOValidator.CITY_REQUEST_DTO_VALIDATOR;
+    public static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR = CityCriteriaValidator.CITY_CRITERIA_VALIDATOR;
+    public static final CityRequestMapper CITY_REQUEST_MAPPER = CityRequestMapper.CITY_RESQUEST_MAPPER;
+    public static final CityResponseMapper CITY_RESPONSE_MAPPER = CityResponseMapper.CITY_RESPONSE_MAPPER;
+    CityServiceAPI service;
 
     @PostMapping(value = "/cities")
     public ResponseEntity<Object> createCity(@RequestBody final CityRequestDTO dto) {
-        return CityRequestDTOValidator.validateCityRequestDTO(dto.name(), dto.state(), dto.country())
-                .map(requestMapper::toModel)
+        return CITY_REQUEST_DTO_VALIDATOR.validateCityRequestDTO(dto.name(), dto.state(), dto.country())
+                .map(CITY_REQUEST_MAPPER::toModel)
                 .map(service::createCity)
-                .map(responseMapper::toDto)
+                .map(CITY_RESPONSE_MAPPER::toDto)
                 .fold(
                         validationErrorMessages -> {
                             String validationErrorMessageReduced =
@@ -68,14 +64,14 @@ public class CityController {
         return ResponseEntity.ok()
                 .body(
                         List.ofAll(service.findCities())
-                                .map(responseMapper::toDto)
+                                .map(CITY_RESPONSE_MAPPER::toDto)
                                 .toJavaList()
                 );
     }
 
     @GetMapping(value = "/cities/{cityId}")
     public ResponseEntity<Object> findCityById(@PathVariable(value = "cityId") long id) {
-        return CityCriteriaValidator.validateCityCriteria(id)
+        return CITY_CRITERIA_VALIDATOR.validateCityCriteria(id)
                 .map(service::findCityById)
                 .fold(
                         validationErrorMessage -> {
@@ -101,7 +97,7 @@ public class CityController {
                                         city -> {
                                             log.info(format("A city with id %d is found", id));
                                             return ResponseEntity.ok()
-                                                    .body(responseMapper.toDto(city));
+                                                    .body(CITY_RESPONSE_MAPPER.toDto(city));
                                         }
                                 )
                 );

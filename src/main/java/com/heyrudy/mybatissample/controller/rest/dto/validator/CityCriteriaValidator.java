@@ -5,19 +5,23 @@ import io.vavr.control.Validation;
 
 public class CityCriteriaValidator {
 
-    private static final int INCORRECT_CITY_ID = 0;
+    public static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR = new CityCriteriaValidator();
 
-    private CityCriteriaValidator() {
-        throw new IllegalStateException("Validation utility class");
-    }
-
-    public static Validation<String, CityCriteriaDTO> validateCityCriteria(long cityId) {
+    public Validation<String, CityCriteriaDTO> validateCityCriteria(long cityId) {
         return validateCityId(cityId).map(CityCriteriaDTO::new);
     }
 
-    private static Validation<String, Long> validateCityId(long cityId) {
-        return cityId <= INCORRECT_CITY_ID
-                ? Validation.invalid("ID must be greater than " + INCORRECT_CITY_ID)
+    private Validation<String, Long> validateCityId(long cityId) {
+        return cityId <= InvalidState.INCORRECT_CITY_ID
+                ? Validation.invalid(InvalidationErrorMessages.INVALID_INPUT_MESSAGE)
                 : Validation.valid(cityId);
+    }
+
+    public static class InvalidState {
+        private static final int INCORRECT_CITY_ID = 0;
+    }
+
+    public static class InvalidationErrorMessages {
+        public static final String INVALID_INPUT_MESSAGE = "ID must be greater than " + InvalidState.INCORRECT_CITY_ID;
     }
 }
