@@ -5,6 +5,7 @@ import com.heyrudy.mybatissample.controller.rest.dto.CityResponseDTO;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityRequestMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityResponseMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.validator.CityCriteriaValidator;
+import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOValidator;
 import com.heyrudy.mybatissample.domain.api.CityServiceAPI;
 import io.vavr.collection.List;
 import lombok.AccessLevel;

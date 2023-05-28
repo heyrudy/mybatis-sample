@@ -37,4 +37,5 @@ public class CityRequestDTOValidator {
     public static class InvalidationErrorMessages {
         public static final String INVALID_INPUT_MESSAGE = "Données Invalides suivant le pattern défini";
     }
+
 }
