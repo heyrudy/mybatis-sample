@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.interactor;
+package com.heyrudy.mybatissample.domain.service;
 
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import com.heyrudy.mybatissample.domain.model.city.City;

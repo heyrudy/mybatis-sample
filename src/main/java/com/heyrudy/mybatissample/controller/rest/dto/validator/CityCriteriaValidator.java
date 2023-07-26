@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.controller.rest.dto.validator;
 
-import com.heyrudy.mybatissample.controller.rest.dto.CityCriteriaDTO;
+import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDTO;
 import io.vavr.control.Validation;
 
 public class CityCriteriaValidator {

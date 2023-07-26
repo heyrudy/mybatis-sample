@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heyrudy.mybatissample.controller.rest.dto.CityCriteriaDTO;
+import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDTO;
 import com.heyrudy.mybatissample.controller.rest.dto.CityResponseDTO;
 import com.heyrudy.mybatissample.controller.rest.CityController;
 import com.heyrudy.mybatissample.domain.api.CityServiceAPI;
@@ -54,12 +54,12 @@ class CityEntityControllerWebLayerTest {
     void createCity() throws Exception {
         // ARRANGE - precondition or setup
         CityResponseDTO cityResponseDto = CityResponseDTO.builder().build();
-        willDoNothing().given(restService).createCity(any(City.class));
-        MockHttpServletRequestBuilder postResult = MockMvcRequestBuilders.post(CITIES_API_V_1_ENDPOINT);
+        willDoNothing().given(restService).createCity(isA(City.class));
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(CITIES_API_V_1_ENDPOINT);
 
         // ACT - action or behavior that we are going test
         ResultActions actualPerformResult = mockMvc.perform(
-                postResult.contentType(MediaType.APPLICATION_JSON)
+                requestBuilder.contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(cityResponseDto))
         );
 

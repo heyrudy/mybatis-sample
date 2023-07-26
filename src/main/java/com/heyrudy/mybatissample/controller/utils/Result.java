@@ -1,19 +1,15 @@
 package com.heyrudy.mybatissample.controller.utils;
 
-import lombok.Getter;
-import lombok.Value;
-
 import java.util.Objects;
 
-@Getter
-@Value
-public class Result<T> {
-    T value;
-    String error;
+public record Result<T>(T value, String error) {
 
-    private Result(T value, String error) {
-        this.value = value;
-        this.error = error;
+    public T getValue() {
+        return value;
+    }
+
+    public String getError() {
+        return error;
     }
 
     public static <T> Result<T> of(T value, String error) {

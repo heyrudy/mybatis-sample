@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: postgres_city
+    image: "postgres:14.8"
+    env_file:
+      - ./database.dev.env
+    networks:
+      - backend
+    volumes:
+      - ./db-data:/var/lib/postgresql/data/
+      - ./sql:/docker-entrypoint-initdb.d/:ro
+    ports:
+      - "127.0.0.1:5432:5432"
+#  pgadmin:
+#    container_name: pgadmin_blog
+#    image: "dpage/pgadmin4:7.3"
+#    env_file:
+#      - ./database.dev.env
+#    ports:
+#      - "127.0.0.1:5050:80"
+#    networks:
+#      - backend
+  keycloak:
+    container_name: keycloak_city
+    image: "jboss/keycloak:16.1.1"
+    depends_on:
+      - "postgres"
+    env_file:
+      - ./keycloak.dev.env
+    ports:
+      - "127.0.0.1:8180:8080"
+      - "127.0.0.1:8787:8787" # debug port
+    networks:
+      - backend
+
+networks:
+  backend:
+    name: backend
+    driver: bridge

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -21,31 +21,70 @@
         <project-build-encoding>UTF-8</project-build-encoding>
         <project-build-sourceEncoding>UTF-8</project-build-sourceEncoding>
         <project-reporting-encoding>UTF-8</project-reporting-encoding>
+        <openapi-inputspec>1</openapi-inputspec>
+        <openapi-modelpackage>2</openapi-modelpackage>
+        <openapi.apipackage>3</openapi.apipackage>
         <java.version>17</java.version>
         <org.liquibase.version>4.20.0</org.liquibase.version>
         <org.posgresql.version>42.5.4</org.posgresql.version>
         <org.lombok.version>1.18.26</org.lombok.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <org.testcontainers.version>1.17.6</org.testcontainers.version>
-        <org.springboot.version>3.1.0</org.springboot.version>
+        <org.springboot.version>3.1.1</org.springboot.version>
         <org.springsecurity.version>6.0.2</org.springsecurity.version>
         <org.instancio.version>2.11.0</org.instancio.version>
         <org.springdoc.version>1.6.15</org.springdoc.version>
         <jpastreamer-core.version>1.1.4</jpastreamer-core.version>
         <vavr.version>0.10.4</vavr.version>
+        <pdfbox.version>2.0.27</pdfbox.version>
+        <fontbox.version>2.0.11</fontbox.version>
+        <assertj-core.version>3.24.2</assertj-core.version>
+        <assertj-vavr.version>0.4.2</assertj-vavr.version>
+        <spring-security-oauth2-jose.version>6.0.2</spring-security-oauth2-jose.version>
+        <spring-security-test.version>6.0.2</spring-security-test.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${org.springdoc.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${org.springboot.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${org.springboot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>${org.springboot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-docker-compose</artifactId>
+            <version>${org.springboot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>${org.springboot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+            <version>${org.springboot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
         </dependency>
 
         <dependency>
@@ -61,17 +100,17 @@
             <version>${org.springboot.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.speedment.jpastreamer</groupId>
-            <artifactId>jpastreamer-core</artifactId>
-            <version>${jpastreamer-core.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.speedment.jpastreamer</groupId>-->
+        <!--            <artifactId>jpastreamer-core</artifactId>-->
+        <!--            <version>${jpastreamer-core.version}</version>-->
+        <!--        </dependency>-->
 
-        <dependency>
-            <groupId>com.speedment.jpastreamer.integration.spring</groupId>
-            <artifactId>spring-boot-jpastreamer-autoconfigure</artifactId>
-            <version>${jpastreamer-core.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>com.speedment.jpastreamer.integration.spring</groupId>-->
+        <!--            <artifactId>spring-boot-jpastreamer-autoconfigure</artifactId>-->
+        <!--            <version>${jpastreamer-core.version}</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -89,6 +128,17 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${org.lombok.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+            <version>${fontbox.version}</version>
         </dependency>
 
         <dependency>
@@ -115,14 +165,14 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.24.2</version>
+            <version>${assertj-core.version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-vavr</artifactId>
-            <version>0.4.2</version>
+            <version>${assertj-vavr.version}</version>
         </dependency>
 
         <dependency>

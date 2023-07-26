@@ -4,22 +4,22 @@ import com.heyrudy.mybatissample.domain.model.city.City;
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import com.heyrudy.mybatissample.gateway.store.spring.relational.entity.CityEntity;
 import com.heyrudy.mybatissample.gateway.store.spring.relational.entity.mapper.CityEntityMapper;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Service
 public class CityDbAdapter implements ICityDbSPI {
 
-    CityRepository cityRepository;
     static CityEntityMapper entityMapper = CityEntityMapper.CITY_ENTITY_MAPPER;
+
+    private final CityRepository cityRepository;
+
+    public CityDbAdapter(CityRepository cityRepository) {
+        this.cityRepository = cityRepository;
+    }
 
     @Override
     public City save(City city) {

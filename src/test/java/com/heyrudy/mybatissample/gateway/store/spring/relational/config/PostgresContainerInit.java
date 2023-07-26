@@ -1,15 +1,16 @@
 package com.heyrudy.mybatissample.gateway.store.spring.relational.config;
 
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 
-@Slf4j
 public class PostgresContainerInit implements
         ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+    public static final Logger logger = LoggerFactory.getLogger(PostgresContainerInit.class);
     public static Postgres11Container postgres11Container;
 
     static {

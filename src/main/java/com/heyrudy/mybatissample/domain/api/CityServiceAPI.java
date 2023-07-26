@@ -1,32 +1,31 @@
 package com.heyrudy.mybatissample.domain.api;
 
-import com.heyrudy.mybatissample.controller.rest.dto.CityCriteriaDTO;
+import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDTO;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.city.City;
-import com.heyrudy.mybatissample.domain.interactor.CreateCity;
-import com.heyrudy.mybatissample.domain.interactor.FindCities;
-import com.heyrudy.mybatissample.domain.interactor.FindCityById;
+import com.heyrudy.mybatissample.domain.service.CreateCity;
+import com.heyrudy.mybatissample.domain.service.FindCities;
+import com.heyrudy.mybatissample.domain.service.FindCityById;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static java.lang.String.format;
 
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Service
 public class CityServiceAPI {
 
-    CreateCity createCity;
+    private final CreateCity createCity;
 
-    FindCityById findCityById;
+    private final FindCityById findCityById;
 
-    FindCities findCities;
+    private final FindCities findCities;
+
+    public CityServiceAPI(CreateCity createCity, FindCityById findCityById, FindCities findCities) {
+        this.createCity = createCity;
+        this.findCityById = findCityById;
+        this.findCities = findCities;
+    }
 
     /**
      * @param city city to persist in the database
