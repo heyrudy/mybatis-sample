@@ -24,7 +24,7 @@ public class JwtAuthConverter implements Converter<Jwt, JwtAuthenticationToken> 
 
     public static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthConverter.class);
     private static final JwtGrantedAuthoritiesConverter JWT_GRANTED_AUTHORITIES_CONVERTER =
-            new JwtGrantedAuthoritiesConverter();
+        new JwtGrantedAuthoritiesConverter();
     private final JwtAuthConverterProperties properties;
 
     public JwtAuthConverter(JwtAuthConverterProperties properties) {
@@ -33,13 +33,14 @@ public class JwtAuthConverter implements Converter<Jwt, JwtAuthenticationToken> 
 
     @Override
     public JwtAuthenticationToken convert(@NonNull Jwt jwt) {
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>(JWT_GRANTED_AUTHORITIES_CONVERTER.convert(jwt));
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>(
+            JWT_GRANTED_AUTHORITIES_CONVERTER.convert(jwt));
 
         grantedAuthorities =
-                Stream.concat(
-                        grantedAuthorities.stream(),
-                        extractResourceRole(jwt).stream()
-                ).collect(Collectors.toSet());
+            Stream.concat(
+                grantedAuthorities.stream(),
+                extractResourceRole(jwt).stream()
+            ).collect(Collectors.toSet());
         return new JwtAuthenticationToken(jwt, grantedAuthorities, getPrincipalClaimName(jwt));
     }
 
@@ -53,23 +54,24 @@ public class JwtAuthConverter implements Converter<Jwt, JwtAuthenticationToken> 
         }
 
         Set<String> realmRoles =
-                Objects.nonNull(realmAccess) &&
-                        Objects.nonNull(realmAccess.get("roles")) &&
-                        realmAccess.get("roles") instanceof List<?> ls
-                        ? ls.stream().map(String.class::cast).collect(Collectors.toSet())
-                        : Set.of();
+            Objects.nonNull(realmAccess) &&
+                Objects.nonNull(realmAccess.get("roles")) &&
+                realmAccess.get("roles") instanceof List<?> ls
+                ? ls.stream().map(String.class::cast).collect(Collectors.toSet())
+                : Set.of();
 
         Set<String> resourceRoles =
-                Objects.nonNull(resourceAccess) &&
-                        Objects.nonNull(resourceAccess.get(properties.resourceId())) &&
-                        resourceAccess.get(properties.resourceId()) instanceof List<?> ls
-                        ? ls.stream().map(String.class::cast).collect(Collectors.toSet())
-                        : Set.of();
+            Objects.nonNull(resourceAccess) &&
+                Objects.nonNull(resourceAccess.get(properties.resourceId())) &&
+                resourceAccess.get(properties.resourceId()) instanceof List<?> ls
+                ? ls.stream().map(String.class::cast).collect(Collectors.toSet())
+                : Set.of();
 
         Set<String> allRoles =
-                !realmRoles.isEmpty() || !resourceRoles.isEmpty()
-                        ? Stream.concat(realmRoles.stream(), resourceRoles.stream()).collect(Collectors.toSet())
-                        : Set.of();
+            !realmRoles.isEmpty() || !resourceRoles.isEmpty()
+                ? Stream.concat(realmRoles.stream(), resourceRoles.stream())
+                .collect(Collectors.toSet())
+                : Set.of();
         if (allRoles.isEmpty()) {
             LOGGER.debug("Aucun rôle défini");
             return Set.of();
@@ -78,13 +80,13 @@ public class JwtAuthConverter implements Converter<Jwt, JwtAuthenticationToken> 
         }
 
         return allRoles.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toSet());
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toSet());
     }
 
     private String getPrincipalClaimName(Jwt jwt) {
         String claimName = Optional.ofNullable(properties.principalAttribute())
-                .orElse(JwtClaimNames.SUB);
+            .orElse(JwtClaimNames.SUB);
         return jwt.getClaim(claimName);
     }
 }

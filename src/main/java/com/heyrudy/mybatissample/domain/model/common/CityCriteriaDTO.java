@@ -8,6 +8,7 @@ public record CityCriteriaDTO(long cityId) {
     }
 
     public static class CityCriteriaDTOBuilder {
+
         private long cityId;
 
         public CityCriteriaDTOBuilder() {

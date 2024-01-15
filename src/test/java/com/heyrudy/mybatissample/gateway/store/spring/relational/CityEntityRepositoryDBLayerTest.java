@@ -21,11 +21,11 @@ class CityEntityRepositoryDBLayerTest {
     void shouldInsertCity() {
         // ARRANGE - precondition or setup
         City expected = City.builder()
-                .id(1L)
-                .name("Paris")
-                .country("France")
-                .state("Paris75")
-                .build();
+            .id(1L)
+            .name("Paris")
+            .country("France")
+            .state("Paris75")
+            .build();
         when(repository.save(expected)).thenReturn(expected);
 
         // ACT - action or behavior that we are going test
@@ -33,8 +33,8 @@ class CityEntityRepositoryDBLayerTest {
 
         // ASSERT - verify the result or output using assert statements
         assertThat(actual)
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+            .usingRecursiveComparison()
+            .isEqualTo(expected);
     }
 
     @Test
@@ -43,11 +43,11 @@ class CityEntityRepositoryDBLayerTest {
         // ARRANGE - precondition or setup
         long cityId = 1L;
         City city = City.builder()
-                .id(cityId)
-                .name("Paris")
-                .state("Paris75")
-                .country("France")
-                .build();
+            .id(cityId)
+            .name("Paris")
+            .state("Paris75")
+            .country("France")
+            .build();
         when(repository.findCityById(anyLong())).thenReturn(Optional.of(city));
 
         // ACT - action or behavior that we are going test
@@ -55,12 +55,12 @@ class CityEntityRepositoryDBLayerTest {
 
         // ASSERT - verify the result or output using assert statements
         assertThat(actual)
-                .isPresent()
-                .hasValueSatisfying(it ->
-                    assertThat(it)
-                                .usingRecursiveComparison()
-                            .isEqualTo(city)
-                );
+            .isPresent()
+            .hasValueSatisfying(it ->
+                assertThat(it)
+                    .usingRecursiveComparison()
+                    .isEqualTo(city)
+            );
     }
 
     @Test
@@ -69,11 +69,11 @@ class CityEntityRepositoryDBLayerTest {
         // ARRANGE - precondition or setup
         City cityZero = City.builder().build();
         City cityOne = City.builder()
-                .id(1L)
-                .name("Paris")
-                .country("France")
-                .state("Paris75")
-                .build();
+            .id(1L)
+            .name("Paris")
+            .country("France")
+            .state("Paris75")
+            .build();
         when(repository.findCities()).thenReturn(List.of(cityZero, cityOne));
 
         // ACT - action or behavior that we are going test
@@ -81,12 +81,12 @@ class CityEntityRepositoryDBLayerTest {
 
         // ASSERT - verify the result or output using assert statements
         assertThat(actual)
-                .hasSize(2);
+            .hasSize(2);
         assertThat(actual.get(0).getId())
-                .isZero();
+            .isZero();
         assertThat(actual.get(1).getId())
-                .isEqualTo(1L);
+            .isEqualTo(1L);
         assertThat(actual.get(1).getName())
-                .isEqualTo("Paris");
+            .isEqualTo("Paris");
     }
 }

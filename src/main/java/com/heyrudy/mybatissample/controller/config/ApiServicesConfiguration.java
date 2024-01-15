@@ -1,9 +1,8 @@
 package com.heyrudy.mybatissample.controller.config;
 
-import com.heyrudy.mybatissample.domain.api.CityServiceAPI;
-import com.heyrudy.mybatissample.domain.service.CreateCity;
-import com.heyrudy.mybatissample.domain.service.FindCities;
-import com.heyrudy.mybatissample.domain.service.FindCityById;
+import com.heyrudy.mybatissample.domain.api.CreateCityInteractorAPI;
+import com.heyrudy.mybatissample.domain.api.FindCitiesInteractorAPI;
+import com.heyrudy.mybatissample.domain.api.FindCityByIdInteractorAPI;
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,23 +11,18 @@ import org.springframework.context.annotation.Configuration;
 public class ApiServicesConfiguration {
 
     @Bean
-    public CreateCity createCity(ICityDbSPI store) {
-        return new CreateCity(store);
+    public CreateCityInteractorAPI createCityInteractorAPI(ICityDbSPI db) {
+        return new CreateCityInteractorAPI(db);
     }
 
     @Bean
-    public FindCityById findCityById(ICityDbSPI store) {
-        return new FindCityById(store);
+    public FindCityByIdInteractorAPI findCityByIdInteractorAPI(ICityDbSPI db) {
+        return new FindCityByIdInteractorAPI(db);
     }
 
     @Bean
-    public FindCities findCities(ICityDbSPI store) {
-        return new FindCities(store);
-    }
-
-    @Bean
-    public CityServiceAPI cityServiceAPI(CreateCity createCity, FindCityById findCityById, FindCities findCities) {
-        return new CityServiceAPI(createCity, findCityById, findCities);
+    public FindCitiesInteractorAPI findCitiesInteractorAPI(ICityDbSPI db) {
+        return new FindCitiesInteractorAPI(db);
     }
 
 }

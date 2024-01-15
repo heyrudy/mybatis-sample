@@ -64,6 +64,7 @@ public class CityEntity {
     }
 
     public static class CityEntityBuilder {
+
         long id;
         private String name;
         private String state;

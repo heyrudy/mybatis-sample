@@ -27,7 +27,6 @@
         <java.version>17</java.version>
         <org.liquibase.version>4.20.0</org.liquibase.version>
         <org.posgresql.version>42.5.4</org.posgresql.version>
-        <org.lombok.version>1.18.26</org.lombok.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <org.testcontainers.version>1.17.6</org.testcontainers.version>
         <org.springboot.version>3.1.1</org.springboot.version>
@@ -122,12 +121,6 @@
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
             <version>${vavr.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${org.lombok.version}</version>
         </dependency>
 
         <dependency>

@@ -34,8 +34,6 @@ public class City {
         return this;
     }
 
-
-
     public String getName() {
         return name;
     }

@@ -13,8 +13,8 @@ public class Postgres11Container extends PostgreSQLContainer<Postgres11Container
 
     public static Postgres11Container getInstance() {
         return POSTGRES_11_CONTAINER.withUsername(ContainerConfig.DB_USER_NAME)
-                .withPassword(ContainerConfig.DB_USER_PASSWORD)
-                .withDatabaseName(ContainerConfig.DB_SCHEMA_NAME);
+            .withPassword(ContainerConfig.DB_USER_PASSWORD)
+            .withDatabaseName(ContainerConfig.DB_SCHEMA_NAME);
     }
 
     @Override
@@ -28,6 +28,7 @@ public class Postgres11Container extends PostgreSQLContainer<Postgres11Container
     }
 
     static class ContainerConfig {
+
         public static final String DB_DOCKER_IMAGE_NAME = "postgres:11";
         public static final String DB_SCHEMA_NAME = "demodb";
         public static final String DB_USER_NAME = "postgres";

@@ -9,17 +9,17 @@ public class CityResponseMapper {
 
     public City toModel(CityResponseDTO dto) {
         return City.builder()
-                .name(dto.name())
-                .state(dto.state())
-                .country(dto.country())
-                .build();
+            .name(dto.name())
+            .state(dto.state())
+            .country(dto.country())
+            .build();
     }
 
     public CityResponseDTO toDto(City entity) {
         return CityResponseDTO.builder()
-                .name(entity.getName())
-                .state(entity.getState())
-                .country(entity.getCountry())
-                .build();
+            .name(entity.getName())
+            .state(entity.getState())
+            .country(entity.getCountry())
+            .build();
     }
 }

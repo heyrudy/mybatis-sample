@@ -19,7 +19,7 @@ public class CreatePdfUtil {
     }
 
     public byte[] createPdf() {
-        try(PDDocument pdfDoc = new PDDocument()) {
+        try (PDDocument pdfDoc = new PDDocument()) {
             PDPage pdfPage = createPDPage(PDRectangle.A3);
             pdfDoc.addPage(pdfPage);
             ecrireDuTexteDansLaPAgePdf(pdfDoc, pdfPage);
@@ -27,7 +27,8 @@ public class CreatePdfUtil {
             pdfDoc.save(byteArrayOutputStream);
             return byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
-            throw new ApplicationRuntimeException("Erreur lors de la création d'un document PDF de test", e);
+            throw new ApplicationRuntimeException(
+                "Erreur lors de la création d'un document PDF de test", e);
         }
     }
 
@@ -46,10 +47,10 @@ public class CreatePdfUtil {
      *
      * @param pdfDoc Instance d'un document PDF
      * @param pdfPage Instance de la page d'un document PDF
-     * @throws IOException
      */
-    private static void ecrireDuTexteDansLaPAgePdf(PDDocument pdfDoc, PDPage pdfPage) throws IOException {
-        int positionDuTexte = (int) (pdfPage.getBBox().getHeight() * (60f/100f));
+    private static void ecrireDuTexteDansLaPAgePdf(PDDocument pdfDoc, PDPage pdfPage)
+        throws IOException {
+        int positionDuTexte = (int) (pdfPage.getBBox().getHeight() * (60f / 100f));
 
         PDPageContentStream pdfPageContentStream = new PDPageContentStream(pdfDoc, pdfPage);
         pdfPageContentStream.beginText();

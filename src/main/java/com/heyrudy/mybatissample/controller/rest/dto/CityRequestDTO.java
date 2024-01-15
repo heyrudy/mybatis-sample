@@ -7,6 +7,7 @@ public record CityRequestDTO(String name, String state, String country) {
     }
 
     public static class CityRequestDTOBuilder {
+
         private String name;
         private String state;
         private String country;

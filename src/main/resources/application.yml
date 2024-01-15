@@ -1,50 +1,50 @@
-db-host: localhost
-db-port: 5432
-db-protocol: jdbc:postgresql
-db-schema: demodb
-jwt:
-  auth:
-    converter:
-      principal-attribute: preferred_username
-      resource-id: city-api
-server:
-  port: 8080
-  servlet:
-    context-path: city/api/v1
-spring:
-  application:
-    name: city-api
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: ${db-protocol}://${db-host}:${db-port}/${db-schema}
-    username: postgres
-    password: mysecretpassword
-  h2:
-    console:
-      enabled: true
-  jpa:
-    open-in-view: false
-  liquibase:
-    change-log: classpath:db/changelog/db.changelog-hub.xml
-    default-schema: public
-    drop-first: false
-    enabled: true
-    password: ${spring.datasource.password}
-    url: ${spring.datasource.url}
-    user: ${spring.datasource.username}
-  security:
-    oauth2:
-      client:
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:9200/auth/realms/city-api
-            user-name-attribute: preferred_username
-        registration:
-          keycloak:
-            authorization-grant-type: authorization_code
-            client-id: city-api
-            scope: openid
-      resource-server:
-        jwt:
-          issuer-uri: http://localhost:9200/realms/city-api
-          jwk-set-uri: ${spring.security.oauth2.resource-server.jwt.issuer-uri}/protocol/openid-connect/certs
+db-host : localhost
+db-port : 5432
+db-protocol : jdbc:postgresql
+db-schema : demodb
+jwt :
+    auth :
+        converter :
+            principal-attribute : preferred_username
+            resource-id : city-api
+server :
+    port : 8080
+    servlet :
+        context-path : city/api/v1
+spring :
+    application :
+        name : city-api
+    datasource :
+        driver-class-name : org.postgresql.Driver
+        url : ${db-protocol}://${db-host}:${db-port}/${db-schema}
+        username : postgres
+        password : mysecretpassword
+    h2 :
+        console :
+            enabled : true
+    jpa :
+        open-in-view : false
+    liquibase :
+        change-log : classpath:db/changelog/db.changelog-hub.xml
+        default-schema : public
+        drop-first : false
+        enabled : true
+        password : ${spring.datasource.password}
+        url : ${spring.datasource.url}
+        user : ${spring.datasource.username}
+    security :
+        oauth2 :
+            client :
+                provider :
+                    keycloak :
+                        issuer-uri : http://localhost:9200/auth/realms/city-api
+                        user-name-attribute : preferred_username
+                registration :
+                    keycloak :
+                        authorization-grant-type : authorization_code
+                        client-id : city-api
+                        scope : openid
+            resource-server :
+                jwt :
+                    issuer-uri : http://localhost:9200/realms/city-api
+                    jwk-set-uri : ${spring.security.oauth2.resource-server.jwt.issuer-uri}/protocol/openid-connect/certs

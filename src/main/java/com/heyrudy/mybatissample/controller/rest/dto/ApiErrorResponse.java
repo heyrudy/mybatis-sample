@@ -7,6 +7,7 @@ public record ApiErrorResponse(String reason) {
     }
 
     public static class ApiErrorResponseBuilder {
+
         private String reason;
 
         public ApiErrorResponseBuilder() {

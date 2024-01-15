@@ -18,10 +18,10 @@ import java.net.URISyntaxException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
-        classes = {
-                MybatisSampleApplication.class
-        },
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+    classes = {
+        MybatisSampleApplication.class
+    },
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 class CityEntityControllerIntegrationTest {
 
@@ -40,7 +40,8 @@ class CityEntityControllerIntegrationTest {
         String localhost = "http://localhost:";
         String baseUrl = localhost + randomServerPort + CITY_ENDPOINT;
         URI uri = new URI(baseUrl);
-        CityResponseDTO cityResponseDto = new CityResponseDTO("Epinay", "Seine-Saint-Denis", "France");
+        CityResponseDTO cityResponseDto = new CityResponseDTO("Epinay", "Seine-Saint-Denis",
+            "France");
         HttpEntity<CityResponseDTO> request = new HttpEntity<>(cityResponseDto);
 
         // ACT - action or behavior that we are going test
@@ -48,10 +49,10 @@ class CityEntityControllerIntegrationTest {
 
         // ASSERT - verify the result or output using assert statements
         assertThat(response)
-                .isNotNull()
-                .satisfies(it -> assertThat(it.getStatusCode())
-                        .isEqualTo(HttpStatus.OK)
-                );
+            .isNotNull()
+            .satisfies(it -> assertThat(it.getStatusCode())
+                .isEqualTo(HttpStatus.OK)
+            );
     }
 
     @Test

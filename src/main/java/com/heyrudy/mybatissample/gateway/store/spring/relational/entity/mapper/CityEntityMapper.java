@@ -9,18 +9,17 @@ public class CityEntityMapper {
 
     public CityEntity toEntity(City city) {
         return CityEntity.builder()
-                .name(city.getName())
-                .state(city.getState())
-                .country(city.getCountry())
-                .build();
+            .name(city.getName())
+            .state(city.getState())
+            .country(city.getCountry())
+            .build();
     }
 
     public City toModel(CityEntity city) {
         return City.builder()
-                .name(city.getName())
-                .state(city.getState())
-                .country(city.getCountry())
-                .build();
+            .name(city.getName())
+            .state(city.getState())
+            .country(city.getCountry())
+            .build();
     }
-
 }

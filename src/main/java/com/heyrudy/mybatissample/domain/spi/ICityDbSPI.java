@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface ICityDbSPI {
 
     City save(City city);
+
     Optional<City> findCityById(long id);
+
     List<City> findCities();
 }

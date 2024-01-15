@@ -4,14 +4,6 @@ import java.util.Objects;
 
 public record Result<T>(T value, String error) {
 
-    public T getValue() {
-        return value;
-    }
-
-    public String getError() {
-        return error;
-    }
-
     public static <T> Result<T> of(T value, String error) {
         return new Result<>(Objects.requireNonNull(value), error);
     }

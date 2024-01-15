@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog
-        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet author="kko"
-               id="createTable-city"
-               failOnError="true">
+      id="createTable-city"
+      failOnError="true">
 
         <comment>create table to store city information</comment>
 
         <createTable remarks="A resume about city information"
-                     schemaName="public"
-                     tableName="city">
+          schemaName="public"
+          tableName="city">
             <column remarks="The unique identifier of the city"
-                    name="id"
-                    type="BIGINT">
+              name="id"
+              type="BIGINT">
                 <constraints nullable="false"
-                             primaryKey="true"
-                             primaryKeyName="city_pkey"/>
+                  primaryKey="true"
+                  primaryKeyName="city_pkey"/>
             </column>
             <column remarks="The name of the city"
-                    name="name"
-                    type="varchar(50)"/>
+              name="name"
+              type="varchar(50)"/>
             <column remarks="The state of the city"
-                    name="state"
-                    type="varchar(50)"/>
+              name="state"
+              type="varchar(50)"/>
             <column remarks="The country of the city"
-                    name="country"
-                    type="varchar(50)"/>
+              name="country"
+              type="varchar(50)"/>
         </createTable>
     </changeSet>
 

@@ -14,7 +14,8 @@ public class HttpClientConfiguration {
     CityClient cityClient() {
         WebClient client = WebClient.builder().baseUrl("http://localhost:8081/cities").build();
         WebClientAdapter adapter = WebClientAdapter.forClient(client);
-        HttpServiceProxyFactory serviceProxyFactory = HttpServiceProxyFactory.builder().clientAdapter(adapter).build();
+        HttpServiceProxyFactory serviceProxyFactory = HttpServiceProxyFactory.builder()
+            .clientAdapter(adapter).build();
         return serviceProxyFactory.createClient(CityClient.class);
     }
 }

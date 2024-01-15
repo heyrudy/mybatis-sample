@@ -32,7 +32,7 @@ class CityEntityRepositoryIntegrationTest {
 
         // ASSERT - verify the result or output using assert statements
         assertThat(PostgresContainerInit.postgres11Container.isRunning())
-                .isTrue();
+            .isTrue();
     }
 
     @Test
@@ -48,10 +48,10 @@ class CityEntityRepositoryIntegrationTest {
 
         // ASSERT - verify the result or output using assert statements
         assertThat(repository.findById(expectedId))
-                .isPresent()
-                .hasValueSatisfying(actual -> assertThat(actual)
-                        .extracting(CityEntity::getState)
-                        .isEqualTo(expectedState)
-                );
+            .isPresent()
+            .hasValueSatisfying(actual -> assertThat(actual)
+                .extracting(CityEntity::getState)
+                .isEqualTo(expectedState)
+            );
     }
 }

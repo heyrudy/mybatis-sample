@@ -31,15 +31,15 @@ public class CityDbAdapter implements ICityDbSPI {
     @Override
     public Optional<City> findCityById(long id) {
         return cityRepository.findById(id)
-                .map(entityMapper::toModel);
+            .map(entityMapper::toModel);
     }
 
 
     @Override
     public List<City> findCities() {
         return StreamSupport
-                .stream(cityRepository.findAll().spliterator(), false)
-                .map(entityMapper::toModel)
-                .toList();
+            .stream(cityRepository.findAll().spliterator(), false)
+            .map(entityMapper::toModel)
+            .toList();
     }
 }
