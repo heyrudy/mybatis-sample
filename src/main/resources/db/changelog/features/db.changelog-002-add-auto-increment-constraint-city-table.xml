@@ -6,10 +6,10 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet author="kko"
-      id="addAutoIncrement-on-city-primary-key"
+      id="addAutoIncrement-on-fullCity-primary-key"
       failOnError="true">
 
-        <comment>add auto-increment constraint on city table</comment>
+        <comment>add auto-increment constraint on fullCity table</comment>
 
         <addAutoIncrement columnDataType="BIGINT"
           columnName="id"
@@ -17,7 +17,7 @@
           generationType="ALWAYS"
           incrementBy="1"
           schemaName="public"
-          tableName="city"/>
+          tableName="fullCity"/>
     </changeSet>
 
 </databaseChangeLog>

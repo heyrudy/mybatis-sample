@@ -1,7 +1,5 @@
 package com.heyrudy.mybatissample.controller.rest;
 
-import static java.lang.String.format;
-
 import com.heyrudy.mybatissample.controller.rest.dto.ApiErrorResponse;
 import com.heyrudy.mybatissample.controller.rest.dto.CityRequestDTO;
 import com.heyrudy.mybatissample.controller.rest.dto.CityResponseDTO;
@@ -9,9 +7,9 @@ import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityRequestMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityResponseMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.validator.CityCriteriaValidator;
 import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOValidator;
-import com.heyrudy.mybatissample.domain.api.CreateCityInteractorAPI;
-import com.heyrudy.mybatissample.domain.api.FindCitiesInteractorAPI;
-import com.heyrudy.mybatissample.domain.api.FindCityByIdInteractorAPI;
+import com.heyrudy.mybatissample.domain.api.ICreateCityInteractorAPI;
+import com.heyrudy.mybatissample.domain.api.IFindCitiesInteractorAPI;
+import com.heyrudy.mybatissample.domain.api.IFindCityByIdInteractorAPI;
 import com.heyrudy.mybatissample.gateway.utils.CreatePdfUtil;
 import io.vavr.collection.List;
 import org.slf4j.Logger;
@@ -38,17 +36,17 @@ public class CityController {
     public static final CityRequestMapper CITY_REQUEST_MAPPER = CityRequestMapper.CITY_REQUEST_MAPPER;
     public static final CityResponseMapper CITY_RESPONSE_MAPPER = CityResponseMapper.CITY_RESPONSE_MAPPER;
     public static final CreatePdfUtil CREATE_PDF_UTIL = CreatePdfUtil.CREATE_PDF_UTIL;
-    private final CreateCityInteractorAPI createCityInteractorAPI;
-    private final FindCityByIdInteractorAPI findCityByIdInteractorAPI;
-    private final FindCitiesInteractorAPI findCitiesInteractorAPI;
+    private final ICreateCityInteractorAPI iCreateCityInteractorAPI;
+    private final IFindCityByIdInteractorAPI iFindCityByIdInteractorAPI;
+    private final IFindCitiesInteractorAPI iFindCitiesInteractorAPI;
 
     public CityController(
-        CreateCityInteractorAPI createCityInteractorAPI,
-        FindCityByIdInteractorAPI findCityByIdInteractorAPI,
-        FindCitiesInteractorAPI findCitiesInteractorAPI) {
-        this.createCityInteractorAPI = createCityInteractorAPI;
-        this.findCityByIdInteractorAPI = findCityByIdInteractorAPI;
-        this.findCitiesInteractorAPI = findCitiesInteractorAPI;
+        ICreateCityInteractorAPI iCreateCityInteractorAPI,
+        IFindCityByIdInteractorAPI iFindCityByIdInteractorAPI,
+        IFindCitiesInteractorAPI iFindCitiesInteractorAPI) {
+        this.iCreateCityInteractorAPI = iCreateCityInteractorAPI;
+        this.iFindCityByIdInteractorAPI = iFindCityByIdInteractorAPI;
+        this.iFindCitiesInteractorAPI = iFindCitiesInteractorAPI;
     }
 
     @PostMapping(value = "/cities")
@@ -56,7 +54,7 @@ public class CityController {
         return CITY_REQUEST_DTO_VALIDATOR.validateCityRequestDTO(dto.name(), dto.state(),
                 dto.country())
             .map(CITY_REQUEST_MAPPER::toModel)
-            .map(createCityInteractorAPI::createCity)
+            .map(iCreateCityInteractorAPI::execute)
             .map(CITY_RESPONSE_MAPPER::toDto)
             .fold(
                 validationErrorMessages -> {
@@ -84,7 +82,7 @@ public class CityController {
         logger.info("All cities were found");
         return ResponseEntity.ok()
             .body(
-                List.ofAll(findCitiesInteractorAPI.findCities())
+                List.ofAll(iFindCitiesInteractorAPI.execute())
                     .map(CITY_RESPONSE_MAPPER::toDto)
                     .toJavaList()
             );
@@ -93,7 +91,7 @@ public class CityController {
     @GetMapping(value = "/cities/{cityId}")
     public ResponseEntity<Object> findCityById(@PathVariable(value = "cityId") long id) {
         return CITY_CRITERIA_VALIDATOR.validateCityCriteria(id)
-            .map(findCityByIdInteractorAPI::findCityById)
+            .map(iFindCityByIdInteractorAPI::execute)
             .fold(
                 validationErrorMessage -> {
                     logger.error(validationErrorMessage);
@@ -116,7 +114,7 @@ public class CityController {
                                 );
                         },
                         city -> {
-                            logger.info(format("A city with id %d is found", id));
+                            logger.info("A city with id {} is found", id);
                             return ResponseEntity.ok()
                                 .body(CITY_RESPONSE_MAPPER.toDto(city));
                         }
@@ -138,5 +136,4 @@ public class CityController {
                 new ByteArrayResource(CREATE_PDF_UTIL.createPdf())
             );
     }
-
 }

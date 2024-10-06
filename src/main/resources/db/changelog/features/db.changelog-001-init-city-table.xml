@@ -6,28 +6,28 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet author="kko"
-      id="createTable-city"
+      id="createTable-fullCity"
       failOnError="true">
 
-        <comment>create table to store city information</comment>
+        <comment>create table to store fullCity information</comment>
 
-        <createTable remarks="A resume about city information"
+        <createTable remarks="A resume about fullCity information"
           schemaName="public"
-          tableName="city">
-            <column remarks="The unique identifier of the city"
+          tableName="fullCity">
+            <column remarks="The unique identifier of the fullCity"
               name="id"
               type="BIGINT">
                 <constraints nullable="false"
                   primaryKey="true"
                   primaryKeyName="city_pkey"/>
             </column>
-            <column remarks="The name of the city"
+            <column remarks="The name of the fullCity"
               name="name"
               type="varchar(50)"/>
-            <column remarks="The state of the city"
+            <column remarks="The state of the fullCity"
               name="state"
               type="varchar(50)"/>
-            <column remarks="The country of the city"
+            <column remarks="The country of the fullCity"
               name="country"
               type="varchar(50)"/>
         </createTable>

@@ -6,14 +6,14 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet author="kko"
-      id="insertIntoTable-city"
+      id="insertIntoTable-fullCity"
       failOnError="true">
 
-        <comment>create table to store city information</comment>
+        <comment>create table to store fullCity information</comment>
 
         <insert dbms="postgresql"
           schemaName="public"
-          tableName="city">
+          tableName="fullCity">
             <column name="name" value="Paris"/>
             <column name="state" value="Paris75"/>
             <column name="country" value="France"/>
@@ -21,7 +21,7 @@
 
         <insert dbms="postgresql"
           schemaName="public"
-          tableName="city">
+          tableName="fullCity">
             <column name="name" value="Saint-Denis"/>
             <column name="state" value="Seine-Saint-Denis"/>
             <column name="country" value="France"/>
@@ -29,7 +29,7 @@
 
         <insert dbms="postgresql"
           schemaName="public"
-          tableName="city">
+          tableName="fullCity">
             <column name="name" value="Courneuve"/>
             <column name="state" value="Seine-Saint-Denis"/>
             <column name="country" value="France"/>
@@ -37,7 +37,7 @@
 
         <insert dbms="postgresql"
           schemaName="public"
-          tableName="city">
+          tableName="fullCity">
             <column name="name" value="Bobigny"/>
             <column name="state" value="Seine-Saint-Denis"/>
             <column name="country" value="France"/>
@@ -45,7 +45,7 @@
 
         <insert dbms="postgresql"
           schemaName="public"
-          tableName="city">
+          tableName="fullCity">
             <column name="name" value="Clichy"/>
             <column name="state" value="Haut-De-Seine"/>
             <column name="country" value="France"/>

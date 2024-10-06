@@ -5,11 +5,11 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <include file="../features/db.changelog-001-init-city-table.xml"
+    <include file="../features/db.changelog-001-init-fullCity-table.xml"
       relativeToChangelogFile="true"/>
-    <include file="../features/db.changelog-002-add-auto-increment-constraint-city-table.xml"
+    <include file="../features/db.changelog-002-add-auto-increment-constraint-fullCity-table.xml"
       relativeToChangelogFile="true"/>
-    <include file="../features/db.changelog-003-populate-city-table.xml"
+    <include file="../features/db.changelog-003-populate-fullCity-table.xml"
       relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -1,25 +1,25 @@
 package com.heyrudy.mybatissample.controller.rest.dto.mapper;
 
-import com.heyrudy.mybatissample.domain.model.city.City;
+import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.controller.rest.dto.CityRequestDTO;
 
 public class CityRequestMapper {
 
     public static final CityRequestMapper CITY_REQUEST_MAPPER = new CityRequestMapper();
 
-    public City toModel(CityRequestDTO dto) {
-        return City.builder()
+    public FullCity toModel(CityRequestDTO dto) {
+        return FullCity.builder()
             .name(dto.name())
             .state(dto.state())
             .country(dto.country())
             .build();
     }
 
-    public CityRequestDTO toDto(City city) {
+    public CityRequestDTO toDto(FullCity fullCity) {
         return CityRequestDTO.builder()
-            .name(city.getName())
-            .state(city.getState())
-            .country(city.getCountry())
+            .name(fullCity.getName())
+            .state(fullCity.getState())
+            .country(fullCity.getCountry())
             .build();
     }
 }
