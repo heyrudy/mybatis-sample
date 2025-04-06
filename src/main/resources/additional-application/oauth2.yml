@@ -1,0 +1,8 @@
+oauth2:
+    client-id: ${spring.security.oauth2.client.registration.client-id}
+    client-secret: ${spring.security.oauth2.client.registration.client-secret}
+    authorization-url: ${spring.security.oauth2.client.provider.authorization-uri}
+    token-url: ${spring.security.oauth2.client.provider.token-uri}
+    scopes:
+        openid: Access to basic information
+        caiman: Access to profile information

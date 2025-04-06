@@ -1,0 +1,17 @@
+# Customize the path for Swagger UI
+springdoc:
+    swagger-ui:
+        path: /api-docs-ui
+        oauth:
+            app-name: CITY-API
+            client-id: ${oauth2.client-id}
+            client-secret: ${oauth2.client-secret}
+            scopes:
+                - openid
+                - caiman
+            use-basic-authentication-with-access-code-grant: true
+        oauth2-redirect-url: http://localhost:8080/isitrac-api/swagger-ui/oauth2-redirect.html
+        with-credentials: true
+        enabled: true
+        operations-sorter: alpha
+        tags-sorter: alpha

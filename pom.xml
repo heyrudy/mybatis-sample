@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.1</version>
+        <version>3.3.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -21,19 +22,22 @@
         <project-build-encoding>UTF-8</project-build-encoding>
         <project-build-sourceEncoding>UTF-8</project-build-sourceEncoding>
         <project-reporting-encoding>UTF-8</project-reporting-encoding>
-        <openapi-inputspec>1</openapi-inputspec>
-        <openapi-modelpackage>2</openapi-modelpackage>
-        <openapi.apipackage>3</openapi.apipackage>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <org.liquibase.version>4.29.0</org.liquibase.version>
         <org.posgresql.version>42.7.3</org.posgresql.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <org.testcontainers.version>1.20.0</org.testcontainers.version>
-        <org.springboot.version>3.1.1</org.springboot.version>
+        <org.springboot.version>3.3.2</org.springboot.version>
         <org.springsecurity.version>6.3.0</org.springsecurity.version>
         <org.instancio.version>4.8.0</org.instancio.version>
-        <org.springdoc.version>1.6.15</org.springdoc.version>
-        <jpastreamer-core.version>1.1.4</jpastreamer-core.version>
+
+        <!-- Spring Doc - Swagger OpenAPI 3 -->
+<!--        <version.jackson-databind-nullable>0.2.1</version.jackson-databind-nullable>-->
+<!--        <version.swagger-annotations>1.6.2</version.swagger-annotations>-->
+<!--        <version.springdoc-openapi-ui>1.6.14</version.springdoc-openapi-ui>-->
+<!--        <version.springdoc-openapi-security>1.6.14</version.springdoc-openapi-security>-->
+<!--        <version.openapi-generator>6.0.1</version.openapi-generator>-->
+<!--        <jpastreamer-core.version>1.1.4</jpastreamer-core.version>-->
         <vavr.version>0.10.4</vavr.version>
         <pdfbox.version>2.0.27</pdfbox.version>
         <fontbox.version>2.0.11</fontbox.version>
@@ -41,7 +45,30 @@
         <assertj-vavr.version>0.4.3</assertj-vavr.version>
         <spring-security-oauth2-jose.version>6.0.2</spring-security-oauth2-jose.version>
         <spring-security-test.version>6.0.2</spring-security-test.version>
+        <cyclops.version>2.1.1</cyclops.version>
+<!--        <default.package>com.heyrudy.mybatissample</default.package>-->
+<!--        <openapi.inputSpec>-->
+<!--            ${project.basedir}/src/main/resources/openapi/server/city.yaml-->
+<!--        </openapi.inputSpec>-->
+<!--        <openapi.server.modelPackage>-->
+<!--            ${default.package}.server.isitrac.rest.dto-->
+<!--        </openapi.server.modelPackage>-->
+<!--        <openapi.server.apiPackage>-->
+<!--            ${default.package}.server.isitrac.rest.api-->
+<!--        </openapi.server.apiPackage>-->
     </properties>
+
+<!--    <dependencyManagement>-->
+<!--        <dependencies>-->
+<!--            <dependency>-->
+<!--                <groupId>org.openapitools</groupId>-->
+<!--                <artifactId>openapi-generator-project</artifactId>-->
+<!--                <version>${version.openapi-generator}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+<!--        </dependencies>-->
+<!--    </dependencyManagement>-->
 
     <dependencies>
         <dependency>
@@ -57,41 +84,67 @@
             <version>${org.springboot.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-            <version>${org.springboot.version}</version>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.boot</groupId>-->
+        <!--            <artifactId>spring-boot-docker-compose</artifactId>-->
+        <!--            <version>${org.springboot.version}</version>-->
+        <!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--            <version>${org.springboot.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>-->
+<!--            <version>${org.springboot.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.security</groupId>-->
+<!--            <artifactId>spring-security-oauth2-jose</artifactId>-->
+<!--        </dependency>-->
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-docker-compose</artifactId>
-            <version>${org.springboot.version}</version>
+            <groupId>com.aol.simplereact</groupId>
+            <artifactId>cyclops-react</artifactId>
+            <version>${cyclops.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-            <version>${org.springboot.version}</version>
-        </dependency>
+        <!-- Spring Doc - Swagger OpenAPI 3 -->
+<!--        <dependency>-->
+<!--            <groupId>org.springdoc</groupId>-->
+<!--            <artifactId>springdoc-openapi-ui</artifactId>-->
+<!--            <version>${version.springdoc-openapi-ui}</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.springdoc</groupId>-->
+<!--            <artifactId>springdoc-openapi-security</artifactId>-->
+<!--            <version>${version.springdoc-openapi-security}</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.openapitools</groupId>-->
+<!--            <artifactId>jackson-databind-nullable</artifactId>-->
+<!--            <version>${version.jackson-databind-nullable}</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>io.swagger</groupId>-->
+<!--            <artifactId>swagger-annotations</artifactId>-->
+<!--            <version>${version.swagger-annotations}</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-            <version>${org.springboot.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-oauth2-jose</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>${org.liquibase.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.liquibase</groupId>-->
+<!--            <artifactId>liquibase-core</artifactId>-->
+<!--            <version>${org.liquibase.version}</version>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -99,23 +152,23 @@
             <version>${org.springboot.version}</version>
         </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>com.speedment.jpastreamer</groupId>-->
-        <!--            <artifactId>jpastreamer-core</artifactId>-->
-        <!--            <version>${jpastreamer-core.version}</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.speedment.jpastreamer</groupId>-->
+<!--            <artifactId>jpastreamer-core</artifactId>-->
+<!--            <version>${jpastreamer-core.version}</version>-->
+<!--        </dependency>-->
 
-        <!--        <dependency>-->
-        <!--            <groupId>com.speedment.jpastreamer.integration.spring</groupId>-->
-        <!--            <artifactId>spring-boot-jpastreamer-autoconfigure</artifactId>-->
-        <!--            <version>${jpastreamer-core.version}</version>-->
-        <!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.speedment.jpastreamer.integration.spring</groupId>-->
+<!--            <artifactId>spring-boot-jpastreamer-autoconfigure</artifactId>-->
+<!--            <version>${jpastreamer-core.version}</version>-->
+<!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${org.posgresql.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.postgresql</groupId>-->
+<!--            <artifactId>postgresql</artifactId>-->
+<!--            <version>${org.posgresql.version}</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>io.vavr</groupId>
@@ -166,12 +219,12 @@
             <version>${assertj-vavr.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <version>${org.springsecurity.version}</version>
-            <scope>test</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.security</groupId>-->
+<!--            <artifactId>spring-security-test</artifactId>-->
+<!--            <version>${org.springsecurity.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -196,11 +249,86 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>maven_central</id>
-            <name>Maven Central</name>
-            <url>https://repo.maven.apache.org/maven2/</url>
-        </repository>
-    </repositories>
+
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            &lt;!&ndash; Name of the maven profile for server stub generator&ndash;&gt;-->
+<!--            <id>openapi-server</id>-->
+<!--            <activation>-->
+<!--                <property>-->
+<!--                    <name>generate</name>-->
+<!--                    <value>swagger</value>-->
+<!--                </property>-->
+<!--            </activation>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.openapitools</groupId>-->
+<!--                        <artifactId>openapi-generator-maven-plugin</artifactId>-->
+<!--                        <version>6.0.1</version>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <goals>-->
+<!--                                    <goal>generate</goal>-->
+<!--                                </goals>-->
+<!--                                <configuration>-->
+<!--                                    &lt;!&ndash; Spring generator config &ndash;&gt;-->
+<!--                                    <generatorName>spring</generatorName>-->
+<!--                                    <library>spring-boot</library>-->
+<!--                                    <inputSpec>${openapi.inputSpec}</inputSpec>-->
+<!--                                    <skipIfSpecIsUnchanged>true</skipIfSpecIsUnchanged>-->
+<!--                                    <generateApis>true</generateApis>-->
+<!--                                    <generateApiDocumentation>true</generateApiDocumentation>-->
+<!--                                    <generateApiTests>false</generateApiTests>-->
+<!--                                    <generateModels>true</generateModels>-->
+<!--                                    <generateModelDocumentation>false</generateModelDocumentation>-->
+<!--                                    <generateModelTests>false</generateModelTests>-->
+<!--                                    <generateSupportingFiles>true</generateSupportingFiles>-->
+<!--                                    <output>-->
+<!--                                        ${project.build.directory}/generated-sources-->
+<!--                                    </output>-->
+<!--                                    &lt;!&ndash; Model java package name &ndash;&gt;-->
+<!--                                    <modelPackage>${openapi.server.modelPackage}</modelPackage>-->
+<!--                                    &lt;!&ndash; API java package name &ndash;&gt;-->
+<!--                                    <apiPackage>${openapi.server.apiPackage}</apiPackage>-->
+<!--                                    <configOptions>-->
+<!--                                        <hideGenerationTimestamp>true</hideGenerationTimestamp>-->
+<!--                                        &lt;!&ndash; Use modern java8 date/time api &ndash;&gt;-->
+<!--                                        <dateLibrary>java8</dateLibrary>-->
+<!--                                        <java8>true</java8>-->
+<!--                                        <oas3>true</oas3>-->
+<!--                                        <useSpringController>false</useSpringController>-->
+<!--                                        <useSpringfox>false</useSpringfox>-->
+<!--                                        &lt;!&ndash; Enable bean validation using javax validation and hibernate validator  &ndash;&gt;-->
+<!--                                        <useBeanValidation>true</useBeanValidation>-->
+<!--                                        <performBeanValidation>true</performBeanValidation>-->
+<!--                                        <interfaceOnly>true</interfaceOnly>-->
+<!--                                        <useTags>true</useTags>-->
+<!--                                        &lt;!&ndash; Use delegate pattern to separate implementation from API definition  &ndash;&gt;-->
+<!--                                        <delegatePattern>false</delegatePattern>-->
+<!--                                        <useOptional>false</useOptional>-->
+<!--                                        &lt;!&ndash; Place required parameters first in models  &ndash;&gt;-->
+<!--                                        <sortModelPropertiesByRequiredFlag>-->
+<!--                                            true-->
+<!--                                        </sortModelPropertiesByRequiredFlag>-->
+<!--                                        <sortParamsByRequiredFlag>true</sortParamsByRequiredFlag>-->
+<!--                                    </configOptions>-->
+<!--                                    <typeMappings>-->
+<!--                                        <typeMapping>-->
+<!--                                            OffsetDateTime=java.time.ZonedDateTime-->
+<!--                                        </typeMapping>-->
+<!--                                    </typeMappings>-->
+<!--                                    <importMappings>-->
+<!--                                        <importMapping>-->
+<!--                                            java.time.OffsetDateTime=java.time.ZonedDateTime-->
+<!--                                        </importMapping>-->
+<!--                                    </importMappings>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+<!--    </profiles>-->
 </project>

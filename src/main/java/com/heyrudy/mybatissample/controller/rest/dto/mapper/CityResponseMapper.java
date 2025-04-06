@@ -15,11 +15,11 @@ public class CityResponseMapper {
             .build();
     }
 
-    public CityResponseDTO toDto(FullCity entity) {
+    public CityResponseDTO toDto(FullCity model) {
         return CityResponseDTO.builder()
-            .name(entity.getName())
-            .state(entity.getState())
-            .country(entity.getCountry())
+            .name(model.getName())
+            .state(model.getState())
+            .country(model.getCountry())
             .build();
     }
 }

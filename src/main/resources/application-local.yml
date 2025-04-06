@@ -1,23 +1,13 @@
-db-host : localhost
-db-port : 5432
-db-protocol : jdbc:postgresql
-db-schema : demodb
-spring :
-    application :
-        name : MYBATIS SAMPLE APP
-    datasource :
-        driver-class-name : org.postgresql.Driver
-        url : ${db-protocol}://${db-host}:${db-port}/${db-schema}
-        username : postgres
-        password : mysecretpassword
-    h2 :
-        console :
-            enabled : true
-    liquibase :
-        change-log : classpath:db/changelog/db.changelog-hub.xml
-        default-schema : public
-        drop-first : false
-        enabled : true
-        password : ${spring.datasource.password}
-        url : ${spring.datasource.url}
-        user : ${spring.datasource.username}
+spring:
+    application:
+        name: MYBATIS SAMPLE APP
+        # Inclusion des yml génériques
+    config:
+        activate:
+            on-profile: local
+        name: application,postgres,liquibase,oauth2,swagger-ui
+        import:
+            - classpath:additional-application/postgres.yml
+            - classpath:additional-application/liquibase.yml
+            - classpath:additional-application/oauth2.yml
+            - classpath:additional-application/swagger-ui.yml

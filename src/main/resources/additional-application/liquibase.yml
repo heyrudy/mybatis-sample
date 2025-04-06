@@ -1,0 +1,9 @@
+spring:
+    liquibase:
+        change-log: classpath:db/changelog/db.changelog-hub.xml
+        default-schema: public
+        drop-first: false
+        enabled: true
+        password: ${spring.datasource.password}
+        url: ${spring.datasource.url}
+        user: ${spring.datasource.username}
