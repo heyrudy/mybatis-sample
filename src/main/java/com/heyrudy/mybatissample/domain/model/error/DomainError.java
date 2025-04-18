@@ -1,9 +1,11 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
 public sealed class DomainError
-    permits DBServiceNotFoundByLocatorError,
-    CityNotFoundError,
-    PDFDocumentCreationError {
+    permits CityNotFoundError,
+    MissingCityDbRepositoryCriticalServiceError,
+    PDFDocumentCreationError,
+    DbCriticalServiceNotFoundByLocatorError,
+    CriticalRepositoryNotFoundByLocatorError {
 
     protected String message;
 

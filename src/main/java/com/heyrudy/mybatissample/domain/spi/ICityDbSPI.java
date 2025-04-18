@@ -1,25 +1,37 @@
 package com.heyrudy.mybatissample.domain.spi;
 
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import cyclops.control.Reader;
+import io.vavr.control.Either;
 import java.util.List;
 import java.util.Optional;
 
 public interface ICityDbSPI {
 
     /**
-     * @param fullCity city with all its details to persist in the database
-     * @return Persisted city in the database
+     * Saves a city.
+     *
+     * @param fullCity The city to save
+     * @return A Reader monad that either results in an error or the saved city
      */
-    FullCity save(FullCity fullCity);
+    Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, FullCity>> save(
+        FullCity fullCity);
 
     /**
-     * @return All cities fetch from the database
+     * Finds all cities.
+     *
+     * @return A Reader monad that either results in an error or a list of cities
      */
-    List<FullCity> findCities();
+    Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, List<FullCity>>> findCities();
 
     /**
-     * @param id city's id to fetch from the database
-     * @return Required information about a city
+     * Finds a city by its ID.
+     *
+     * @param id The ID of the city to find
+     * @return A Reader monad that either results in an error or an optional city
      */
-    Optional<FullCity> findCityById(long id);
+    Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, Optional<FullCity>>> findCityById(
+        long id);
 }

@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.domain.model.common;
 
 
-public record CityCriteriaDTO(long cityId) {
+public record CityCriteriaDetails(long cityId) {
 
     public static CityCriteriaDTOBuilder builder() {
         return new CityCriteriaDTOBuilder();
@@ -19,8 +19,8 @@ public record CityCriteriaDTO(long cityId) {
             return this;
         }
 
-        public CityCriteriaDTO build() {
-            return new CityCriteriaDTO(cityId);
+        public CityCriteriaDetails build() {
+            return new CityCriteriaDetails(cityId);
         }
     }
 }

@@ -1,14 +1,14 @@
 package com.heyrudy.mybatissample.controller.rest.dto.validator;
 
-import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDTO;
+import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import io.vavr.control.Validation;
 
 public class CityCriteriaValidator {
 
     public static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR = new CityCriteriaValidator();
 
-    public Validation<String, CityCriteriaDTO> validateCityCriteria(long cityId) {
-        return validateCityId(cityId).map(CityCriteriaDTO::new);
+    public Validation<String, CityCriteriaDetails> validateCityCriteria(long cityId) {
+        return validateCityId(cityId).map(CityCriteriaDetails::new);
     }
 
     private Validation<String, Long> validateCityId(long cityId) {

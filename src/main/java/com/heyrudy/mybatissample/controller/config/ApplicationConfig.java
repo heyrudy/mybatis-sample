@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.controller.config;
 
-import com.heyrudy.mybatissample.domain.spi.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

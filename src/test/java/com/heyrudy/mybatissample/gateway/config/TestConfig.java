@@ -4,14 +4,14 @@ import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
-import com.heyrudy.mybatissample.domain.model.error.DBServiceNotFoundByLocatorError;
-import com.heyrudy.mybatissample.domain.spi.AppScopedLocator;
-import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
-import com.heyrudy.mybatissample.domain.spi.ServiceKey;
-import com.heyrudy.mybatissample.domain.spi.ServiceKey.CityDbKey;
-import com.heyrudy.mybatissample.domain.spi.ServiceKey.DbServiceKey;
-import com.heyrudy.mybatissample.gateway.db.spring.relational.CityDbAdapter;
-import com.heyrudy.mybatissample.gateway.db.spring.relational.repository.CityRepository;
+import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.DbCriticalServiceNotFoundByLocatorError;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.ServiceKey;
+import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
+import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CriticalRepositoryKey;
+import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.DbCriticalServiceKey;
+import com.heyrudy.mybatissample.gateway.db.mock.MockedCityCriticalDbSPIAdapter;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import java.util.Map;
@@ -37,12 +37,6 @@ public class TestConfig {
         return new SpringTestAppScopedLocator(applicationContext);
     }
 
-    @Bean
-    @Primary
-    public ICityDbSPI cityDbSPI(CityRepository cityRepository) {
-        return new CityDbAdapter(cityRepository);
-    }
-
     public static class SpringTestAppScopedLocator implements AppScopedLocator {
 
         private final ApplicationContext applicationContext;
@@ -52,10 +46,21 @@ public class TestConfig {
         }
 
         @Override
-        public <T> Either<DBServiceNotFoundByLocatorError, T> getDBService(DbServiceKey<T> key) {
+        public <T> Either<CriticalRepositoryNotFoundByLocatorError, T> getCriticalRepository(
+            CriticalRepositoryKey<T> key) {
             return getService(key)
-                .toEither(new DBServiceNotFoundByLocatorError(
-                    "No DB service found for key: %s".formatted(key)));
+                .toEither(new CriticalRepositoryNotFoundByLocatorError(
+                    ErrorMessage.NO_CRITICAL_REPOSITORY_FOUND_FOR_KEY_ERROR_MESSAGE
+                        .formatted(key)));
+        }
+
+        @Override
+        public <T> Either<DbCriticalServiceNotFoundByLocatorError, T> getDbCriticalService(
+            DbCriticalServiceKey<T> key) {
+            return getService(key)
+                .toEither(new DbCriticalServiceNotFoundByLocatorError(
+                    ErrorMessage.NO_DB_SPI_CRITICAL_SERVICE_FOUND_FOR_KEY_ERROR_MESSAGE
+                        .formatted(key)));
         }
 
         @Override
@@ -80,12 +85,15 @@ public class TestConfig {
 
         private Map<ServiceKey<?>, ?> cityServiceMap() {
             return Map.ofEntries(
+//                Map.entry(
+//                    CityRepositoryKey.INSTANCE, getBean(CityRepository.class)),
                 Map.entry(
-                    CityDbKey.INSTANCE, getBeanOrMock(ICityDbSPI.class))
+                    CityDbSPIKey.INSTANCE,
+                    new MockedCityCriticalDbSPIAdapter())
             );
         }
 
-        private <T> T getBeanOrMock(Class<T> beanClass) {
+        private <T> T getBean(Class<T> beanClass) {
             return applicationContext.getBeanProvider(beanClass).getObject();
         }
     }

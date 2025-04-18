@@ -9,17 +9,17 @@ public class CityEntityMapper {
 
     public CityEntity toEntity(FullCity fullCity) {
         return CityEntity.builder()
+            .id(fullCity.getId())
             .name(fullCity.getName())
             .state(fullCity.getState())
-            .country(fullCity.getCountry())
-            .build();
+            .country(fullCity.getCountry()).build();
     }
 
     public FullCity toModel(CityEntity city) {
         return FullCity.builder()
+            .id(city.getId())
             .name(city.getName())
             .state(city.getState())
-            .country(city.getCountry())
-            .build();
+            .country(city.getCountry()).build();
     }
 }

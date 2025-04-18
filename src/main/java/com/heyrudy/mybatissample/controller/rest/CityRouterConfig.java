@@ -15,7 +15,12 @@ package com.heyrudy.mybatissample.controller.rest;
 //import org.slf4j.MDC;
 //import org.springframework.context.annotation.Bean;
 
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.RouterFunctions;
+import org.springframework.web.servlet.function.ServerResponse;
 //import org.springframework.http.HttpStatus;
 //import org.springframework.web.servlet.function.HandlerFilterFunction;
 //import org.springframework.web.servlet.function.RouterFunction;
@@ -24,10 +29,41 @@ import org.springframework.context.annotation.Configuration;
 //import org.springframework.web.servlet.function.ServerResponse;
 
 @Configuration
-public class RouterConfig {
+public class CityRouterConfig {
 
 //    public static final Logger logger = LoggerFactory.getLogger(RouterConfig.class);
 //    private static final String SECRET_KEY = "your-secret-key"; // Use a secure method in production
+
+    public static final CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER =
+        CityCriticalRestAPIAdapter.INSTANCE;
+
+    private final AppScopedLocator appScopedLocator;
+
+    public CityRouterConfig(AppScopedLocator appScopedLocator) {
+        this.appScopedLocator = appScopedLocator;
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> routes() {
+        return RouterFunctions.route()
+            .POST("api/v1/cities",
+                request ->
+                    CITY_CRITICAL_REST_API_ADAPTER.createCity(request)
+                        .apply(appScopedLocator))
+            .GET("api/v1/cities",
+                request ->
+                    CITY_CRITICAL_REST_API_ADAPTER.findCities()
+                        .apply(appScopedLocator))
+            .GET("api/v1/cities/{cityId}",
+                request ->
+                    CITY_CRITICAL_REST_API_ADAPTER.findCityById(request)
+                        .apply(appScopedLocator))
+            .GET("api/v1/cities/download",
+                request ->
+                    CITY_CRITICAL_REST_API_ADAPTER.downloadCityPdfReport()
+                        .apply(appScopedLocator))
+            .build();
+    }
 
 //    @Bean
 //    public RouterFunction<ServerResponse> routerFunctionWithFilters(
@@ -37,17 +73,6 @@ public class RouterConfig {
 //            .filter(loggingFilter())
 //            .filter(jwtAuthenticationFilter())
 //            .filter(metricsCollectionFilter());
-//    }
-
-//    // Example routes
-//    @Bean
-//    public RouterFunction<ServerResponse> routes(CityController cityController) {
-//        return RouterFunctions.route()
-//            .POST("api/v1/cities", cityController::createCity)
-//            .GET("api/v1/cities", cityController::findCities)
-//            .GET("api/v1/cities/{cityId}", cityController::findCityById)
-//            .GET("api/v1/cities/download", cityController::downloadCityPdfReport)
-//            .build();
 //    }
 
 //    // JWT Authentication Filter

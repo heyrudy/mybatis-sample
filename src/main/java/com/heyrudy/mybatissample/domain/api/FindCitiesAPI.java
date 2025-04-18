@@ -1,10 +1,13 @@
 package com.heyrudy.mybatissample.domain.api;
 
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
-import com.heyrudy.mybatissample.domain.spi.AppScopedLocator;
-import com.heyrudy.mybatissample.domain.spi.ServiceKey.CityDbKey;
+import com.heyrudy.mybatissample.domain.model.error.MissingCityDbRepositoryCriticalServiceError;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
 import cyclops.control.Reader;
+import io.vavr.control.Either;
 import java.util.List;
+import java.util.function.Function;
 
 public class FindCitiesAPI {
 
@@ -14,14 +17,22 @@ public class FindCitiesAPI {
         super();
     }
 
-    public Reader<AppScopedLocator, List<FullCity>> execute() {
+    public Reader<AppScopedLocator, Either<MissingCityDbRepositoryCriticalServiceError, List<FullCity>>> execute() {
         return locator ->
-            locator.getDBService(CityDbKey.INSTANCE)
-                .fold(
-                    dbServiceNotFoundByLocatorError -> {
-                        throw dbServiceNotFoundByLocatorError.toException();
-                    },
-                    iCityDbSPI -> iCityDbSPI.findCities().stream().toList()
-                );
+            locator.getDbCriticalService(CityDbSPIKey.INSTANCE)
+                .bimap(
+                    dbCriticalServiceNotFoundByLocatorError ->
+                        new MissingCityDbRepositoryCriticalServiceError(
+                            dbCriticalServiceNotFoundByLocatorError.getMessage()),
+                    iCityDbSPI ->
+                        iCityDbSPI.findCities()
+                            .apply(locator)
+                            .bimap(
+                                criticalRepositoryNotFoundByLocatorError ->
+                                    new MissingCityDbRepositoryCriticalServiceError(
+                                        criticalRepositoryNotFoundByLocatorError.getMessage()),
+                                Function.identity()
+                            )
+                ).flatMap(Function.identity());
     }
 }

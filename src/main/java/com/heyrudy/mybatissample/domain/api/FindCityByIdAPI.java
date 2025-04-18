@@ -1,12 +1,13 @@
 package com.heyrudy.mybatissample.domain.api;
 
-import static java.lang.String.format;
-
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
-import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDTO;
+import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
-import com.heyrudy.mybatissample.domain.spi.AppScopedLocator;
-import com.heyrudy.mybatissample.domain.spi.ServiceKey.CityDbKey;
+import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError.ErrorMessage;
+import com.heyrudy.mybatissample.domain.model.error.MissingCityDbRepositoryCriticalServiceError;
+import com.heyrudy.mybatissample.domain.model.error.MissingCityError;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -19,19 +20,28 @@ public class FindCityByIdAPI {
         super();
     }
 
-    public Reader<AppScopedLocator, Either<CityNotFoundError, FullCity>> execute(
-        final CityCriteriaDTO cityCriteriaDTO) {
+    public Reader<AppScopedLocator, Either<MissingCityError, FullCity>> execute(
+        final CityCriteriaDetails cityCriteriaDetails) {
         return locator ->
-            locator.getDBService(CityDbKey.INSTANCE)
-                .fold(
-                    dbServiceNotFoundByLocatorError -> {
-                        throw dbServiceNotFoundByLocatorError.toException();
-                    },
-                    iCityDbSPI ->
-                        Option.ofOptional(
-                                iCityDbSPI.findCityById(cityCriteriaDTO.cityId()))
-                            .toEither(() -> new CityNotFoundError(
-                                format("City with id %d was not found", cityCriteriaDTO.cityId())))
+            locator.getDbCriticalService(CityDbSPIKey.INSTANCE)
+                .<MissingCityError>mapLeft(dbCriticalServiceNotFoundByLocatorError ->
+                    new MissingCityDbRepositoryCriticalServiceError(
+                        dbCriticalServiceNotFoundByLocatorError.getMessage())
+                )
+                .flatMap(iCityDbSPI ->
+                    iCityDbSPI.findCityById(cityCriteriaDetails.cityId())
+                        .apply(locator)
+                        .<MissingCityError>mapLeft(criticalRepositoryNotFoundByLocatorError ->
+                            new MissingCityDbRepositoryCriticalServiceError(
+                                criticalRepositoryNotFoundByLocatorError.getMessage())
+                        )
+                        .flatMap(optionalCity ->
+                            Option.ofOptional(optionalCity)
+                                .toEither(new CityNotFoundError(
+                                    ErrorMessage.CITY_NOT_FOUND_ERROR_MESSAGE.formatted(
+                                        cityCriteriaDetails.cityId())
+                                ))
+                        )
                 );
     }
 }
