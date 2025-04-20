@@ -16,7 +16,7 @@ import com.heyrudy.mybatissample.domain.api.FindCitiesAPI;
 import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityDbRepositoryCriticalServiceError;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
 import cyclops.control.Reader;
 import io.vavr.control.Try;
@@ -29,12 +29,14 @@ import org.springframework.http.MediaType;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
-public class CityCriticalRestAPIAdapter {
+public final class CityCriticalRestAPIAdapter {
 
     public static final Logger logger = LoggerFactory.getLogger(CityCriticalRestAPIAdapter.class);
 
-    public static final CityRequestDTOValidator CITY_REQUEST_DTO_VALIDATOR = CityRequestDTOValidator.CITY_REQUEST_DTO_VALIDATOR;
-    public static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR = CityCriteriaValidator.CITY_CRITERIA_VALIDATOR;
+    public static final CityRequestDTOValidator CITY_REQUEST_DTO_VALIDATOR =
+        CityRequestDTOValidator.CITY_REQUEST_DTO_VALIDATOR;
+    public static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR =
+        CityCriteriaValidator.CITY_CRITERIA_VALIDATOR;
 
     public static final CityRequestMapper CITY_REQUEST_MAPPER = CityRequestMapper.INSTANCE;
     public static final CityResponseMapper CITY_RESPONSE_MAPPER = CityResponseMapper.INSTANCE;
@@ -54,7 +56,7 @@ public class CityCriticalRestAPIAdapter {
      * @param request city with all its details to persist in the database
      * @return HTTP Response with persisted city in the database
      */
-    public Reader<AppScopedLocator, ServerResponse> createCity(ServerRequest request) {
+    public Reader<AppScopedServiceLocator, ServerResponse> createCity(ServerRequest request) {
         return locator ->
             Try.of(() -> request.body(CityRequestDTO.class))
                 .toEither()
@@ -106,7 +108,7 @@ public class CityCriticalRestAPIAdapter {
     /**
      * @return HTTP Response with all cities fetched from the database
      */
-    public Reader<AppScopedLocator, ServerResponse> findCities() {
+    public Reader<AppScopedServiceLocator, ServerResponse> findCities() {
         logger.info("All cities were found");
         return locator ->
             FIND_CITIES_API.execute()
@@ -127,7 +129,7 @@ public class CityCriticalRestAPIAdapter {
      * @param request city's id to fetch from the database
      * @return HTTP Response with required information about a city
      */
-    public Reader<AppScopedLocator, ServerResponse> findCityById(ServerRequest request) {
+    public Reader<AppScopedServiceLocator, ServerResponse> findCityById(ServerRequest request) {
         String id = request.pathVariable("id");
         return locator ->
             CITY_CRITERIA_VALIDATOR.validateCityCriteria(Long.parseLong(id))
@@ -179,7 +181,7 @@ public class CityCriticalRestAPIAdapter {
                 );
     }
 
-    public Reader<AppScopedLocator, ServerResponse> downloadCityPdfReport() {
+    public Reader<AppScopedServiceLocator, ServerResponse> downloadCityPdfReport() {
         return locator ->
             ServerResponse.ok()
                 .headers(httpHeaders ->

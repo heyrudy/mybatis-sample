@@ -1,18 +1,18 @@
 package com.heyrudy.mybatissample.domain.api;
 
-import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError.ErrorMessage;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityDbRepositoryCriticalServiceError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityError;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 
-public class FindCityByIdAPI {
+public final class FindCityByIdAPI {
 
     public static final FindCityByIdAPI INSTANCE = new FindCityByIdAPI();
 
@@ -20,7 +20,7 @@ public class FindCityByIdAPI {
         super();
     }
 
-    public Reader<AppScopedLocator, Either<MissingCityError, FullCity>> execute(
+    public Reader<AppScopedServiceLocator, Either<MissingCityError, ICity>> execute(
         final CityCriteriaDetails cityCriteriaDetails) {
         return locator ->
             locator.getDbCriticalService(CityDbSPIKey.INSTANCE)

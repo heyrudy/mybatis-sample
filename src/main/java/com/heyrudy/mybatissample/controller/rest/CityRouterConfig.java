@@ -15,7 +15,7 @@ package com.heyrudy.mybatissample.controller.rest;
 //import org.slf4j.MDC;
 //import org.springframework.context.annotation.Bean;
 
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -37,10 +37,10 @@ public class CityRouterConfig {
     public static final CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER =
         CityCriticalRestAPIAdapter.INSTANCE;
 
-    private final AppScopedLocator appScopedLocator;
+    private final AppScopedServiceLocator appScopedServiceLocator;
 
-    public CityRouterConfig(AppScopedLocator appScopedLocator) {
-        this.appScopedLocator = appScopedLocator;
+    public CityRouterConfig(AppScopedServiceLocator appScopedServiceLocator) {
+        this.appScopedServiceLocator = appScopedServiceLocator;
     }
 
     @Bean
@@ -49,19 +49,19 @@ public class CityRouterConfig {
             .POST("api/v1/cities",
                 request ->
                     CITY_CRITICAL_REST_API_ADAPTER.createCity(request)
-                        .apply(appScopedLocator))
+                        .apply(appScopedServiceLocator))
             .GET("api/v1/cities",
                 request ->
                     CITY_CRITICAL_REST_API_ADAPTER.findCities()
-                        .apply(appScopedLocator))
+                        .apply(appScopedServiceLocator))
             .GET("api/v1/cities/{cityId}",
                 request ->
                     CITY_CRITICAL_REST_API_ADAPTER.findCityById(request)
-                        .apply(appScopedLocator))
+                        .apply(appScopedServiceLocator))
             .GET("api/v1/cities/download",
                 request ->
                     CITY_CRITICAL_REST_API_ADAPTER.downloadCityPdfReport()
-                        .apply(appScopedLocator))
+                        .apply(appScopedServiceLocator))
             .build();
     }
 

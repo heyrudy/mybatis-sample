@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.controller.config;
 
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -21,7 +21,7 @@ public class ApplicationConfig implements ApplicationContextAware {
 
     // Expose CompositionRoot as a bean
     @Bean
-    public AppScopedLocator appScopedLocator() {
-        return new SpringAppScopedLocator(applicationContext);
+    public AppScopedServiceLocator appScopedLocator() {
+        return new SpringAppScopedServiceLocator(applicationContext);
     }
 }

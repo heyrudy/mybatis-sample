@@ -1,13 +1,14 @@
 package com.heyrudy.mybatissample.gateway.db.spring.relational.entity.mapper;
 
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.entity.CityEntity;
 
 public class CityEntityMapper {
 
     public static final CityEntityMapper CITY_ENTITY_MAPPER = new CityEntityMapper();
 
-    public CityEntity toEntity(FullCity fullCity) {
+    public CityEntity toEntity(ICity fullCity) {
         return CityEntity.builder()
             .id(fullCity.getId())
             .name(fullCity.getName())
@@ -15,7 +16,7 @@ public class CityEntityMapper {
             .country(fullCity.getCountry()).build();
     }
 
-    public FullCity toModel(CityEntity city) {
+    public ICity toModel(CityEntity city) {
         return FullCity.builder()
             .id(city.getId())
             .name(city.getName())

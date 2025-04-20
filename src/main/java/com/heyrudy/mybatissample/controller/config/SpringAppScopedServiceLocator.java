@@ -6,15 +6,12 @@ import static io.vavr.API.Match;
 
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
 import com.heyrudy.mybatissample.domain.model.error.DbCriticalServiceNotFoundByLocatorError;
-import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
-import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityRepositoryKey;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CriticalRepositoryKey;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.DbCriticalServiceKey;
 import com.heyrudy.mybatissample.gateway.db.mock.MockedCityCriticalDbSPIAdapter;
-import com.heyrudy.mybatissample.gateway.db.spring.relational.repository.CityRepository;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import java.util.Map;
@@ -23,11 +20,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.context.ApplicationContext;
 
-public class SpringAppScopedLocator implements AppScopedLocator {
+public class SpringAppScopedServiceLocator implements AppScopedServiceLocator {
 
     private final ApplicationContext applicationContext;
 
-    public SpringAppScopedLocator(ApplicationContext applicationContext) {
+    public SpringAppScopedServiceLocator(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
@@ -71,12 +68,12 @@ public class SpringAppScopedLocator implements AppScopedLocator {
 
     private Map<ServiceKey<?>, ?> cityServiceMap() {
         return Map.ofEntries(
-            Map.entry(
-                CityRepositoryKey.INSTANCE,
-                getBeanOrMock(CityRepository.class, Option.none())),
+//            Map.entry(
+//                CityRepositoryKey.INSTANCE,
+//                getBeanOrMock(CityRepository.class, Option.none())),
             Map.entry(
                 CityDbSPIKey.INSTANCE,
-                getBeanOrMock(ICityDbSPI.class, Option.of(MockedCityCriticalDbSPIAdapter::new)))
+                new MockedCityCriticalDbSPIAdapter())
         );
     }
 

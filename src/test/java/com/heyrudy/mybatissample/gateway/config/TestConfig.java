@@ -6,7 +6,7 @@ import static io.vavr.API.Match;
 
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
 import com.heyrudy.mybatissample.domain.model.error.DbCriticalServiceNotFoundByLocatorError;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CriticalRepositoryKey;
@@ -33,15 +33,15 @@ public class TestConfig {
 
     @Bean
     @Primary
-    public AppScopedLocator springTestAppScopedLocator() {
-        return new SpringTestAppScopedLocator(applicationContext);
+    public AppScopedServiceLocator springTestAppScopedLocator() {
+        return new SpringTestAppScopedServiceLocator(applicationContext);
     }
 
-    public static class SpringTestAppScopedLocator implements AppScopedLocator {
+    public static class SpringTestAppScopedServiceLocator implements AppScopedServiceLocator {
 
         private final ApplicationContext applicationContext;
 
-        public SpringTestAppScopedLocator(ApplicationContext applicationContext) {
+        public SpringTestAppScopedServiceLocator(ApplicationContext applicationContext) {
             this.applicationContext = applicationContext;
         }
 

@@ -1,14 +1,14 @@
 package com.heyrudy.mybatissample.domain.api;
 
-import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityDbRepositoryCriticalServiceError;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.function.Function;
 
-public class CreateCityAPI {
+public final class CreateCityAPI {
 
     public static final CreateCityAPI INSTANCE = new CreateCityAPI();
 
@@ -16,8 +16,8 @@ public class CreateCityAPI {
         super();
     }
 
-    public Reader<AppScopedLocator, Either<MissingCityDbRepositoryCriticalServiceError, FullCity>> execute(
-        final FullCity fullCity) {
+    public Reader<AppScopedServiceLocator, Either<MissingCityDbRepositoryCriticalServiceError, ICity>> execute(
+        final ICity city) {
         return locator ->
             locator.getDbCriticalService(CityDbSPIKey.INSTANCE)
                 .bimap(
@@ -25,7 +25,7 @@ public class CreateCityAPI {
                         new MissingCityDbRepositoryCriticalServiceError(
                             dbCriticalServiceNotFoundByLocatorError.getMessage()),
                     iCityDbSPI ->
-                        iCityDbSPI.save(fullCity)
+                        iCityDbSPI.save(city)
                             .apply(locator)
                             .bimap(
                                 criticalRepositoryNotFoundByLocatorError ->

@@ -10,7 +10,7 @@ import com.heyrudy.mybatissample.gateway.db.spring.relational.repository.CityRep
 public sealed interface ServiceKey<T>
     permits CriticalRepositoryKey,
     DbCriticalServiceKey,
-    /*ServiceKey.RestSPICriticalServiceKey*/
+    /*RestSPICriticalServiceKey*/
     AuditSPIServiceKey {
 
     Class<T> getType();

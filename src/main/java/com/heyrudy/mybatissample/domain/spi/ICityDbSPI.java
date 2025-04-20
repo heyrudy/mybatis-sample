@@ -1,8 +1,8 @@
 package com.heyrudy.mybatissample.domain.spi;
 
-import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.List;
@@ -16,15 +16,15 @@ public interface ICityDbSPI {
      * @param fullCity The city to save
      * @return A Reader monad that either results in an error or the saved city
      */
-    Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, FullCity>> save(
-        FullCity fullCity);
+    Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, ICity>> save(
+        ICity fullCity);
 
     /**
      * Finds all cities.
      *
      * @return A Reader monad that either results in an error or a list of cities
      */
-    Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, List<FullCity>>> findCities();
+    Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, List<ICity>>> findCities();
 
     /**
      * Finds a city by its ID.
@@ -32,6 +32,6 @@ public interface ICityDbSPI {
      * @param id The ID of the city to find
      * @return A Reader monad that either results in an error or an optional city
      */
-    Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, Optional<FullCity>>> findCityById(
+    Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, Optional<ICity>>> findCityById(
         long id);
 }

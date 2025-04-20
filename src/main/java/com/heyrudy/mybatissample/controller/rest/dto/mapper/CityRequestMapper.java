@@ -2,6 +2,7 @@ package com.heyrudy.mybatissample.controller.rest.dto.mapper;
 
 import com.heyrudy.mybatissample.controller.rest.dto.CityRequestDTO;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 
 public class CityRequestMapper {
 
@@ -11,7 +12,7 @@ public class CityRequestMapper {
         super();
     }
 
-    public FullCity toModel(CityRequestDTO dto) {
+    public ICity toModel(CityRequestDTO dto) {
         return FullCity.builder()
             .name(dto.name())
             .state(dto.state())

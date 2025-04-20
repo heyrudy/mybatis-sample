@@ -1,9 +1,9 @@
 package com.heyrudy.mybatissample.gateway.db.spring.relational;
 
-import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityRepositoryKey;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.entity.CityEntity;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.entity.mapper.CityEntityMapper;
@@ -19,8 +19,8 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
     public static final CityEntityMapper CITY_ENTITY_MAPPER = CityEntityMapper.CITY_ENTITY_MAPPER;
 
     @Override
-    public Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, FullCity>> save(
-        FullCity fullCity) {
+    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, ICity>> save(
+        ICity fullCity) {
         return locator ->
             locator.getCriticalRepository(CityRepositoryKey.INSTANCE)
                 .bimap(
@@ -34,7 +34,7 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
     }
 
     @Override
-    public Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, List<FullCity>>> findCities() {
+    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, List<ICity>>> findCities() {
         return locator ->
             locator.getCriticalRepository(CityRepositoryKey.INSTANCE)
                 .bimap(
@@ -47,7 +47,7 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
     }
 
     @Override
-    public Reader<AppScopedLocator, Either<CriticalRepositoryNotFoundByLocatorError, Optional<FullCity>>> findCityById(
+    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, Optional<ICity>>> findCityById(
         long id) {
         return locator ->
             locator.getCriticalRepository(CityRepositoryKey.INSTANCE)

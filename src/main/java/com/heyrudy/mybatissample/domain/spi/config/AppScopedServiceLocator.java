@@ -7,7 +7,7 @@ import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.DbCriticalServiceK
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 
-public interface AppScopedLocator {
+public interface AppScopedServiceLocator {
 
     <T> Either<CriticalRepositoryNotFoundByLocatorError, T> getCriticalRepository(
         CriticalRepositoryKey<T> key);
