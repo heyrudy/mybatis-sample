@@ -8,12 +8,12 @@ public class CityEntityMapper {
 
     public static final CityEntityMapper CITY_ENTITY_MAPPER = new CityEntityMapper();
 
-    public CityEntity toEntity(ICity fullCity) {
+    public CityEntity toEntity(ICity iCity) {
         return CityEntity.builder()
-            .id(fullCity.getId())
-            .name(fullCity.getName())
-            .state(fullCity.getState())
-            .country(fullCity.getCountry()).build();
+            .id(iCity.getId())
+            .name(iCity.getName())
+            .state(iCity.getState())
+            .country(iCity.getCountry()).build();
     }
 
     public ICity toModel(CityEntity city) {

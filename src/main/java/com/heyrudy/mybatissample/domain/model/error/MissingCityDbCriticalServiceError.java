@@ -1,10 +1,10 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public final class MissingCityDbRepositoryCriticalServiceError
+public final class MissingCityDbCriticalServiceError
     extends DomainError
     implements MissingCityError {
 
-    public MissingCityDbRepositoryCriticalServiceError(String message) {
+    public MissingCityDbCriticalServiceError(String message) {
         super(message);
     }
 }

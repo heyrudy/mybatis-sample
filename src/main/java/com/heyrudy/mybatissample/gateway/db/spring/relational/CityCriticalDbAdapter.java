@@ -5,11 +5,10 @@ import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundBy
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityRepositoryKey;
+import com.heyrudy.mybatissample.domain.spi.config.Workflow;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.entity.CityEntity;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.entity.mapper.CityEntityMapper;
-import cyclops.control.Reader;
 import io.vavr.collection.Stream;
-import io.vavr.control.Either;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -19,14 +18,14 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
     public static final CityEntityMapper CITY_ENTITY_MAPPER = CityEntityMapper.CITY_ENTITY_MAPPER;
 
     @Override
-    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, ICity>> save(
-        ICity fullCity) {
+    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByLocatorError, ICity> save(
+        ICity iCity) {
         return locator ->
             locator.getCriticalRepository(CityRepositoryKey.INSTANCE)
                 .bimap(
                     Function.identity(),
                     cityRepository -> {
-                        CityEntity cityEntity = CITY_ENTITY_MAPPER.toEntity(fullCity);
+                        CityEntity cityEntity = CITY_ENTITY_MAPPER.toEntity(iCity);
                         CityEntity cityEntitySaved = cityRepository.save(cityEntity);
                         return CITY_ENTITY_MAPPER.toModel(cityEntitySaved);
                     }
@@ -34,7 +33,7 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
     }
 
     @Override
-    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, List<ICity>>> findCities() {
+    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByLocatorError, List<ICity>> findCities() {
         return locator ->
             locator.getCriticalRepository(CityRepositoryKey.INSTANCE)
                 .bimap(
@@ -47,7 +46,7 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
     }
 
     @Override
-    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, Optional<ICity>>> findCityById(
+    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByLocatorError, Optional<ICity>> findCityById(
         long id) {
         return locator ->
             locator.getCriticalRepository(CityRepositoryKey.INSTANCE)

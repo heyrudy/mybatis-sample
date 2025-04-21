@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 class CityCriticalDbAdapterTest {
 
-    private final AppScopedServiceLocator appScopedServiceLocator =
+    private final AppScopedServiceLocator mockedAppScopedServiceLocator =
         mock(AppScopedServiceLocator.class);
     private final CityRepository mockedCityRepository =
         mock(CityRepository.class);
@@ -47,7 +47,7 @@ class CityCriticalDbAdapterTest {
             .country("France")
             .state("Paris75").build();
 
-        when(appScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
+        when(mockedAppScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
             .thenReturn(Either.right(mockedCityRepository));
         when(mockedCityRepository.save(isA(CityEntity.class)))
             .thenReturn(cityEntity);
@@ -55,9 +55,11 @@ class CityCriticalDbAdapterTest {
         // ACT - action or behavior that we are going to test
         Either<CriticalRepositoryNotFoundByLocatorError, ICity> actual =
             adapterInstanceUnderTest.save(expected)
-                .apply(appScopedServiceLocator);
+                .apply(mockedAppScopedServiceLocator);
 
         // ASSERT - verify the result or output using assert statements
+        verify(mockedAppScopedServiceLocator, times(1))
+            .getCriticalRepository(CityRepositoryKey.INSTANCE);
         verify(mockedCityRepository, times(1))
             .save(isA(CityEntity.class));
 
@@ -82,7 +84,7 @@ class CityCriticalDbAdapterTest {
                 .country("France")
                 .state("Paris75").build();
 
-        when(appScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
+        when(mockedAppScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
             .thenReturn(Either.right(mockedCityRepository));
         when(mockedCityRepository.findAll())
             .thenReturn(List.of(cityEntityZero, cityEntityOne));
@@ -90,9 +92,11 @@ class CityCriticalDbAdapterTest {
         // ACT - action or behavior that we are going to test
         Either<CriticalRepositoryNotFoundByLocatorError, List<ICity>> actual =
             adapterInstanceUnderTest.findCities()
-                .apply(appScopedServiceLocator);
+                .apply(mockedAppScopedServiceLocator);
 
         // ASSERT - verify the result or output using assert statements
+        verify(mockedAppScopedServiceLocator, times(1))
+            .getCriticalRepository(CityRepositoryKey.INSTANCE);
         verify(mockedCityRepository, times(1))
             .findAll();
 
@@ -130,7 +134,7 @@ class CityCriticalDbAdapterTest {
             .state("Paris75")
             .country("France").build();
 
-        when(appScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
+        when(mockedAppScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
             .thenReturn(Either.right(mockedCityRepository));
         when(mockedCityRepository.findById(anyLong()))
             .thenReturn(Optional.of(cityEntity));
@@ -138,9 +142,11 @@ class CityCriticalDbAdapterTest {
         // ACT - action or behavior that we are going to test
         Either<CriticalRepositoryNotFoundByLocatorError, Optional<ICity>> actual =
             adapterInstanceUnderTest.findCityById(cityId)
-                .apply(appScopedServiceLocator);
+                .apply(mockedAppScopedServiceLocator);
 
         // ASSERT - verify the result or output using assert statements
+        verify(mockedAppScopedServiceLocator, times(1))
+            .getCriticalRepository(CityRepositoryKey.INSTANCE);
         verify(mockedCityRepository, times(1))
             .findById(anyLong());
 

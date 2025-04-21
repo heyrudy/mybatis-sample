@@ -2,7 +2,7 @@ package com.heyrudy.mybatissample.domain.model.error;
 
 public sealed class DomainError
     permits CityNotFoundError,
-    MissingCityDbRepositoryCriticalServiceError,
+    MissingCityDbCriticalServiceError,
     PDFDocumentCreationError,
     DbCriticalServiceNotFoundByLocatorError,
     CriticalRepositoryNotFoundByLocatorError {

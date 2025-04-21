@@ -4,12 +4,11 @@ import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError.ErrorMessage;
-import com.heyrudy.mybatissample.domain.model.error.MissingCityDbRepositoryCriticalServiceError;
+import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalServiceError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityError;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
-import cyclops.control.Reader;
-import io.vavr.control.Either;
+import com.heyrudy.mybatissample.domain.spi.config.Workflow;
 import io.vavr.control.Option;
 
 public final class FindCityByIdAPI {
@@ -20,19 +19,19 @@ public final class FindCityByIdAPI {
         super();
     }
 
-    public Reader<AppScopedServiceLocator, Either<MissingCityError, ICity>> execute(
+    public Workflow<AppScopedServiceLocator, MissingCityError, ICity> execute(
         final CityCriteriaDetails cityCriteriaDetails) {
         return locator ->
             locator.getDbCriticalService(CityDbSPIKey.INSTANCE)
                 .<MissingCityError>mapLeft(dbCriticalServiceNotFoundByLocatorError ->
-                    new MissingCityDbRepositoryCriticalServiceError(
+                    new MissingCityDbCriticalServiceError(
                         dbCriticalServiceNotFoundByLocatorError.getMessage())
                 )
                 .flatMap(iCityDbSPI ->
                     iCityDbSPI.findCityById(cityCriteriaDetails.cityId())
                         .apply(locator)
                         .<MissingCityError>mapLeft(criticalRepositoryNotFoundByLocatorError ->
-                            new MissingCityDbRepositoryCriticalServiceError(
+                            new MissingCityDbCriticalServiceError(
                                 criticalRepositoryNotFoundByLocatorError.getMessage())
                         )
                         .flatMap(optionalCity ->

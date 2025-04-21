@@ -29,7 +29,7 @@ class CityRepositoryIntegrationTest {
     void postgres_container_liveness() {
         // ARRANGE - precondition or setup
 
-        // ACT - action or behavior that we are going test
+        // ACT - action or behavior that we are going to test
 
         // ASSERT - verify the result or output using assert statements
         assertThat(PostgresContainerInit.postgres11Container.isRunning())
@@ -44,7 +44,7 @@ class CityRepositoryIntegrationTest {
         String expectedState = "Haut-De-Seine92";
         long expectedId = 5L;
 
-        // ACT - action or behavior that we are going test
+        // ACT - action or behavior that we are going to test
         repository.updateCityById(expectedId, expectedState);
 
         // ASSERT - verify the result or output using assert statements

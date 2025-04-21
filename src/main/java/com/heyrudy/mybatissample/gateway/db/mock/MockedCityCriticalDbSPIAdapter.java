@@ -4,7 +4,7 @@ import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
-import cyclops.control.Reader;
+import com.heyrudy.mybatissample.domain.spi.config.Workflow;
 import io.vavr.control.Either;
 import java.util.List;
 import java.util.Map;
@@ -18,24 +18,24 @@ public final class MockedCityCriticalDbSPIAdapter implements ICityDbSPI {
     private final static Map<Long, ICity> IN_MEMORY_DB = new ConcurrentHashMap<>();
 
     @Override
-    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, ICity>> save(
-        ICity fullCity) {
+    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByLocatorError, ICity> save(
+        ICity iCity) {
         return locator -> {
             Function<Map<Long, ICity>, Long> idGenerator = AutoIncrementMap.atomicGenerator();
             Long newCityId = AutoIncrementMap.putWithAutoIncrement(
-                IN_MEMORY_DB, null, fullCity, idGenerator);
+                IN_MEMORY_DB, null, iCity, idGenerator);
             return Either.right(IN_MEMORY_DB.get(newCityId));
         };
     }
 
     @Override
-    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, List<ICity>>> findCities() {
+    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByLocatorError, List<ICity>> findCities() {
         return locator ->
             Either.right(IN_MEMORY_DB.values().stream().toList());
     }
 
     @Override
-    public Reader<AppScopedServiceLocator, Either<CriticalRepositoryNotFoundByLocatorError, Optional<ICity>>> findCityById(
+    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByLocatorError, Optional<ICity>> findCityById(
         long id) {
         return locator ->
             Either.right(Optional.ofNullable(IN_MEMORY_DB.get(id)));

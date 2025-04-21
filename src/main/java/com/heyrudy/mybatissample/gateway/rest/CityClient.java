@@ -1,11 +1,11 @@
 package com.heyrudy.mybatissample.gateway.rest;
 
-import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 import org.springframework.web.service.annotation.GetExchange;
 
 public interface CityClient {
 
     @GetExchange
-    FullCity getCityById(Long id);
+    ICity getCityById(Long id);
 
 }
