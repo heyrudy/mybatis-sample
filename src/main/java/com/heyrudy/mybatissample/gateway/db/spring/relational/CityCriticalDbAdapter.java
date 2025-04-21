@@ -2,10 +2,10 @@ package com.heyrudy.mybatissample.gateway.db.spring.relational;
 
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
+import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityRepositoryKey;
-import com.heyrudy.mybatissample.domain.spi.config.Workflow;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.entity.CityEntity;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.entity.mapper.CityEntityMapper;
 import io.vavr.collection.Stream;

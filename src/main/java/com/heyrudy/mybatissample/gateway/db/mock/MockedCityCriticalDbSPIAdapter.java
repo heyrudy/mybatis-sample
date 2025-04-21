@@ -2,9 +2,9 @@ package com.heyrudy.mybatissample.gateway.db.mock;
 
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
+import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
-import com.heyrudy.mybatissample.domain.spi.config.Workflow;
 import io.vavr.control.Either;
 import java.util.List;
 import java.util.Map;

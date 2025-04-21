@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.spi.config;
+package com.heyrudy.mybatissample.domain.model.utils;
 
 import cyclops.control.Reader;
 import io.vavr.control.Either;

@@ -6,9 +6,9 @@ import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError.ErrorMessage;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalServiceError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityError;
+import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
 import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
-import com.heyrudy.mybatissample.domain.spi.config.Workflow;
 import io.vavr.control.Option;
 
 public final class FindCityByIdAPI {
