@@ -50,9 +50,8 @@ public final class CityRepository implements ICityRepository {
                             criticalDSLContextNotFoundByConfigLocatorError.getMessage()),
                     dslContext ->
                         Option.of(dslContext.insertInto(CITIES)
-                                .columns(ID, NAME, STATE, COUNTRY)
-                                .values(iCity.getId(), iCity.getName(), iCity.getState(),
-                                    iCity.getCountry())
+                                .columns(NAME, STATE, COUNTRY)
+                                .values(iCity.getName(), iCity.getState(), iCity.getCountry())
                                 .returning()
                                 .fetchOne())
                             .toEither(
@@ -71,7 +70,8 @@ public final class CityRepository implements ICityRepository {
                     dslContext ->
                         dslContext.select(ID, NAME, STATE, COUNTRY)
                             .from(CITIES)
-                            .fetch().stream()
+                            .fetch()
+                            .stream()
                             .map(CityRepository::mapRecord)
                             .toList()
                 );
