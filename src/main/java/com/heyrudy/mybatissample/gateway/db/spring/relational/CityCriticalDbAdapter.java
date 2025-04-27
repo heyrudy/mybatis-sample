@@ -27,7 +27,8 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                             .bimap(
                                 Function.identity(),
                                 cityRepository ->
-                                    cityRepository.save(iCity).apply(appScopedConfigLocator)
+                                    cityRepository.save(iCity)
+                                        .apply(appScopedConfigLocator)
                                         .bimap(
                                             criticalDSLContextNotFoundByConfigLocatorError ->
                                                 new CriticalRepositoryNotFoundByServiceLocatorError(
@@ -51,7 +52,8 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                             .bimap(
                                 Function.identity(),
                                 cityRepository ->
-                                    cityRepository.findAll().apply(appScopedConfigLocator)
+                                    cityRepository.findAll()
+                                        .apply(appScopedConfigLocator)
                                         .bimap(
                                             criticalDSLContextNotFoundByConfigLocatorError ->
                                                 new CriticalRepositoryNotFoundByServiceLocatorError(
@@ -76,7 +78,8 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                             .bimap(
                                 Function.identity(),
                                 cityRepository ->
-                                    cityRepository.findById(id).apply(appScopedConfigLocator)
+                                    cityRepository.findById(id)
+                                        .apply(appScopedConfigLocator)
                                         .bimap(
                                             criticalDSLContextNotFoundByConfigLocatorError ->
                                                 new CriticalRepositoryNotFoundByServiceLocatorError(
