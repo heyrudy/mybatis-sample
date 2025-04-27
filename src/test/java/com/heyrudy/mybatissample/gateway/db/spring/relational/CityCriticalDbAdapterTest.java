@@ -10,87 +10,117 @@ import static org.mockito.Mockito.when;
 
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByServiceLocatorError;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
-import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityRepositoryKey;
-import com.heyrudy.mybatissample.gateway.db.spring.relational.entity.CityEntity;
+import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
+import com.heyrudy.mybatissample.domain.spi.config.CriticalAppScopedConfigLocatorKey;
+import com.heyrudy.mybatissample.domain.spi.config.CriticalDSLContextKey;
+import com.heyrudy.mybatissample.domain.spi.config.CriticalDataSourceKey;
+import com.heyrudy.mybatissample.domain.spi.config.CriticalDbSecretPropertiesKey;
+import com.heyrudy.mybatissample.gateway.config.AppScopedConfigLocator;
+import com.heyrudy.mybatissample.gateway.config.AppScopedSecretLocator;
+import com.heyrudy.mybatissample.gateway.config.DbSecretProperties;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.repository.CityRepository;
 import io.vavr.control.Either;
 import java.util.List;
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.assertj.vavr.api.VavrAssertions;
+import org.jooq.DSLContext;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class CityCriticalDbAdapterTest {
 
-    private final AppScopedServiceLocator mockedAppScopedServiceLocator =
-        mock(AppScopedServiceLocator.class);
-    private final CityRepository mockedCityRepository =
-        mock(CityRepository.class);
+    DbSecretProperties mockedDbConfigProperties;
+    DataSource dataSource;
+    DSLContext dslContext;
+    AppScopedSecretLocator mockedAppScopedSecretLocator;
+    AppScopedConfigLocator mockedAppScopedConfigLocator;
+    AppScopedServiceLocator mockedAppScopedServiceLocator;
+    CityRepository mockedCityRepository;
 
-    private final CityCriticalDbAdapter adapterInstanceUnderTest =
-        new CityCriticalDbAdapter();
+    private CityCriticalDbAdapter adapterInstanceUnderTest;
+
+    @BeforeEach
+    void setUp() {
+        // Initialize all mocks in setup
+        mockedDbConfigProperties = mock(DbSecretProperties.class);
+        dataSource = mock(DataSource.class);
+        dslContext = mock(DSLContext.class);
+        mockedAppScopedSecretLocator = mock(AppScopedSecretLocator.class);
+        mockedAppScopedConfigLocator = mock(AppScopedConfigLocator.class);
+        mockedAppScopedServiceLocator = mock(AppScopedServiceLocator.class);
+        mockedCityRepository = mock(CityRepository.class);
+
+        adapterInstanceUnderTest = new CityCriticalDbAdapter();
+
+        // Common mock setups that are used in multiple tests
+        when(mockedAppScopedSecretLocator.getCriticalDbSecretProperties(
+            CriticalDbSecretPropertiesKey.INSTANCE))
+            .thenReturn(Either.right(mockedDbConfigProperties));
+        when(mockedAppScopedConfigLocator.getCriticalDataSourceConfig(
+            CriticalDataSourceKey.INSTANCE))
+            .thenReturn(Either.right(dataSource));
+        when(mockedAppScopedConfigLocator
+            .getCriticalDSLContextConfig(CriticalDSLContextKey.INSTANCE))
+            .thenReturn(Either.right(dslContext));
+        when(mockedAppScopedServiceLocator
+            .getCriticalConfig(CriticalAppScopedConfigLocatorKey.INSTANCE))
+            .thenReturn(Either.right(mockedAppScopedConfigLocator));
+        when(mockedAppScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
+            .thenReturn(Either.right(mockedCityRepository));
+    }
 
     @Test
     @DisplayName("insert a new city details into database")
     void shouldInsertCity() {
         // ARRANGE - precondition or setup
-        ICity expected = FullCity.builder()
-            .id(1L)
-            .name("Paris")
-            .country("France")
-            .state("Paris75").build();
-        CityEntity cityEntity = CityEntity.builder()
+        ICity cityToSave = FullCity.builder()
             .id(1L)
             .name("Paris")
             .country("France")
             .state("Paris75").build();
 
-        when(mockedAppScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
-            .thenReturn(Either.right(mockedCityRepository));
-        when(mockedCityRepository.save(isA(CityEntity.class)))
-            .thenReturn(cityEntity);
+        when(mockedCityRepository.save(isA(ICity.class)))
+            .thenReturn(r -> Either.right(cityToSave));
 
         // ACT - action or behavior that we are going to test
-        Either<CriticalRepositoryNotFoundByLocatorError, ICity> actual =
-            adapterInstanceUnderTest.save(expected)
+        Either<CriticalRepositoryNotFoundByServiceLocatorError, ICity> actual =
+            adapterInstanceUnderTest.save(cityToSave)
                 .apply(mockedAppScopedServiceLocator);
 
         // ASSERT - verify the result or output using assert statements
         verify(mockedAppScopedServiceLocator, times(1))
             .getCriticalRepository(CityRepositoryKey.INSTANCE);
         verify(mockedCityRepository, times(1))
-            .save(isA(CityEntity.class));
+            .save(isA(ICity.class));
 
         VavrAssertions.assertThat(actual)
             .isNotNull()
             .isRight()
             .extracting(Either::get)
             .usingRecursiveComparison()
-            .isEqualTo(expected);
+            .isEqualTo(cityToSave);
     }
 
     @Test
     @DisplayName("fetch all cities details from database")
     void shouldFindAllCities() {
         // ARRANGE - precondition or setup
-        CityEntity cityEntityZero =
-            CityEntity.builder().build();
-        CityEntity cityEntityOne =
-            CityEntity.builder()
-                .id(1L)
-                .name("Paris")
-                .country("France")
-                .state("Paris75").build();
+        ICity cityZero = FullCity.builder().build();
+        ICity cityOne = FullCity.builder()
+            .id(1L)
+            .name("Paris")
+            .country("France")
+            .state("Paris75").build();
 
-        when(mockedAppScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
-            .thenReturn(Either.right(mockedCityRepository));
         when(mockedCityRepository.findAll())
-            .thenReturn(List.of(cityEntityZero, cityEntityOne));
+            .thenReturn(r -> Either.right(List.of(cityZero, cityOne)));
 
         // ACT - action or behavior that we are going to test
-        Either<CriticalRepositoryNotFoundByLocatorError, List<ICity>> actual =
+        Either<CriticalRepositoryNotFoundByServiceLocatorError, List<ICity>> actual =
             adapterInstanceUnderTest.findCities()
                 .apply(mockedAppScopedServiceLocator);
 
@@ -104,16 +134,16 @@ class CityCriticalDbAdapterTest {
             .isNotNull()
             .isRight()
             .extracting(Either::get)
-            .satisfies(fullCities -> {
-                assertThat(fullCities)
+            .satisfies(cities -> {
+                assertThat(cities)
                     .isNotEmpty()
                     .hasSize(2);
 
-                assertThat(fullCities.get(0).getId())
+                assertThat(cities.get(0).getId())
                     .isZero();
-                assertThat(fullCities.get(1).getId())
+                assertThat(cities.get(1).getId())
                     .isEqualTo(1L);
-                assertThat(fullCities.get(1).getName())
+                assertThat(cities.get(1).getName())
                     .isEqualTo("Paris");
             });
     }
@@ -123,24 +153,17 @@ class CityCriticalDbAdapterTest {
     void shouldFindCityById() {
         // ARRANGE - precondition or setup
         long cityId = 1L;
-        ICity expected = FullCity.builder()
-            .id(cityId)
-            .name("Paris")
-            .state("Paris75")
-            .country("France").build();
-        CityEntity cityEntity = CityEntity.builder()
+        ICity expectedCity = FullCity.builder()
             .id(cityId)
             .name("Paris")
             .state("Paris75")
             .country("France").build();
 
-        when(mockedAppScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
-            .thenReturn(Either.right(mockedCityRepository));
         when(mockedCityRepository.findById(anyLong()))
-            .thenReturn(Optional.of(cityEntity));
+            .thenReturn(r -> Either.right(Optional.of(expectedCity)));
 
         // ACT - action or behavior that we are going to test
-        Either<CriticalRepositoryNotFoundByLocatorError, Optional<ICity>> actual =
+        Either<CriticalRepositoryNotFoundByServiceLocatorError, Optional<ICity>> actual =
             adapterInstanceUnderTest.findCityById(cityId)
                 .apply(mockedAppScopedServiceLocator);
 
@@ -148,19 +171,19 @@ class CityCriticalDbAdapterTest {
         verify(mockedAppScopedServiceLocator, times(1))
             .getCriticalRepository(CityRepositoryKey.INSTANCE);
         verify(mockedCityRepository, times(1))
-            .findById(anyLong());
+            .findById(cityId);
 
         VavrAssertions.assertThat(actual)
             .isNotNull()
             .isRight()
             .extracting(Either::get)
-            .satisfies(fullCityOpt ->
-                assertThat(fullCityOpt)
+            .satisfies(cityOpt ->
+                assertThat(cityOpt)
                     .isPresent()
-                    .hasValueSatisfying(it ->
-                        assertThat(it)
+                    .hasValueSatisfying(city ->
+                        assertThat(city)
                             .usingRecursiveComparison()
-                            .isEqualTo(expected))
+                            .isEqualTo(expectedCity))
             );
     }
 }

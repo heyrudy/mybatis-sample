@@ -1,12 +1,8 @@
-db-host: localhost
-db-port: 5432
-db-protocol: jdbc:postgresql
-db-schema: demodb
-spring:
-    datasource:
-        driver-class-name: org.postgresql.Driver
-        url: ${db-protocol}://${db-host}:${db-port}/${db-schema}
+db:
+    secret:
+        host: localhost
+        port: 5432
+        protocol: jdbc:postgresql
+        schema: demodb
         username: postgres
         password: mysecretpassword
-    jpa:
-        open-in-view: false

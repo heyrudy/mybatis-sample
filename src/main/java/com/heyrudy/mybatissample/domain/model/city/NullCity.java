@@ -2,6 +2,10 @@ package com.heyrudy.mybatissample.domain.model.city;
 
 public final class NullCity implements ICity {
 
+    public NullCity() {
+        super();
+    }
+
     @Override
     public long getId() {
         return -1;

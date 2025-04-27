@@ -8,7 +8,7 @@ import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalService
 import com.heyrudy.mybatissample.domain.model.error.MissingCityError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
-import com.heyrudy.mybatissample.domain.spi.config.ServiceKey.CityDbSPIKey;
+import com.heyrudy.mybatissample.domain.spi.config.CityDbSPIKey;
 import io.vavr.control.Option;
 
 public final class FindCityByIdAPI {
@@ -21,15 +21,15 @@ public final class FindCityByIdAPI {
 
     public Workflow<AppScopedServiceLocator, MissingCityError, ICity> execute(
         final CityCriteriaDetails cityCriteriaDetails) {
-        return locator ->
-            locator.getDbCriticalService(CityDbSPIKey.INSTANCE)
+        return appScopedServiceLocator ->
+            appScopedServiceLocator.getDbCriticalService(CityDbSPIKey.INSTANCE)
                 .<MissingCityError>mapLeft(dbCriticalServiceNotFoundByLocatorError ->
                     new MissingCityDbCriticalServiceError(
                         dbCriticalServiceNotFoundByLocatorError.getMessage())
                 )
                 .flatMap(iCityDbSPI ->
                     iCityDbSPI.findCityById(cityCriteriaDetails.cityId())
-                        .apply(locator)
+                        .apply(appScopedServiceLocator)
                         .<MissingCityError>mapLeft(criticalRepositoryNotFoundByLocatorError ->
                             new MissingCityDbCriticalServiceError(
                                 criticalRepositoryNotFoundByLocatorError.getMessage())

@@ -1,7 +1,10 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
 public sealed interface DomainError
-    permits MissingCriticalDependencyError,
+    permits MissingCriticalSecretError,
+    MissingCriticalConfigError,
+    MissingCriticalDependencyError,
+    DomainRepositoryError,
     DomainServiceSPIError,
     DomainServiceAPIError {
 

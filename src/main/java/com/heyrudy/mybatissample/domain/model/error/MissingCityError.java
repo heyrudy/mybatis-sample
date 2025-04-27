@@ -7,5 +7,4 @@ public sealed class MissingCityError
     public MissingCityError(String message) {
         super(message);
     }
-
 }
