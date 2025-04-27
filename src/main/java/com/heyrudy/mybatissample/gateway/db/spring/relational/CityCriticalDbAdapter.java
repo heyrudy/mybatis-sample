@@ -60,7 +60,6 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                                         )
                             ).flatMap(Function.identity())
                 ).flatMap(Function.identity());
-
     }
 
     @Override

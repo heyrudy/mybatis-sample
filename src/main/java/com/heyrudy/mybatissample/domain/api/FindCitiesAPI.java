@@ -20,9 +20,9 @@ public final class FindCitiesAPI {
         return appScopedServiceLocator ->
             appScopedServiceLocator.getDbCriticalService(CityDbSPIKey.INSTANCE)
                 .bimap(
-                    dbCriticalServiceNotFoundByLocatorError ->
+                    dbCriticalServiceNotFoundByServiceLocatorError ->
                         new MissingCityDbCriticalServiceError(
-                            dbCriticalServiceNotFoundByLocatorError.getMessage()),
+                            dbCriticalServiceNotFoundByServiceLocatorError.getMessage()),
                     iCityDbSPI ->
                         iCityDbSPI.findCities()
                             .apply(appScopedServiceLocator)

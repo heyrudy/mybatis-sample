@@ -23,9 +23,9 @@ public final class FindCityByIdAPI {
         final CityCriteriaDetails cityCriteriaDetails) {
         return appScopedServiceLocator ->
             appScopedServiceLocator.getDbCriticalService(CityDbSPIKey.INSTANCE)
-                .<MissingCityError>mapLeft(dbCriticalServiceNotFoundByLocatorError ->
+                .<MissingCityError>mapLeft(dbCriticalServiceNotFoundByServiceLocatorError ->
                     new MissingCityDbCriticalServiceError(
-                        dbCriticalServiceNotFoundByLocatorError.getMessage())
+                        dbCriticalServiceNotFoundByServiceLocatorError.getMessage())
                 )
                 .flatMap(iCityDbSPI ->
                     iCityDbSPI.findCityById(cityCriteriaDetails.cityId())

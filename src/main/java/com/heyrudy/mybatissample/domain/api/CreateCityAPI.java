@@ -20,9 +20,9 @@ public final class CreateCityAPI {
         return appScopedServiceLocator ->
             appScopedServiceLocator.getDbCriticalService(CityDbSPIKey.INSTANCE)
                 .bimap(
-                    dbCriticalServiceNotFoundByLocatorError ->
+                    dbCriticalServiceNotFoundByServiceLocatorError ->
                         new MissingCityDbCriticalServiceError(
-                            dbCriticalServiceNotFoundByLocatorError.getMessage()),
+                            dbCriticalServiceNotFoundByServiceLocatorError.getMessage()),
                     iCityDbSPI ->
                         iCityDbSPI.save(city)
                             .apply(appScopedServiceLocator)
