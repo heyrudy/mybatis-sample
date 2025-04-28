@@ -30,9 +30,9 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                                     cityRepository.save(iCity)
                                         .apply(appScopedConfigLocator)
                                         .bimap(
-                                            criticalDSLContextNotFoundByConfigLocatorError ->
+                                            cityNotSavedByRepositoryError ->
                                                 new CriticalRepositoryNotFoundByServiceLocatorError(
-                                                    criticalDSLContextNotFoundByConfigLocatorError.getMessage()),
+                                                    cityNotSavedByRepositoryError.getMessage()),
                                             Function.identity()
                                         )
                             ).flatMap(Function.identity())
@@ -81,9 +81,9 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                                     cityRepository.findById(id)
                                         .apply(appScopedConfigLocator)
                                         .bimap(
-                                            criticalDSLContextNotFoundByConfigLocatorError ->
+                                            cityNotFoundByRepositoryError ->
                                                 new CriticalRepositoryNotFoundByServiceLocatorError(
-                                                    criticalDSLContextNotFoundByConfigLocatorError.getMessage()),
+                                                    cityNotFoundByRepositoryError.getMessage()),
                                             Function.identity()
                                         )
                             ).flatMap(Function.identity())
