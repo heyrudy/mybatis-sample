@@ -4,7 +4,7 @@ import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByServiceLocatorError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import io.vavr.control.Either;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +18,9 @@ public final class MockedCityCriticalDbSPIAdapter implements ICityDbSPI {
     private final static Map<Long, ICity> IN_MEMORY_DB = new ConcurrentHashMap<>();
 
     @Override
-    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByServiceLocatorError, ICity> save(
+    public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByServiceLocatorError, ICity> save(
         ICity iCity) {
-        return locator -> {
+        return appScopedDependencyLocator -> {
             Function<Map<Long, ICity>, Long> idGenerator = AutoIncrementMap.atomicGenerator();
             Long newCityId = AutoIncrementMap.putWithAutoIncrement(
                 IN_MEMORY_DB, null, iCity, idGenerator);
@@ -29,15 +29,15 @@ public final class MockedCityCriticalDbSPIAdapter implements ICityDbSPI {
     }
 
     @Override
-    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByServiceLocatorError, List<ICity>> findCities() {
-        return locator ->
+    public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByServiceLocatorError, List<ICity>> findCities() {
+        return appScopedDependencyLocator ->
             Either.right(IN_MEMORY_DB.values().stream().toList());
     }
 
     @Override
-    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByServiceLocatorError, Optional<ICity>> findCityById(
+    public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByServiceLocatorError, Optional<ICity>> findCityById(
         long id) {
-        return locator ->
+        return appScopedDependencyLocator ->
             Either.right(Optional.ofNullable(IN_MEMORY_DB.get(id)));
     }
 

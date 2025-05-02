@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.domain.spi.config;
 
-public sealed interface DbCriticalServiceKey<T>
-    extends ServiceKey<T>
+public sealed interface CriticalDbSPIKey<T>
+    extends DependencyKey<T>
     permits CityDbSPIKey {
 
 }

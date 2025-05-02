@@ -4,9 +4,8 @@ import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByServiceLocatorError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
-import com.heyrudy.mybatissample.domain.spi.config.CriticalAppScopedConfigLocatorKey;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -14,79 +13,55 @@ import java.util.function.Function;
 public final class CityCriticalDbAdapter implements ICityDbSPI {
 
     @Override
-    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByServiceLocatorError, ICity> save(
+    public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByServiceLocatorError, ICity> save(
         ICity iCity) {
-        return appScopedServiceLocator ->
-            appScopedServiceLocator.getCriticalConfig(CriticalAppScopedConfigLocatorKey.INSTANCE)
-                .bimap(
-                    missingCriticalConfigError ->
-                        new CriticalRepositoryNotFoundByServiceLocatorError(
-                            missingCriticalConfigError.getMessage()),
-                    appScopedConfigLocator ->
-                        appScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE)
-                            .bimap(
-                                Function.identity(),
-                                cityRepository ->
-                                    cityRepository.save(iCity)
-                                        .apply(appScopedConfigLocator)
-                                        .bimap(
-                                            cityNotSavedByRepositoryError ->
-                                                new CriticalRepositoryNotFoundByServiceLocatorError(
-                                                    cityNotSavedByRepositoryError.getMessage()),
-                                            Function.identity()
-                                        )
-                            ).flatMap(Function.identity())
-                ).flatMap(Function.identity());
+        return appScopedDependencyLocator ->
+            appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)
+                .mapLeft(missingCriticalDependencyError ->
+                    new CriticalRepositoryNotFoundByServiceLocatorError(
+                        missingCriticalDependencyError.getMessage()))
+                .flatMap(iCityRepository ->
+                    iCityRepository.save(iCity)
+                        .apply(appScopedDependencyLocator)
+                        .mapLeft(error ->
+                            new CriticalRepositoryNotFoundByServiceLocatorError(
+                                error.getMessage()))
+                        .map(Function.identity())
+                );
     }
 
     @Override
-    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByServiceLocatorError, List<ICity>> findCities() {
-        return appScopedServiceLocator ->
-            appScopedServiceLocator.getCriticalConfig(CriticalAppScopedConfigLocatorKey.INSTANCE)
-                .bimap(
-                    missingCriticalConfigError ->
-                        new CriticalRepositoryNotFoundByServiceLocatorError(
-                            missingCriticalConfigError.getMessage()),
-                    appScopedConfigLocator ->
-                        appScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE)
-                            .bimap(
-                                Function.identity(),
-                                cityRepository ->
-                                    cityRepository.findAll()
-                                        .apply(appScopedConfigLocator)
-                                        .bimap(
-                                            criticalDSLContextNotFoundByConfigLocatorError ->
-                                                new CriticalRepositoryNotFoundByServiceLocatorError(
-                                                    criticalDSLContextNotFoundByConfigLocatorError.getMessage()),
-                                            Function.identity()
-                                        )
-                            ).flatMap(Function.identity())
-                ).flatMap(Function.identity());
+    public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByServiceLocatorError, List<ICity>> findCities() {
+        return appScopedDependencyLocator ->
+            appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)
+                .mapLeft(missingCriticalDependencyError ->
+                    new CriticalRepositoryNotFoundByServiceLocatorError(
+                        missingCriticalDependencyError.getMessage()))
+                .flatMap(iCityRepository ->
+                    iCityRepository.findAll()
+                        .apply(appScopedDependencyLocator)
+                        .mapLeft(criticalDSLContextNotFoundByConfigLocatorError ->
+                            new CriticalRepositoryNotFoundByServiceLocatorError(
+                                criticalDSLContextNotFoundByConfigLocatorError.getMessage()))
+                        .map(Function.identity())
+                );
     }
 
     @Override
-    public Workflow<AppScopedServiceLocator, CriticalRepositoryNotFoundByServiceLocatorError, Optional<ICity>> findCityById(
+    public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByServiceLocatorError, Optional<ICity>> findCityById(
         long id) {
-        return appScopedServiceLocator ->
-            appScopedServiceLocator.getCriticalConfig(CriticalAppScopedConfigLocatorKey.INSTANCE)
-                .bimap(
-                    missingCriticalConfigError ->
-                        new CriticalRepositoryNotFoundByServiceLocatorError(
-                            missingCriticalConfigError.getMessage()),
-                    appScopedConfigLocator ->
-                        appScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE)
-                            .bimap(
-                                Function.identity(),
-                                cityRepository ->
-                                    cityRepository.findById(id)
-                                        .apply(appScopedConfigLocator)
-                                        .bimap(
-                                            cityNotFoundByRepositoryError ->
-                                                new CriticalRepositoryNotFoundByServiceLocatorError(
-                                                    cityNotFoundByRepositoryError.getMessage()),
-                                            Function.identity()
-                                        )
-                            ).flatMap(Function.identity())
-                ).flatMap(Function.identity());
+        return appScopedDependencyLocator ->
+            appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)
+                .mapLeft(missingCriticalDependencyError ->
+                    new CriticalRepositoryNotFoundByServiceLocatorError(
+                        missingCriticalDependencyError.getMessage()))
+                .flatMap(iCityRepository ->
+                    iCityRepository.findById(id)
+                        .apply(appScopedDependencyLocator)
+                        .mapLeft(cityNotFoundByRepositoryError ->
+                            new CriticalRepositoryNotFoundByServiceLocatorError(
+                                cityNotFoundByRepositoryError.getMessage()))
+                        .map(Function.identity())
+                );
     }
 }

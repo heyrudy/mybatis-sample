@@ -3,7 +3,7 @@ package com.heyrudy.mybatissample.domain.api;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalServiceError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CityDbSPIKey;
 import java.util.function.Function;
 
@@ -15,17 +15,17 @@ public final class CreateCityAPI {
         super();
     }
 
-    public Workflow<AppScopedServiceLocator, MissingCityDbCriticalServiceError, ICity> execute(
+    public Workflow<AppScopedDependencyLocator, MissingCityDbCriticalServiceError, ICity> execute(
         final ICity city) {
-        return appScopedServiceLocator ->
-            appScopedServiceLocator.getDbCriticalService(CityDbSPIKey.INSTANCE)
+        return appScopedDependencyLocator ->
+            appScopedDependencyLocator.getDependency(CityDbSPIKey.INSTANCE)
                 .bimap(
-                    dbCriticalServiceNotFoundByServiceLocatorError ->
+                    missingCriticalDependencyError ->
                         new MissingCityDbCriticalServiceError(
-                            dbCriticalServiceNotFoundByServiceLocatorError.getMessage()),
+                            missingCriticalDependencyError.getMessage()),
                     iCityDbSPI ->
                         iCityDbSPI.save(city)
-                            .apply(appScopedServiceLocator)
+                            .apply(appScopedDependencyLocator)
                             .bimap(
                                 criticalRepositoryNotFoundByLocatorError ->
                                     new MissingCityDbCriticalServiceError(

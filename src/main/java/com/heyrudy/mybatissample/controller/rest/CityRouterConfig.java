@@ -15,7 +15,7 @@ package com.heyrudy.mybatissample.controller.rest;
 //import org.slf4j.MDC;
 //import org.springframework.context.annotation.Bean;
 
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -37,10 +37,10 @@ public class CityRouterConfig {
     public static final CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER =
         CityCriticalRestAPIAdapter.INSTANCE;
 
-    private final AppScopedServiceLocator appScopedServiceLocator;
+    private final AppScopedDependencyLocator appScopedDependencyLocator;
 
-    public CityRouterConfig(AppScopedServiceLocator appScopedServiceLocator) {
-        this.appScopedServiceLocator = appScopedServiceLocator;
+    public CityRouterConfig(AppScopedDependencyLocator appScopedDependencyLocator) {
+        this.appScopedDependencyLocator = appScopedDependencyLocator;
     }
 
     @Bean
@@ -49,19 +49,19 @@ public class CityRouterConfig {
             .POST("api/v1/cities",
                 request ->
                     CITY_CRITICAL_REST_API_ADAPTER.createCity(request)
-                        .apply(appScopedServiceLocator))
+                        .apply(appScopedDependencyLocator))
             .GET("api/v1/cities",
                 request ->
                     CITY_CRITICAL_REST_API_ADAPTER.findCities()
-                        .apply(appScopedServiceLocator))
+                        .apply(appScopedDependencyLocator))
             .GET("api/v1/cities/{cityId}",
                 request ->
                     CITY_CRITICAL_REST_API_ADAPTER.findCityById(request)
-                        .apply(appScopedServiceLocator))
+                        .apply(appScopedDependencyLocator))
             .GET("api/v1/cities/download",
                 request ->
                     CITY_CRITICAL_REST_API_ADAPTER.downloadCityPdfReport()
-                        .apply(appScopedServiceLocator))
+                        .apply(appScopedDependencyLocator))
             .build();
     }
 

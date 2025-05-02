@@ -7,7 +7,7 @@ import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError.ErrorMessa
 import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalServiceError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CityDbSPIKey;
 import io.vavr.control.Option;
 
@@ -19,17 +19,17 @@ public final class FindCityByIdAPI {
         super();
     }
 
-    public Workflow<AppScopedServiceLocator, MissingCityError, ICity> execute(
+    public Workflow<AppScopedDependencyLocator, MissingCityError, ICity> execute(
         final CityCriteriaDetails cityCriteriaDetails) {
-        return appScopedServiceLocator ->
-            appScopedServiceLocator.getDbCriticalService(CityDbSPIKey.INSTANCE)
-                .<MissingCityError>mapLeft(dbCriticalServiceNotFoundByServiceLocatorError ->
+        return appScopedDependencyLocator ->
+            appScopedDependencyLocator.getDependency(CityDbSPIKey.INSTANCE)
+                .<MissingCityError>mapLeft(missingCriticalDependencyError ->
                     new MissingCityDbCriticalServiceError(
-                        dbCriticalServiceNotFoundByServiceLocatorError.getMessage())
+                        missingCriticalDependencyError.getMessage())
                 )
                 .flatMap(iCityDbSPI ->
                     iCityDbSPI.findCityById(cityCriteriaDetails.cityId())
-                        .apply(appScopedServiceLocator)
+                        .apply(appScopedDependencyLocator)
                         .<MissingCityError>mapLeft(criticalRepositoryNotFoundByLocatorError ->
                             new MissingCityDbCriticalServiceError(
                                 criticalRepositoryNotFoundByLocatorError.getMessage())
@@ -38,9 +38,7 @@ public final class FindCityByIdAPI {
                             Option.ofOptional(optionalCity)
                                 .toEither(new CityNotFoundError(
                                     ErrorMessage.CITY_NOT_FOUND_ERROR_MESSAGE.formatted(
-                                        cityCriteriaDetails.cityId())
-                                ))
-                        )
+                                        cityCriteriaDetails.cityId()))))
                 );
     }
 }

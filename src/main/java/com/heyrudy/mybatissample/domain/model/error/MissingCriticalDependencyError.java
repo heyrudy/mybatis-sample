@@ -2,7 +2,9 @@ package com.heyrudy.mybatissample.domain.model.error;
 
 public sealed class MissingCriticalDependencyError
     implements DomainError
-    permits CriticalRepositoryNotFoundByServiceLocatorError,
+    permits MissingCriticalSecretError,
+    MissingCriticalConfigError,
+    CriticalRepositoryNotFoundByServiceLocatorError,
     DbCriticalServiceNotFoundByServiceLocatorError {
 
     protected String message;

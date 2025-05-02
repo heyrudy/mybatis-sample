@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.domain.spi.config;
 
-sealed interface AuditSPIServiceKey<T>
-    extends ServiceKey<T>
+sealed interface NonCriticalSPIKey<T>
+    extends DependencyKey<T>
     permits AuditSPIKey {
 
 }

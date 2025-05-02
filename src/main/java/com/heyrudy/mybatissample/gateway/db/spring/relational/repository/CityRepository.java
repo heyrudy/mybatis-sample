@@ -10,12 +10,14 @@ import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryErro
 import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByConfigLocatorError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CriticalDSLContextKey;
-import com.heyrudy.mybatissample.gateway.config.AppScopedConfigLocator;
 import io.vavr.control.Option;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+
 import org.jooq.Table;
 
 public final class CityRepository implements ICityRepository {
@@ -40,63 +42,62 @@ public final class CityRepository implements ICityRepository {
     }
 
     @Override
-    public Workflow<AppScopedConfigLocator, CityNotSavedByRepositoryError, ICity> save(
+    public Workflow<AppScopedDependencyLocator, CityNotSavedByRepositoryError, ICity> save(
         ICity iCity) {
-        return appScopedConfigLocator ->
-            appScopedConfigLocator.getCriticalDSLContextConfig(CriticalDSLContextKey.INSTANCE)
-                .bimap(
-                    criticalDSLContextNotFoundByConfigLocatorError ->
-                        new CityNotSavedByRepositoryError(
-                            criticalDSLContextNotFoundByConfigLocatorError.getMessage()),
-                    dslContext ->
-                        Option.of(dslContext.insertInto(CITIES)
-                                .columns(NAME, STATE, COUNTRY)
-                                .values(iCity.getName(), iCity.getState(), iCity.getCountry())
-                                .returning()
-                                .fetchOne())
-                            .toEither(
-                                new CityNotSavedByRepositoryError(
-                                    "Failed to insert city: No record returned"))
-                            .map(CityRepository::mapRecord)
+        return appScopedDependencyLocator ->
+            appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
+                .toEither(new CityNotSavedByRepositoryError(
+                    AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
+                        .formatted(CriticalDSLContextKey.INSTANCE)))
+                .map(dslContext ->
+                    Option.of(dslContext.insertInto(CITIES)
+                            .columns(NAME, STATE, COUNTRY)
+                            .values(iCity.getName(), iCity.getState(), iCity.getCountry())
+                            .returning()
+                            .fetchOne())
+                        .toEither(
+                            new CityNotSavedByRepositoryError(
+                                "Failed to insert city: No record returned"))
+                        .map(CityRepository::mapRecord)
                 ).flatMap(Function.identity());
     }
 
     @Override
-    public Workflow<AppScopedConfigLocator, CriticalDSLContextNotFoundByConfigLocatorError, List<ICity>> findAll() {
-        return appScopedConfigLocator ->
-            appScopedConfigLocator.getCriticalDSLContextConfig(CriticalDSLContextKey.INSTANCE)
-                .bimap(
-                    Function.identity(),
-                    dslContext ->
-                        dslContext.select(ID, NAME, STATE, COUNTRY)
-                            .from(CITIES)
-                            .fetch()
-                            .stream()
-                            .map(CityRepository::mapRecord)
-                            .toList()
+    public Workflow<AppScopedDependencyLocator, CriticalDSLContextNotFoundByConfigLocatorError, List<ICity>> findAll() {
+        return appScopedDependencyLocator ->
+            appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
+                .toEither(new CriticalDSLContextNotFoundByConfigLocatorError(
+                    AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
+                        .formatted(CriticalDSLContextKey.INSTANCE)))
+                .map(dslContext ->
+                    dslContext.select(ID, NAME, STATE, COUNTRY)
+                        .from(CITIES)
+                        .fetch()
+                        .stream()
+                        .map(CityRepository::mapRecord)
+                        .toList()
                 );
     }
 
     @Override
-    public Workflow<AppScopedConfigLocator, CityNotFoundByRepositoryError, Optional<ICity>> findById(
+    public Workflow<AppScopedDependencyLocator, CityNotFoundByRepositoryError, Optional<ICity>> findById(
         long id) {
-        return appScopedConfigLocator ->
-            appScopedConfigLocator.getCriticalDSLContextConfig(CriticalDSLContextKey.INSTANCE)
-                .bimap(
-                    criticalDSLContextNotFoundByConfigLocatorError ->
-                        new CityNotFoundByRepositoryError(
-                            criticalDSLContextNotFoundByConfigLocatorError.getMessage()),
-                    dslContext ->
-                        Option.of(dslContext.select(ID, NAME, STATE, COUNTRY)
-                                .from(CITIES)
-                                .where(ID.eq(id))
-                                .fetchOne())
-                            .toEither(
-                                new CityNotFoundByRepositoryError(
-                                    "Failed to retrieve city with ID %d".formatted(id)))
-                            .map(CityRepository::mapRecord)
-                            .toOption()
-                            .toJavaOptional()
+        return appScopedDependencyLocator ->
+            appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
+                .toEither(new CityNotFoundByRepositoryError(
+                    AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
+                        .formatted(CriticalDSLContextKey.INSTANCE)))
+                .map(dslContext ->
+                    Option.of(dslContext.select(ID, NAME, STATE, COUNTRY)
+                            .from(CITIES)
+                            .where(ID.eq(id))
+                            .fetchOne())
+                        .toEither(
+                            new CityNotFoundByRepositoryError(
+                                "Failed to retrieve city with ID %d".formatted(id)))
+                        .map(CityRepository::mapRecord)
+                        .toOption()
+                        .toJavaOptional()
                 );
     }
 }

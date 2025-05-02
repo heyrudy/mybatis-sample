@@ -11,34 +11,20 @@ import static org.mockito.Mockito.when;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByServiceLocatorError;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
-import com.heyrudy.mybatissample.domain.spi.config.CriticalAppScopedConfigLocatorKey;
-import com.heyrudy.mybatissample.domain.spi.config.CriticalDSLContextKey;
-import com.heyrudy.mybatissample.domain.spi.config.CriticalDataSourceKey;
-import com.heyrudy.mybatissample.domain.spi.config.CriticalDbSecretPropertiesKey;
-import com.heyrudy.mybatissample.gateway.config.AppScopedConfigLocator;
-import com.heyrudy.mybatissample.gateway.config.AppScopedSecretLocator;
-import com.heyrudy.mybatissample.gateway.config.DbSecretProperties;
 import com.heyrudy.mybatissample.gateway.db.spring.relational.repository.CityRepository;
 import io.vavr.control.Either;
 import java.util.List;
 import java.util.Optional;
-import javax.sql.DataSource;
 import org.assertj.vavr.api.VavrAssertions;
-import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class CityCriticalDbAdapterTest {
 
-    DbSecretProperties mockedDbConfigProperties;
-    DataSource dataSource;
-    DSLContext dslContext;
-    AppScopedSecretLocator mockedAppScopedSecretLocator;
-    AppScopedConfigLocator mockedAppScopedConfigLocator;
-    AppScopedServiceLocator mockedAppScopedServiceLocator;
+    AppScopedDependencyLocator mockedAppScopedDependencyLocator;
     CityRepository mockedCityRepository;
 
     private CityCriticalDbAdapter adapterInstanceUnderTest;
@@ -46,30 +32,13 @@ class CityCriticalDbAdapterTest {
     @BeforeEach
     void setUp() {
         // Initialize all mocks in setup
-        mockedDbConfigProperties = mock(DbSecretProperties.class);
-        dataSource = mock(DataSource.class);
-        dslContext = mock(DSLContext.class);
-        mockedAppScopedSecretLocator = mock(AppScopedSecretLocator.class);
-        mockedAppScopedConfigLocator = mock(AppScopedConfigLocator.class);
-        mockedAppScopedServiceLocator = mock(AppScopedServiceLocator.class);
+        mockedAppScopedDependencyLocator = mock(AppScopedDependencyLocator.class);
         mockedCityRepository = mock(CityRepository.class);
 
         adapterInstanceUnderTest = new CityCriticalDbAdapter();
 
         // Common mock setups that are used in multiple tests
-        when(mockedAppScopedSecretLocator.getCriticalDbSecretProperties(
-            CriticalDbSecretPropertiesKey.INSTANCE))
-            .thenReturn(Either.right(mockedDbConfigProperties));
-        when(mockedAppScopedConfigLocator.getCriticalDataSourceConfig(
-            CriticalDataSourceKey.INSTANCE))
-            .thenReturn(Either.right(dataSource));
-        when(mockedAppScopedConfigLocator
-            .getCriticalDSLContextConfig(CriticalDSLContextKey.INSTANCE))
-            .thenReturn(Either.right(dslContext));
-        when(mockedAppScopedServiceLocator
-            .getCriticalConfig(CriticalAppScopedConfigLocatorKey.INSTANCE))
-            .thenReturn(Either.right(mockedAppScopedConfigLocator));
-        when(mockedAppScopedServiceLocator.getCriticalRepository(CityRepositoryKey.INSTANCE))
+        when(mockedAppScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE))
             .thenReturn(Either.right(mockedCityRepository));
     }
 
@@ -89,11 +58,11 @@ class CityCriticalDbAdapterTest {
         // ACT - action or behavior that we are going to test
         Either<CriticalRepositoryNotFoundByServiceLocatorError, ICity> actual =
             adapterInstanceUnderTest.save(cityToSave)
-                .apply(mockedAppScopedServiceLocator);
+                .apply(mockedAppScopedDependencyLocator);
 
         // ASSERT - verify the result or output using assert statements
-        verify(mockedAppScopedServiceLocator, times(1))
-            .getCriticalRepository(CityRepositoryKey.INSTANCE);
+        verify(mockedAppScopedDependencyLocator, times(1))
+            .getDependency(CityRepositoryKey.INSTANCE);
         verify(mockedCityRepository, times(1))
             .save(isA(ICity.class));
 
@@ -122,11 +91,11 @@ class CityCriticalDbAdapterTest {
         // ACT - action or behavior that we are going to test
         Either<CriticalRepositoryNotFoundByServiceLocatorError, List<ICity>> actual =
             adapterInstanceUnderTest.findCities()
-                .apply(mockedAppScopedServiceLocator);
+                .apply(mockedAppScopedDependencyLocator);
 
         // ASSERT - verify the result or output using assert statements
-        verify(mockedAppScopedServiceLocator, times(1))
-            .getCriticalRepository(CityRepositoryKey.INSTANCE);
+        verify(mockedAppScopedDependencyLocator, times(1))
+            .getDependency(CityRepositoryKey.INSTANCE);
         verify(mockedCityRepository, times(1))
             .findAll();
 
@@ -138,7 +107,6 @@ class CityCriticalDbAdapterTest {
                 assertThat(cities)
                     .isNotEmpty()
                     .hasSize(2);
-
                 assertThat(cities.get(0).getId())
                     .isZero();
                 assertThat(cities.get(1).getId())
@@ -165,13 +133,13 @@ class CityCriticalDbAdapterTest {
         // ACT - action or behavior that we are going to test
         Either<CriticalRepositoryNotFoundByServiceLocatorError, Optional<ICity>> actual =
             adapterInstanceUnderTest.findCityById(cityId)
-                .apply(mockedAppScopedServiceLocator);
+                .apply(mockedAppScopedDependencyLocator);
 
         // ASSERT - verify the result or output using assert statements
-        verify(mockedAppScopedServiceLocator, times(1))
-            .getCriticalRepository(CityRepositoryKey.INSTANCE);
+        verify(mockedAppScopedDependencyLocator, times(1))
+            .getDependency(CityRepositoryKey.INSTANCE);
         verify(mockedCityRepository, times(1))
-            .findById(cityId);
+            .findById(anyLong());
 
         VavrAssertions.assertThat(actual)
             .isNotNull()

@@ -1,11 +1,7 @@
 package com.heyrudy.mybatissample.domain.spi.config;
 
-public sealed interface ServiceKey<T>
-    permits SecretKey,
-    ConfigKey,
-    CriticalRepositoryKey,
-    DbCriticalServiceKey,
-    AuditSPIServiceKey {
+public sealed interface EnvironmentKey<T>
+    permits DependencyKey {
 
     Class<T> getType();
 

@@ -17,7 +17,7 @@ import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalServiceError;
 import com.heyrudy.mybatissample.domain.model.utils.PartialWorkflow;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedServiceLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
 import io.vavr.control.Try;
 import java.util.Map;
@@ -56,9 +56,9 @@ public final class CityCriticalRestAPIAdapter {
      * @param request city with all its details to persist in the database
      * @return HTTP Response with persisted city in the database
      */
-    public PartialWorkflow<AppScopedServiceLocator, ServerResponse> createCity(
+    public PartialWorkflow<AppScopedDependencyLocator, ServerResponse> createCity(
         ServerRequest request) {
-        return appScopedServiceLocator ->
+        return appScopedDependencyLocator ->
             Try.of(() -> request.body(CityRequestDTO.class))
                 .toEither()
                 .fold(
@@ -74,7 +74,7 @@ public final class CityCriticalRestAPIAdapter {
                             .map(CITY_REQUEST_MAPPER::toModel)
                             .map(it ->
                                 CREATE_CITY_API.execute(it)
-                                    .apply(appScopedServiceLocator))
+                                    .apply(appScopedDependencyLocator))
                             .fold(
                                 validationErrorMessages -> {
                                     String validationErrorMessageReduced =
@@ -110,11 +110,11 @@ public final class CityCriticalRestAPIAdapter {
     /**
      * @return HTTP Response with all cities fetched from the database
      */
-    public PartialWorkflow<AppScopedServiceLocator, ServerResponse> findCities() {
+    public PartialWorkflow<AppScopedDependencyLocator, ServerResponse> findCities() {
         logger.info("All cities were found");
-        return appScopedServiceLocator ->
+        return appScopedDependencyLocator ->
             FIND_CITIES_API.execute()
-                .apply(appScopedServiceLocator)
+                .apply(appScopedDependencyLocator)
                 .fold(missingCityDbCriticalServiceError ->
                         ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
                             .body(
@@ -131,14 +131,14 @@ public final class CityCriticalRestAPIAdapter {
      * @param request city's id to fetch from the database
      * @return HTTP Response with required information about a city
      */
-    public PartialWorkflow<AppScopedServiceLocator, ServerResponse> findCityById(
+    public PartialWorkflow<AppScopedDependencyLocator, ServerResponse> findCityById(
         ServerRequest request) {
         String id = request.pathVariable("id");
-        return appScopedServiceLocator ->
+        return appScopedDependencyLocator ->
             CITY_CRITERIA_VALIDATOR.validateCityCriteria(Long.parseLong(id))
                 .map(it ->
                     FIND_CITY_BY_ID_API.execute(it)
-                        .apply(appScopedServiceLocator))
+                        .apply(appScopedDependencyLocator))
                 .fold(
                     validationErrorMessage -> {
                         logger.error(validationErrorMessage);
@@ -184,8 +184,8 @@ public final class CityCriticalRestAPIAdapter {
                 );
     }
 
-    public PartialWorkflow<AppScopedServiceLocator, ServerResponse> downloadCityPdfReport() {
-        return locator ->
+    public PartialWorkflow<AppScopedDependencyLocator, ServerResponse> downloadCityPdfReport() {
+        return appScopedSecretLocator ->
             ServerResponse.ok()
                 .headers(httpHeaders ->
                     httpHeaders.add("content-disposition",

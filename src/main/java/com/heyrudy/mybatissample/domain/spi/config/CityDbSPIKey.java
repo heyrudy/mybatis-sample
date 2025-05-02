@@ -2,7 +2,7 @@ package com.heyrudy.mybatissample.domain.spi.config;
 
 import com.heyrudy.mybatissample.domain.spi.ICityDbSPI;
 
-public enum CityDbSPIKey implements DbCriticalServiceKey<ICityDbSPI> {
+public enum CityDbSPIKey implements CriticalDbSPIKey<ICityDbSPI> {
     INSTANCE;
 
     @Override

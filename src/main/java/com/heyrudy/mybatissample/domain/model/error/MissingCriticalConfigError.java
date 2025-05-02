@@ -1,21 +1,12 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
 public sealed class MissingCriticalConfigError
-    implements DomainError
+    extends MissingCriticalDependencyError
     permits CriticalDataSourceNotFoundByConfigLocatorError,
     CriticalDSLContextNotFoundByConfigLocatorError {
 
-    protected String message;
-
     public MissingCriticalConfigError(String message) {
+        super(message);
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public RuntimeException toException() {
-        return new RuntimeException(this.message);
     }
 }

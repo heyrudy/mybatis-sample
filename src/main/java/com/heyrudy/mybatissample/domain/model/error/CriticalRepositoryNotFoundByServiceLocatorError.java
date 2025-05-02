@@ -5,5 +5,6 @@ public final class CriticalRepositoryNotFoundByServiceLocatorError
 
     public CriticalRepositoryNotFoundByServiceLocatorError(String message) {
         super(message);
+        this.message = message;
     }
 }

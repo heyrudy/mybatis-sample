@@ -5,16 +5,16 @@ import com.heyrudy.mybatissample.domain.model.error.CityNotFoundByRepositoryErro
 import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByConfigLocatorError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
-import com.heyrudy.mybatissample.gateway.config.AppScopedConfigLocator;
+import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import java.util.List;
 import java.util.Optional;
 
 public interface ICityRepository {
 
-    Workflow<AppScopedConfigLocator, CityNotSavedByRepositoryError, ICity> save(ICity iCity);
+    Workflow<AppScopedDependencyLocator, CityNotSavedByRepositoryError, ICity> save(ICity iCity);
 
-    Workflow<AppScopedConfigLocator, CriticalDSLContextNotFoundByConfigLocatorError, List<ICity>> findAll();
+    Workflow<AppScopedDependencyLocator, CriticalDSLContextNotFoundByConfigLocatorError, List<ICity>> findAll();
 
-    Workflow<AppScopedConfigLocator, CityNotFoundByRepositoryError, Optional<ICity>> findById(
+    Workflow<AppScopedDependencyLocator, CityNotFoundByRepositoryError, Optional<ICity>> findById(
         long id);
 }
