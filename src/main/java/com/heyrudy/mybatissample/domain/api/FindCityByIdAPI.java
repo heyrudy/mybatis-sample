@@ -17,12 +17,6 @@ public final class FindCityByIdAPI {
         super();
     }
 
-    /**
-     * Finds a city by its ID.
-     *
-     * @param cityCriteriaDetails The city details to find
-     * @return A Reader monad as a Workflow that either results in an error or an optional city
-     */
     public Workflow<AppScopedDependencyLocator, CityNotFoundError, ICity> execute(
         final CityCriteriaDetails cityCriteriaDetails) {
         return appScopedDependencyLocator ->

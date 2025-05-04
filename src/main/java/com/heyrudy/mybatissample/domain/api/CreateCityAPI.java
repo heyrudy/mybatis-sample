@@ -14,12 +14,6 @@ public final class CreateCityAPI {
         super();
     }
 
-    /**
-     * Saves a city.
-     *
-     * @param city The city to save
-     * @return A Reader monad as a Workflow that either results in an error or the saved city
-     */
     public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByDependencyLocatorError, ICity> execute(
         final ICity city) {
         return appScopedDependencyLocator ->

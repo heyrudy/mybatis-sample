@@ -15,11 +15,6 @@ public final class FindCitiesAPI {
         super();
     }
 
-    /**
-     * Finds all cities.
-     *
-     * @return A Reader monad as a Workflow that either results in an error or a list of cities
-     */
     public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>> execute() {
         return appScopedDependencyLocator ->
             appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)

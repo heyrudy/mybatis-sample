@@ -11,10 +11,27 @@ import java.util.Optional;
 
 public interface ICityRepository {
 
+    /**
+     * Saves a city.
+     *
+     * @param iCity The city to save
+     * @return A Reader monad as a Workflow that either results in an error or the saved city
+     */
     Workflow<AppScopedDependencyLocator, CityNotSavedByRepositoryError, ICity> save(ICity iCity);
 
+    /**
+     * Finds all cities.
+     *
+     * @return A Reader monad as a Workflow that either results in an error or a list of cities
+     */
     Workflow<AppScopedDependencyLocator, CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>> findAll();
 
+    /**
+     * Finds a city by its ID.
+     *
+     * @param id The ID of the city to find
+     * @return A Reader monad as a Workflow that either results in an error or an optional city
+     */
     Workflow<AppScopedDependencyLocator, CityNotFoundByRepositoryError, Optional<ICity>> findById(
         long id);
 }
