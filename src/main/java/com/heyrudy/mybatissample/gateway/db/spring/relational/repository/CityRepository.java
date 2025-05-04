@@ -15,7 +15,6 @@ import com.heyrudy.mybatissample.domain.spi.config.CriticalDSLContextKey;
 import io.vavr.control.Option;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import org.jooq.Table;
 
 public final class CityRepository implements ICityRepository {
@@ -46,7 +45,7 @@ public final class CityRepository implements ICityRepository {
             appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
                 .mapLeft(missingCriticalDependencyError ->
                     new CityNotSavedByRepositoryError(missingCriticalDependencyError.getMessage()))
-                .map(dslContext ->
+                .flatMap(dslContext ->
                     Option.of(dslContext.insertInto(CITIES)
                             .columns(NAME, STATE, COUNTRY)
                             .values(iCity.getName(), iCity.getState(), iCity.getCountry())
@@ -55,8 +54,7 @@ public final class CityRepository implements ICityRepository {
                         .toEither(
                             new CityNotSavedByRepositoryError(
                                 "Failed to insert city: No record returned"))
-                        .map(CityRepository::mapRecord)
-                ).flatMap(Function.identity());
+                        .map(CityRepository::mapRecord));
     }
 
     @Override
@@ -72,8 +70,7 @@ public final class CityRepository implements ICityRepository {
                         .fetch()
                         .stream()
                         .map(CityRepository::mapRecord)
-                        .toList()
-                );
+                        .toList());
     }
 
     @Override
@@ -93,7 +90,6 @@ public final class CityRepository implements ICityRepository {
                                 "Failed to retrieve city with ID %d".formatted(id)))
                         .map(CityRepository::mapRecord)
                         .toOption()
-                        .toJavaOptional()
-                );
+                        .toJavaOptional());
     }
 }
