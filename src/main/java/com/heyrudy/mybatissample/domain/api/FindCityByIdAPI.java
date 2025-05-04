@@ -22,14 +22,12 @@ public final class FindCityByIdAPI {
         return appScopedDependencyLocator ->
             appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)
                 .mapLeft(missingCriticalDependencyError ->
-                    new CityNotFoundError(
-                        missingCriticalDependencyError.getMessage()))
+                    new CityNotFoundError(missingCriticalDependencyError.getMessage()))
                 .flatMap(iCityRepository ->
                     iCityRepository.findById(cityCriteriaDetails.cityId())
                         .apply(appScopedDependencyLocator)
                         .mapLeft(cityNotFoundByRepositoryError ->
-                            new CityNotFoundError(
-                                cityNotFoundByRepositoryError.getMessage()))
+                            new CityNotFoundError(cityNotFoundByRepositoryError.getMessage()))
                         .flatMap(optionalCity ->
                             Option.ofOptional(optionalCity)
                                 .toEither(new CityNotFoundError(
