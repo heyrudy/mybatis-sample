@@ -27,8 +27,8 @@ public final class CreateCityAPI {
                 .mapLeft(missingCriticalDependencyError ->
                     new CriticalRepositoryNotFoundByDependencyLocatorError(
                         missingCriticalDependencyError.getMessage()))
-                .flatMap(iCityDbSPI ->
-                    iCityDbSPI.save(city)
+                .flatMap(iCityRepository ->
+                    iCityRepository.save(city)
                         .apply(appScopedDependencyLocator)
                         .mapLeft(cityNotSavedByRepositoryError ->
                             new CriticalRepositoryNotFoundByDependencyLocatorError(

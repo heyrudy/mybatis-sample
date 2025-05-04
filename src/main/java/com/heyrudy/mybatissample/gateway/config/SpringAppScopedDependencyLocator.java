@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.controller.config;
+package com.heyrudy.mybatissample.gateway.config;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;
@@ -55,7 +55,7 @@ public class SpringAppScopedDependencyLocator implements AppScopedDependencyLoca
     private Map<DependencyKey<?>, ?> dependencyMap() {
         return createDataSource()
             .fold(
-                criticalDbSecretPropertiesNotFoundByDependencyLocatorError ->
+                __ ->
                     Map.ofEntries(Map.entry(
                         CityRepositoryKey.INSTANCE, new MockedCityRepository())),
                 dataSource ->

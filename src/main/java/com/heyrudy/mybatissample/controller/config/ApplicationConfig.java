@@ -1,6 +1,7 @@
 package com.heyrudy.mybatissample.controller.config;
 
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.gateway.config.SpringAppScopedDependencyLocator;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

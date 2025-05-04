@@ -4,7 +4,6 @@ import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
-import com.heyrudy.mybatissample.controller.config.SpringAppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
