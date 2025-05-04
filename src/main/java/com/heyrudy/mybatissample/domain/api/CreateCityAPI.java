@@ -5,7 +5,6 @@ import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalService
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CityDbSPIKey;
-import java.util.function.Function;
 
 public final class CreateCityAPI {
 
@@ -19,19 +18,14 @@ public final class CreateCityAPI {
         final ICity city) {
         return appScopedDependencyLocator ->
             appScopedDependencyLocator.getDependency(CityDbSPIKey.INSTANCE)
-                .bimap(
-                    missingCriticalDependencyError ->
-                        new MissingCityDbCriticalServiceError(
-                            missingCriticalDependencyError.getMessage()),
-                    iCityDbSPI ->
-                        iCityDbSPI.save(city)
-                            .apply(appScopedDependencyLocator)
-                            .bimap(
-                                criticalRepositoryNotFoundByLocatorError ->
-                                    new MissingCityDbCriticalServiceError(
-                                        criticalRepositoryNotFoundByLocatorError.getMessage()),
-                                Function.identity()
-                            )
-                ).flatMap(Function.identity());
+                .mapLeft(missingCriticalDependencyError ->
+                    new MissingCityDbCriticalServiceError(
+                        missingCriticalDependencyError.getMessage()))
+                .flatMap(iCityDbSPI ->
+                    iCityDbSPI.save(city)
+                        .apply(appScopedDependencyLocator)
+                        .mapLeft(criticalRepositoryNotFoundByLocatorError ->
+                            new MissingCityDbCriticalServiceError(
+                                criticalRepositoryNotFoundByLocatorError.getMessage())));
     }
 }

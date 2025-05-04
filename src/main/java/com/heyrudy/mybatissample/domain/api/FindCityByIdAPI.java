@@ -25,8 +25,7 @@ public final class FindCityByIdAPI {
             appScopedDependencyLocator.getDependency(CityDbSPIKey.INSTANCE)
                 .<MissingCityError>mapLeft(missingCriticalDependencyError ->
                     new MissingCityDbCriticalServiceError(
-                        missingCriticalDependencyError.getMessage())
-                )
+                        missingCriticalDependencyError.getMessage()))
                 .flatMap(iCityDbSPI ->
                     iCityDbSPI.findCityById(cityCriteriaDetails.cityId())
                         .apply(appScopedDependencyLocator)
@@ -38,7 +37,6 @@ public final class FindCityByIdAPI {
                             Option.ofOptional(optionalCity)
                                 .toEither(new CityNotFoundError(
                                     ErrorMessage.CITY_NOT_FOUND_ERROR_MESSAGE.formatted(
-                                        cityCriteriaDetails.cityId()))))
-                );
+                                        cityCriteriaDetails.cityId())))));
     }
 }

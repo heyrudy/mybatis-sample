@@ -13,11 +13,9 @@ import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CriticalDSLContextKey;
 import io.vavr.control.Option;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-
 import org.jooq.Table;
 
 public final class CityRepository implements ICityRepository {
@@ -46,9 +44,8 @@ public final class CityRepository implements ICityRepository {
         ICity iCity) {
         return appScopedDependencyLocator ->
             appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
-                .toEither(new CityNotSavedByRepositoryError(
-                    AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
-                        .formatted(CriticalDSLContextKey.INSTANCE)))
+                .mapLeft(missingCriticalDependencyError ->
+                    new CityNotSavedByRepositoryError(missingCriticalDependencyError.getMessage()))
                 .map(dslContext ->
                     Option.of(dslContext.insertInto(CITIES)
                             .columns(NAME, STATE, COUNTRY)
@@ -66,9 +63,9 @@ public final class CityRepository implements ICityRepository {
     public Workflow<AppScopedDependencyLocator, CriticalDSLContextNotFoundByConfigLocatorError, List<ICity>> findAll() {
         return appScopedDependencyLocator ->
             appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
-                .toEither(new CriticalDSLContextNotFoundByConfigLocatorError(
-                    AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
-                        .formatted(CriticalDSLContextKey.INSTANCE)))
+                .mapLeft(missingCriticalDependencyError ->
+                    new CriticalDSLContextNotFoundByConfigLocatorError(
+                        missingCriticalDependencyError.getMessage()))
                 .map(dslContext ->
                     dslContext.select(ID, NAME, STATE, COUNTRY)
                         .from(CITIES)
@@ -84,9 +81,8 @@ public final class CityRepository implements ICityRepository {
         long id) {
         return appScopedDependencyLocator ->
             appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
-                .toEither(new CityNotFoundByRepositoryError(
-                    AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
-                        .formatted(CriticalDSLContextKey.INSTANCE)))
+                .mapLeft(missingCriticalDependencyError ->
+                    new CityNotFoundByRepositoryError(missingCriticalDependencyError.getMessage()))
                 .map(dslContext ->
                     Option.of(dslContext.select(ID, NAME, STATE, COUNTRY)
                             .from(CITIES)

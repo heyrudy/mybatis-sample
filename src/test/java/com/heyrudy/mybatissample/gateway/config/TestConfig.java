@@ -44,7 +44,7 @@ public class TestConfig {
                         Either.right(key.getType().cast(v))),
                 Case($(),
                     () ->
-                        ErrorMessage.toDependencyError().apply(key)
+                        ErrorMessage.toDependencyError(key)
                             .map(Either::<MissingCriticalDependencyError, T>left)
                             .fold(
                                 () -> Either.left(new MissingCriticalDependencyError(
