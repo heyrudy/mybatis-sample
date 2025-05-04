@@ -8,7 +8,6 @@ import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 public final class CityCriticalDbAdapter implements ICityDbSPI {
 
@@ -26,7 +25,6 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                         .mapLeft(error ->
                             new CriticalRepositoryNotFoundByServiceLocatorError(
                                 error.getMessage()))
-                        .map(Function.identity())
                 );
     }
 
@@ -43,7 +41,6 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                         .mapLeft(criticalDSLContextNotFoundByConfigLocatorError ->
                             new CriticalRepositoryNotFoundByServiceLocatorError(
                                 criticalDSLContextNotFoundByConfigLocatorError.getMessage()))
-                        .map(Function.identity())
                 );
     }
 
@@ -61,7 +58,6 @@ public final class CityCriticalDbAdapter implements ICityDbSPI {
                         .mapLeft(cityNotFoundByRepositoryError ->
                             new CriticalRepositoryNotFoundByServiceLocatorError(
                                 cityNotFoundByRepositoryError.getMessage()))
-                        .map(Function.identity())
                 );
     }
 }
