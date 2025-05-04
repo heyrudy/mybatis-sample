@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
 public final class CityNotFoundError
-    extends MissingCityError {
+    extends DomainServiceAPIError {
 
     public CityNotFoundError(String message) {
         super(message);

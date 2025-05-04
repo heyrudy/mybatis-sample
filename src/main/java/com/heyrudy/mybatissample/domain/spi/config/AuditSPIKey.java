@@ -2,7 +2,8 @@ package com.heyrudy.mybatissample.domain.spi.config;
 
 import com.heyrudy.mybatissample.domain.spi.IAuditSPI;
 
-public enum AuditSPIKey implements NonCriticalSPIKey<IAuditSPI> {
+public enum AuditSPIKey
+    implements NonCriticalSPIKey<IAuditSPI> {
     INSTANCE;
 
     @Override

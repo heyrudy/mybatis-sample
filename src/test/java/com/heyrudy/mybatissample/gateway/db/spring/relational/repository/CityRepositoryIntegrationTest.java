@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.gateway.db.spring.relational;
+package com.heyrudy.mybatissample.gateway.db.spring.relational.repository;
 
 import com.heyrudy.mybatissample.gateway.db.spring.relational.config.PostgresContainerInit;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

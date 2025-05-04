@@ -1,10 +1,5 @@
 package com.heyrudy.mybatissample.controller.rest;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.Predicates.instanceOf;
-
 import com.heyrudy.mybatissample.controller.rest.dto.ApiErrorResponse;
 import com.heyrudy.mybatissample.controller.rest.dto.CityRequestDTO;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityRequestMapper;
@@ -14,8 +9,6 @@ import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOVal
 import com.heyrudy.mybatissample.domain.api.CreateCityAPI;
 import com.heyrudy.mybatissample.domain.api.FindCitiesAPI;
 import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
-import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
-import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalServiceError;
 import com.heyrudy.mybatissample.domain.model.utils.PartialWorkflow;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
@@ -148,32 +141,17 @@ public final class CityCriticalRestAPIAdapter {
                                     .reason(validationErrorMessage)
                                     .build());
                     },
-                    missingCityErrorICityEither ->
-                        missingCityErrorICityEither.fold(
-                            missingCityError ->
-                                Match(missingCityError).of(
-                                    Case($(instanceOf(
-                                            MissingCityDbCriticalServiceError.class)),
-                                        it -> {
-                                            logger.error(it.getMessage());
-                                            return ServerResponse.status(
-                                                    HttpStatus.FAILED_DEPENDENCY)
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .body(
-                                                    ApiErrorResponse.builder()
-                                                        .reason(it.getMessage())
-                                                        .build());
-                                        }),
-                                    Case($(instanceOf(CityNotFoundError.class)),
-                                        it -> {
-                                            logger.error(it.getMessage());
-                                            return ServerResponse.badRequest()
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .body(
-                                                    ApiErrorResponse.builder()
-                                                        .reason(it.getMessage())
-                                                        .build());
-                                        })),
+                    cityNotFoundErrorICityEither ->
+                        cityNotFoundErrorICityEither.fold(
+                            cityNotFoundError -> {
+                                logger.error(cityNotFoundError.getMessage());
+                                return ServerResponse.badRequest()
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .body(
+                                        ApiErrorResponse.builder()
+                                            .reason(cityNotFoundError.getMessage())
+                                            .build());
+                            },
                             iCity -> {
                                 logger.info("A city with id {} is found", id);
                                 return ServerResponse.ok()

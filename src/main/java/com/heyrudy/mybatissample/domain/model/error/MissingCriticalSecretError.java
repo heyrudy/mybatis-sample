@@ -2,7 +2,7 @@ package com.heyrudy.mybatissample.domain.model.error;
 
 public sealed class MissingCriticalSecretError
     extends MissingCriticalDependencyError
-    permits CriticalDbSecretPropertiesNotFoundBySecretLocatorError {
+    permits CriticalDbSecretPropertiesNotFoundByDependencyLocatorError {
 
     public MissingCriticalSecretError(String message) {
         super(message);

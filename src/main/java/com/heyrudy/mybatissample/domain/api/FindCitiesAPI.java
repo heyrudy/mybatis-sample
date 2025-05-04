@@ -1,10 +1,10 @@
 package com.heyrudy.mybatissample.domain.api;
 
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.model.error.MissingCityDbCriticalServiceError;
+import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.domain.spi.config.CityDbSPIKey;
+import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
 import java.util.List;
 
 public final class FindCitiesAPI {
@@ -15,17 +15,22 @@ public final class FindCitiesAPI {
         super();
     }
 
-    public Workflow<AppScopedDependencyLocator, MissingCityDbCriticalServiceError, List<ICity>> execute() {
+    /**
+     * Finds all cities.
+     *
+     * @return A Reader monad as a Workflow that either results in an error or a list of cities
+     */
+    public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>> execute() {
         return appScopedDependencyLocator ->
-            appScopedDependencyLocator.getDependency(CityDbSPIKey.INSTANCE)
+            appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)
                 .mapLeft(missingCriticalDependencyError ->
-                    new MissingCityDbCriticalServiceError(
+                    new CriticalRepositoryNotFoundByDependencyLocatorError(
                         missingCriticalDependencyError.getMessage()))
-                .flatMap(iCityDbSPI ->
-                    iCityDbSPI.findCities()
+                .flatMap(iCityRepository ->
+                    iCityRepository.findAll()
                         .apply(appScopedDependencyLocator)
-                        .mapLeft(criticalRepositoryNotFoundByLocatorError ->
-                            new MissingCityDbCriticalServiceError(
-                                criticalRepositoryNotFoundByLocatorError.getMessage())));
+                        .mapLeft(criticalDSLContextNotFoundByDependencyLocatorError ->
+                            new CriticalRepositoryNotFoundByDependencyLocatorError(
+                                criticalDSLContextNotFoundByDependencyLocatorError.getMessage())));
     }
 }

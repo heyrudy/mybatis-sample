@@ -1,9 +1,9 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public final class CriticalRepositoryNotFoundByServiceLocatorError
+public final class DbCriticalServiceNotFoundByDependencyLocatorError
     extends MissingCriticalDependencyError {
 
-    public CriticalRepositoryNotFoundByServiceLocatorError(String message) {
+    public DbCriticalServiceNotFoundByDependencyLocatorError(String message) {
         super(message);
         this.message = message;
     }

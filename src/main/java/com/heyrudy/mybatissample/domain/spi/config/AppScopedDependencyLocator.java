@@ -5,10 +5,10 @@ import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
-import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByConfigLocatorError;
-import com.heyrudy.mybatissample.domain.model.error.CriticalDbSecretPropertiesNotFoundBySecretLocatorError;
-import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByServiceLocatorError;
-import com.heyrudy.mybatissample.domain.model.error.DbCriticalServiceNotFoundByServiceLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.CriticalDbSecretPropertiesNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.DbCriticalServiceNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -35,19 +35,19 @@ public non-sealed interface AppScopedDependencyLocator
             EnvironmentKey<?> key) {
             return Match(key).option(
                 Case($(instanceOf(CriticalDbSecretPropertiesKey.class)),
-                    it -> new CriticalDbSecretPropertiesNotFoundBySecretLocatorError(
+                    it -> new CriticalDbSecretPropertiesNotFoundByDependencyLocatorError(
                         AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DB_SECRET_PROPERTIES_FOUND_FOR_KEY_ERROR_MESSAGE
                             .formatted(it))),
                 Case($(instanceOf(CriticalDSLContextKey.class)),
-                    it -> new CriticalDSLContextNotFoundByConfigLocatorError(
+                    it -> new CriticalDSLContextNotFoundByDependencyLocatorError(
                         AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
                             .formatted(it))),
                 Case($(instanceOf(CriticalRepositoryKey.class)),
-                    it -> new CriticalRepositoryNotFoundByServiceLocatorError(
+                    it -> new CriticalRepositoryNotFoundByDependencyLocatorError(
                         AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_REPOSITORY_FOUND_FOR_KEY_ERROR_MESSAGE
                             .formatted(it))),
                 Case($(instanceOf(DependencyKey.class)),
-                    it -> new DbCriticalServiceNotFoundByServiceLocatorError(
+                    it -> new DbCriticalServiceNotFoundByDependencyLocatorError(
                         AppScopedDependencyLocator.ErrorMessage.NO_DB_SPI_CRITICAL_SERVICE_FOUND_FOR_KEY_ERROR_MESSAGE
                             .formatted(it)))
             );

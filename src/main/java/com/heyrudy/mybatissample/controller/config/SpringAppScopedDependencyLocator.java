@@ -4,15 +4,15 @@ import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
-import com.heyrudy.mybatissample.domain.model.error.CriticalDbSecretPropertiesNotFoundBySecretLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.CriticalDbSecretPropertiesNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.domain.spi.config.CityDbSPIKey;
+import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
 import com.heyrudy.mybatissample.domain.spi.config.CriticalDSLContextKey;
 import com.heyrudy.mybatissample.domain.spi.config.CriticalDbSecretPropertiesKey;
 import com.heyrudy.mybatissample.domain.spi.config.DependencyKey;
 import com.heyrudy.mybatissample.gateway.config.IDbSecretProperties.MockedDbSecretProperties;
-import com.heyrudy.mybatissample.gateway.db.mock.MockedCityCriticalDbSPIAdapter;
+import com.heyrudy.mybatissample.gateway.db.spring.relational.repository.MockedCityRepository;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.vavr.control.Either;
@@ -55,23 +55,23 @@ public class SpringAppScopedDependencyLocator implements AppScopedDependencyLoca
     private Map<DependencyKey<?>, ?> dependencyMap() {
         return createDataSource()
             .fold(
-                criticalDbSecretPropertiesNotFoundBySecretLocatorError ->
+                criticalDbSecretPropertiesNotFoundByDependencyLocatorError ->
                     Map.ofEntries(Map.entry(
-                        CityDbSPIKey.INSTANCE, new MockedCityCriticalDbSPIAdapter())),
+                        CityRepositoryKey.INSTANCE, new MockedCityRepository())),
                 dataSource ->
                     Map.ofEntries(
                         Map.entry(
                             CriticalDSLContextKey.INSTANCE,
                             DSL.using(dataSource, SQLDialect.POSTGRES)),
                         Map.entry(
-                            CityDbSPIKey.INSTANCE, new MockedCityCriticalDbSPIAdapter())
+                            CityRepositoryKey.INSTANCE, new MockedCityRepository())
                     )
             );
     }
 
-    private Either<CriticalDbSecretPropertiesNotFoundBySecretLocatorError, DataSource> createDataSource() {
+    private Either<CriticalDbSecretPropertiesNotFoundByDependencyLocatorError, DataSource> createDataSource() {
         return Option.of(getBeanOrMock(MockedDbSecretProperties.class, Option.none()))
-            .toEither(new CriticalDbSecretPropertiesNotFoundBySecretLocatorError(
+            .toEither(new CriticalDbSecretPropertiesNotFoundByDependencyLocatorError(
                 AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DB_SECRET_PROPERTIES_FOUND_FOR_KEY_ERROR_MESSAGE
                     .formatted(CriticalDbSecretPropertiesKey.INSTANCE)))
             .map(iDbSecretProperties ->

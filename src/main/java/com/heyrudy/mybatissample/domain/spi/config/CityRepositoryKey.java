@@ -2,7 +2,8 @@ package com.heyrudy.mybatissample.domain.spi.config;
 
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 
-public enum CityRepositoryKey implements CriticalRepositoryKey<ICityRepository> {
+public enum CityRepositoryKey
+    implements CriticalRepositoryKey<ICityRepository> {
     INSTANCE;
 
     @Override

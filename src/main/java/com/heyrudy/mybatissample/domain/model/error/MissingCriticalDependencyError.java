@@ -4,8 +4,8 @@ public sealed class MissingCriticalDependencyError
     implements DomainError
     permits MissingCriticalSecretError,
     MissingCriticalConfigError,
-    CriticalRepositoryNotFoundByServiceLocatorError,
-    DbCriticalServiceNotFoundByServiceLocatorError {
+    CriticalRepositoryNotFoundByDependencyLocatorError,
+    DbCriticalServiceNotFoundByDependencyLocatorError {
 
     protected String message;
 

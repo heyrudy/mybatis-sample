@@ -7,7 +7,7 @@ import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryError;
-import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByConfigLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
@@ -58,11 +58,11 @@ public final class CityRepository implements ICityRepository {
     }
 
     @Override
-    public Workflow<AppScopedDependencyLocator, CriticalDSLContextNotFoundByConfigLocatorError, List<ICity>> findAll() {
+    public Workflow<AppScopedDependencyLocator, CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>> findAll() {
         return appScopedDependencyLocator ->
             appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
                 .mapLeft(missingCriticalDependencyError ->
-                    new CriticalDSLContextNotFoundByConfigLocatorError(
+                    new CriticalDSLContextNotFoundByDependencyLocatorError(
                         missingCriticalDependencyError.getMessage()))
                 .map(dslContext ->
                     dslContext.select(ID, NAME, STATE, COUNTRY)

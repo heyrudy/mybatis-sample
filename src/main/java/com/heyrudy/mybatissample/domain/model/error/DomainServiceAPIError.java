@@ -2,7 +2,7 @@ package com.heyrudy.mybatissample.domain.model.error;
 
 public sealed class DomainServiceAPIError
     implements DomainError
-    permits MissingCityError {
+    permits CityNotFoundError {
 
     protected String message;
 

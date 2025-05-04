@@ -7,10 +7,10 @@ import static io.vavr.API.Match;
 import com.heyrudy.mybatissample.controller.config.SpringAppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.domain.spi.config.CityDbSPIKey;
+import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
 import com.heyrudy.mybatissample.domain.spi.config.DependencyKey;
 import com.heyrudy.mybatissample.domain.spi.config.EnvironmentKey;
-import com.heyrudy.mybatissample.gateway.db.mock.MockedCityCriticalDbSPIAdapter;
+import com.heyrudy.mybatissample.gateway.db.spring.relational.repository.MockedCityRepository;
 import io.vavr.control.Either;
 import java.util.Map;
 import java.util.function.Function;
@@ -57,7 +57,7 @@ public class TestConfig {
         private Map<EnvironmentKey<?>, ?> dependencyMap() {
             return Map.ofEntries(
                 Map.entry(
-                    CityDbSPIKey.INSTANCE, new MockedCityCriticalDbSPIAdapter())
+                    CityRepositoryKey.INSTANCE, new MockedCityRepository())
             );
         }
 
