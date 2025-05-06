@@ -15,14 +15,14 @@ public final class CreateCityAPI {
     }
 
     public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByDependencyLocatorError, ICity> execute(
-        final ICity city) {
+        final ICity iCity) {
         return appScopedDependencyLocator ->
             appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)
                 .mapLeft(missingCriticalDependencyError ->
                     new CriticalRepositoryNotFoundByDependencyLocatorError(
                         missingCriticalDependencyError.getMessage()))
                 .flatMap(iCityRepository ->
-                    iCityRepository.save(city)
+                    iCityRepository.save(iCity)
                         .apply(appScopedDependencyLocator)
                         .mapLeft(cityNotSavedByRepositoryError ->
                             new CriticalRepositoryNotFoundByDependencyLocatorError(
