@@ -13,9 +13,9 @@ public enum CriticalDbSecretPropertiesKey
 
     @Override
     public Reader<AppScopedDependencyLocator, Either<? extends MissingCriticalDependencyError, IDbSecretProperties>> describeDependencyContext() {
-        return it ->
+        return appScopedDependencyLocator ->
             Option.of(
-                    it.getBeanOrMock(
+                    appScopedDependencyLocator.getBeanOrMock(
                         IDbSecretProperties.class, Option.of(MockedDbSecretProperties::new)))
                 .toEither(new CriticalDbSecretPropertiesNotFoundByDependencyLocatorError(
                     AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DB_SECRET_PROPERTIES_FOUND_FOR_KEY_ERROR_MESSAGE
