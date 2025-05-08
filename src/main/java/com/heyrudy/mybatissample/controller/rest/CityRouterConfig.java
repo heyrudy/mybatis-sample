@@ -15,7 +15,7 @@ package com.heyrudy.mybatissample.controller.rest;
 //import org.slf4j.MDC;
 //import org.springframework.context.annotation.Bean;
 
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.function.RouterFunction;

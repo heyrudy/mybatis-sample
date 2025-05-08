@@ -1,6 +1,6 @@
-package com.heyrudy.mybatissample.gateway.config;
+package com.heyrudy.mybatissample.context;
 
-import com.heyrudy.mybatissample.gateway.config.IDbSecretProperties.MockedDbSecretProperties;
+import com.heyrudy.mybatissample.context.IDbSecretProperties.MockedDbSecretProperties;
 
 public sealed interface IDbSecretProperties
     permits DbSecretProperties,

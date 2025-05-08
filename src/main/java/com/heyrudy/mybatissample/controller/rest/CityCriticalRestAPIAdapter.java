@@ -9,9 +9,9 @@ import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOVal
 import com.heyrudy.mybatissample.domain.api.CreateCityAPI;
 import com.heyrudy.mybatissample.domain.api.FindCitiesAPI;
 import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
-import com.heyrudy.mybatissample.domain.model.utils.PartialWorkflow;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
+import cyclops.control.Reader;
 import io.vavr.control.Try;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public final class CityCriticalRestAPIAdapter {
      * @param request city with all its details to persist in the database
      * @return HTTP Response with persisted city in the database
      */
-    public PartialWorkflow<AppScopedDependencyLocator, ServerResponse> createCity(
+    public Reader<AppScopedDependencyLocator, ServerResponse> createCity(
         ServerRequest request) {
         return appScopedDependencyLocator ->
             Try.of(() -> request.body(CityRequestDTO.class))
@@ -103,7 +103,7 @@ public final class CityCriticalRestAPIAdapter {
     /**
      * @return HTTP Response with all cities fetched from the database
      */
-    public PartialWorkflow<AppScopedDependencyLocator, ServerResponse> findCities() {
+    public Reader<AppScopedDependencyLocator, ServerResponse> findCities() {
         logger.info("All cities were found");
         return appScopedDependencyLocator ->
             FIND_CITIES_API.execute()
@@ -124,7 +124,7 @@ public final class CityCriticalRestAPIAdapter {
      * @param request city's id to fetch from the database
      * @return HTTP Response with required information about a city
      */
-    public PartialWorkflow<AppScopedDependencyLocator, ServerResponse> findCityById(
+    public Reader<AppScopedDependencyLocator, ServerResponse> findCityById(
         ServerRequest request) {
         String id = request.pathVariable("id");
         return appScopedDependencyLocator ->
@@ -162,7 +162,7 @@ public final class CityCriticalRestAPIAdapter {
                 );
     }
 
-    public PartialWorkflow<AppScopedDependencyLocator, ServerResponse> downloadCityPdfReport() {
+    public Reader<AppScopedDependencyLocator, ServerResponse> downloadCityPdfReport() {
         return appScopedSecretLocator ->
             ServerResponse.ok()
                 .headers(httpHeaders ->

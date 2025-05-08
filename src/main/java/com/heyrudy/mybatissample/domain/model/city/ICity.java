@@ -7,6 +7,8 @@ public sealed interface ICity
 
     long getId();
 
+    void setId(long id);
+
     String getName();
 
     String getState();

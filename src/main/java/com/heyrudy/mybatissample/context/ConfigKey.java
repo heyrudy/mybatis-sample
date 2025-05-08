@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.spi.config;
+package com.heyrudy.mybatissample.context;
 
 public sealed interface ConfigKey<T>
     extends DependencyKey<T>

@@ -19,6 +19,11 @@ public final class PartialCityProxy implements ICity {
     }
 
     @Override
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    @Override
     public String getName() {
         return null;
     }

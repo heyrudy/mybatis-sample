@@ -4,9 +4,9 @@ import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
+import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.List;
 import java.util.Map;
@@ -20,26 +20,27 @@ public class MockedCityRepository implements ICityRepository {
     private final static Map<Long, ICity> IN_MEMORY_DB = new ConcurrentHashMap<>();
 
     @Override
-    public Workflow<AppScopedDependencyLocator, CityNotSavedByRepositoryError, ICity> save(
+    public Reader<AppScopedDependencyLocator, Either<CityNotSavedByRepositoryError, ICity>> save(
         ICity iCity) {
-        return appScopedDependencyLocator -> {
+        return __ -> {
             Function<Map<Long, ICity>, Long> idGenerator = AutoIncrementMap.atomicGenerator();
             Long newCityId = AutoIncrementMap.putWithAutoIncrement(
                 IN_MEMORY_DB, null, iCity, idGenerator);
+            iCity.setId(newCityId);
             return Either.right(IN_MEMORY_DB.get(newCityId));
         };
     }
 
     @Override
-    public Workflow<AppScopedDependencyLocator, CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>> findAll() {
-        return appScopedDependencyLocator ->
+    public Reader<AppScopedDependencyLocator, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>> findAll() {
+        return __ ->
             Either.right(IN_MEMORY_DB.values().stream().toList());
     }
 
     @Override
-    public Workflow<AppScopedDependencyLocator, CityNotFoundByRepositoryError, Optional<ICity>> findById(
+    public Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Optional<ICity>>> findById(
         long id) {
-        return appScopedDependencyLocator ->
+        return __ ->
             Either.right(Optional.ofNullable(IN_MEMORY_DB.get(id)));
     }
 

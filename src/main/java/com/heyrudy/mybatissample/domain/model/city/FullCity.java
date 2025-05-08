@@ -14,13 +14,6 @@ public final class FullCity implements ICity {
         return new FullCity();
     }
 
-    public FullCity(long id, String name, String state, String country) {
-        this.id = id;
-        this.name = name;
-        this.state = state;
-        this.country = country;
-    }
-
     public long getId() {
         return id;
     }

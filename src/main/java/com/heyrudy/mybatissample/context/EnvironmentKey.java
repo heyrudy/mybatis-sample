@@ -1,9 +1,7 @@
-package com.heyrudy.mybatissample.domain.spi.config;
+package com.heyrudy.mybatissample.context;
 
-public sealed interface EnvironmentKey<T>
+public sealed interface EnvironmentKey
     permits DependencyKey {
-
-    Class<T> getType();
 
 //    sealed interface estSPICriticalServiceKey<T> extends ServiceKey<T> permits CityRestSPIKey {
 //

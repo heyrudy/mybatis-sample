@@ -4,9 +4,10 @@ import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError.ErrorMessage;
-import com.heyrudy.mybatissample.domain.model.utils.Workflow;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
+import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.context.CityRepositoryKey;
+import cyclops.control.Reader;
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 
 public final class FindCityByIdAPI {
@@ -17,10 +18,11 @@ public final class FindCityByIdAPI {
         super();
     }
 
-    public Workflow<AppScopedDependencyLocator, CityNotFoundError, ICity> execute(
+    public Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>> execute(
         final CityCriteriaDetails cityCriteriaDetails) {
         return appScopedDependencyLocator ->
-            appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)
+            CityRepositoryKey.INSTANCE.describeDependencyContext()
+                .apply(appScopedDependencyLocator)
                 .mapLeft(missingCriticalDependencyError ->
                     new CityNotFoundError(missingCriticalDependencyError.getMessage()))
                 .flatMap(iCityRepository ->

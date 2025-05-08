@@ -2,9 +2,10 @@ package com.heyrudy.mybatissample.domain.api;
 
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.domain.model.utils.Workflow;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.domain.spi.config.CityRepositoryKey;
+import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.context.CityRepositoryKey;
+import cyclops.control.Reader;
+import io.vavr.control.Either;
 
 public final class CreateCityAPI {
 
@@ -14,10 +15,11 @@ public final class CreateCityAPI {
         super();
     }
 
-    public Workflow<AppScopedDependencyLocator, CriticalRepositoryNotFoundByDependencyLocatorError, ICity> execute(
+    public Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>> execute(
         final ICity iCity) {
         return appScopedDependencyLocator ->
-            appScopedDependencyLocator.getDependency(CityRepositoryKey.INSTANCE)
+            CityRepositoryKey.INSTANCE.describeDependencyContext()
+                .apply(appScopedDependencyLocator)
                 .mapLeft(missingCriticalDependencyError ->
                     new CriticalRepositoryNotFoundByDependencyLocatorError(
                         missingCriticalDependencyError.getMessage()))

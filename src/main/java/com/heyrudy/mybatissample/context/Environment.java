@@ -1,6 +1,6 @@
-package com.heyrudy.mybatissample.domain.spi.config;
+package com.heyrudy.mybatissample.context;
 
-import com.heyrudy.mybatissample.domain.spi.config.Environment.NoEnv;
+import com.heyrudy.mybatissample.context.Environment.NoEnv;
 
 public sealed interface Environment
     permits AppScopedDependencyLocator,

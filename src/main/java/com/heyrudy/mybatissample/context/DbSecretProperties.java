@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.gateway.config;
+package com.heyrudy.mybatissample.context;
 
 import jakarta.annotation.PreDestroy;
 import jakarta.validation.constraints.NotBlank;

@@ -2,13 +2,20 @@ package com.heyrudy.mybatissample.domain.model.city;
 
 public final class NullCity implements ICity {
 
+    private long id;
+
     public NullCity() {
         super();
     }
 
     @Override
     public long getId() {
-        return -1;
+        return id;
+    }
+
+    @Override
+    public void setId(long id) {
+        this.id = id;
     }
 
     @Override

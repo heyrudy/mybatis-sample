@@ -8,10 +8,11 @@ import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.domain.model.utils.Workflow;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
-import com.heyrudy.mybatissample.domain.spi.config.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.domain.spi.config.CriticalDSLContextKey;
+import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.context.CriticalDSLContextKey;
+import cyclops.control.Reader;
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 import java.util.List;
 import java.util.Optional;
@@ -39,10 +40,11 @@ public final class CityRepository implements ICityRepository {
     }
 
     @Override
-    public Workflow<AppScopedDependencyLocator, CityNotSavedByRepositoryError, ICity> save(
+    public Reader<AppScopedDependencyLocator, Either<CityNotSavedByRepositoryError, ICity>> save(
         ICity iCity) {
         return appScopedDependencyLocator ->
-            appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
+            CriticalDSLContextKey.INSTANCE.describeDependencyContext()
+                .apply(appScopedDependencyLocator)
                 .mapLeft(missingCriticalDependencyError ->
                     new CityNotSavedByRepositoryError(missingCriticalDependencyError.getMessage()))
                 .flatMap(dslContext ->
@@ -58,9 +60,10 @@ public final class CityRepository implements ICityRepository {
     }
 
     @Override
-    public Workflow<AppScopedDependencyLocator, CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>> findAll() {
+    public Reader<AppScopedDependencyLocator, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>> findAll() {
         return appScopedDependencyLocator ->
-            appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
+            CriticalDSLContextKey.INSTANCE.describeDependencyContext()
+                .apply(appScopedDependencyLocator)
                 .mapLeft(missingCriticalDependencyError ->
                     new CriticalDSLContextNotFoundByDependencyLocatorError(
                         missingCriticalDependencyError.getMessage()))
@@ -74,10 +77,11 @@ public final class CityRepository implements ICityRepository {
     }
 
     @Override
-    public Workflow<AppScopedDependencyLocator, CityNotFoundByRepositoryError, Optional<ICity>> findById(
+    public Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Optional<ICity>>> findById(
         long id) {
         return appScopedDependencyLocator ->
-            appScopedDependencyLocator.getDependency(CriticalDSLContextKey.INSTANCE)
+            CriticalDSLContextKey.INSTANCE.describeDependencyContext()
+                .apply(appScopedDependencyLocator)
                 .mapLeft(missingCriticalDependencyError ->
                     new CityNotFoundByRepositoryError(missingCriticalDependencyError.getMessage()))
                 .map(dslContext ->

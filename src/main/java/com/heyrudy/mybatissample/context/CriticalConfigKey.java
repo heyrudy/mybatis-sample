@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.spi.config;
+package com.heyrudy.mybatissample.context;
 
 public sealed interface CriticalConfigKey<T>
     extends ConfigKey<T>

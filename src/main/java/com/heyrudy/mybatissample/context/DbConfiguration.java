@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.gateway.config;
+package com.heyrudy.mybatissample.context;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
