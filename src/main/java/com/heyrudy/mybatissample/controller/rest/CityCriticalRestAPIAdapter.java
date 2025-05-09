@@ -10,10 +10,15 @@ import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOVal
 import com.heyrudy.mybatissample.domain.api.CreateCityAPI;
 import com.heyrudy.mybatissample.domain.api.FindCitiesAPI;
 import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
+import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
 import cyclops.control.Reader;
+import io.vavr.collection.Seq;
+import io.vavr.control.Either;
 import io.vavr.control.Try;
-import java.util.Map;
+import io.vavr.control.Validation;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -33,52 +38,56 @@ public enum CityCriticalRestAPIAdapter {
      */
     public Reader<AppScopedDependencyLocator, ServerResponse> createCity(
         ServerRequest request) {
-        return appScopedDependencyLocator ->
-            Try.of(() -> request.body(CityRequestDTO.class))
-                .toEither()
-                .fold(
-                    // Error handling for malformed JSON or validation failures
-                    error ->
-                        ServerResponse.badRequest()
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body(Map.of("error",
-                                "Invalid request body: %s".formatted(error.getMessage()))),
-                    cityRequestDTO ->
-                        CityRequestDTOValidator.INSTANCE.validateCityRequestDTO(
-                                cityRequestDTO.name(), cityRequestDTO.state(), cityRequestDTO.country())
-                            .map(CityRequestMapper.INSTANCE::toModel)
-                            .map(iCity ->
-                                CreateCityAPI.INSTANCE.execute(iCity)
-                                    .apply(appScopedDependencyLocator))
-                            .fold(
-                                validationErrorMessages -> {
-                                    String validationErrorMessageReduced =
-                                        validationErrorMessages.toStream()
-                                            .reduce((f, s) -> f.equals(s) ? f : s);
-                                    logger.info(validationErrorMessageReduced);
-                                    return ServerResponse.badRequest()
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .body(
-                                            ApiErrorResponse.builder()
-                                                .reason(validationErrorMessageReduced)
-                                                .build());
-                                },
-                                missingCityDbCriticalServiceErrorICityEither ->
-                                    missingCityDbCriticalServiceErrorICityEither
-                                        .fold(
-                                            missingCityDbSPICriticalServiceError ->
-                                                ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
-                                                    .body(
-                                                        missingCityDbSPICriticalServiceError.getMessage()),
-                                            iCity -> {
-                                                logger.info("A new city is created");
-                                                return ServerResponse.status(HttpStatus.CREATED)
-                                                    .contentType(MediaType.APPLICATION_JSON)
-                                                    .body(CityResponseMapper.INSTANCE.toDto(iCity));
-                                            }
-                                        )
-                            )
-                );
+        // 1) Define function to parse JSON body into DTO
+        Reader<AppScopedDependencyLocator, Either<String, CityRequestDTO>> parseBodyReader =
+            __ ->
+                Try.of(() -> request.body(CityRequestDTO.class))
+                    .toEither()
+                    .mapLeft(Throwable::getMessage);
+        // 2) Define a function to validate a DTO,
+        // returning Either with validation errors or valid DTO
+        Function<CityRequestDTO, Either<String, CityRequestDTO>> validateDto =
+            cityRequestDTO -> {
+                Validation<Seq<String>, CityRequestDTO> cityRequestDTOValidation =
+                    CityRequestDTOValidator.INSTANCE.validateCityRequestDTO(
+                        cityRequestDTO.name(), cityRequestDTO.state(), cityRequestDTO.country());
+
+                return cityRequestDTOValidation.isValid()
+                    ? Either.right(cityRequestDTO)
+                    : Either.left(
+                        String.valueOf(cityRequestDTOValidation.toStream().reduce((a, b) -> a.equals(b) ? a : b)));
+            };
+        // 3) Define a function that creates a Reader for handling validation error
+        Function<String, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>>
+            constantErrorReader =
+            errMsg ->
+                __ -> Either.left(
+                    new CriticalRepositoryNotFoundByDependencyLocatorError(errMsg));
+        // 4) Define function to transform DTO to model and execute create operation
+        Function<CityRequestDTO, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>>
+            dtoToCreateCity =
+            cityRequestDTO ->
+                CreateCityAPI.INSTANCE.execute(CityRequestMapper.INSTANCE.toModel(cityRequestDTO));
+        // 5) Define function to create error response
+        Function<CriticalRepositoryNotFoundByDependencyLocatorError, ServerResponse> createErrorResponse =
+            criticalRepositoryNotFoundByDependencyLocatorError ->
+                ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
+                    .body(criticalRepositoryNotFoundByDependencyLocatorError.getMessage());
+        // 6) Define function to create a success response
+        Function<ICity, ServerResponse> createSuccessResponse =
+            iCity ->
+                ServerResponse.status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(CityResponseMapper.INSTANCE.toDto(iCity));
+        // Compose operations with flatMap to explicitly avoid apply
+        return parseBodyReader
+            .map(parsedBodyEither -> parsedBodyEither.flatMap(validateDto))
+            .flatMap(validatedDtoEither ->
+                validatedDtoEither.fold(constantErrorReader, dtoToCreateCity))
+            .map(criticalRepositoryNotFoundByDependencyLocatorErrorICityEither ->
+                criticalRepositoryNotFoundByDependencyLocatorErrorICityEither.fold(
+                    createErrorResponse, createSuccessResponse)
+            );
     }
 
     /**
