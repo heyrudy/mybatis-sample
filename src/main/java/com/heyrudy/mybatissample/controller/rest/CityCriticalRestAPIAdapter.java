@@ -11,6 +11,8 @@ import com.heyrudy.mybatissample.domain.api.CreateCityAPI;
 import com.heyrudy.mybatissample.domain.api.FindCitiesAPI;
 import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
+import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
+import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
 import cyclops.control.Reader;
@@ -18,6 +20,7 @@ import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
+import java.util.List;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +58,8 @@ public enum CityCriticalRestAPIAdapter {
                 return cityRequestDTOValidation.isValid()
                     ? Either.right(cityRequestDTO)
                     : Either.left(
-                        String.valueOf(cityRequestDTOValidation.toStream().reduce((a, b) -> a.equals(b) ? a : b)));
+                        String.valueOf(cityRequestDTOValidation.toStream()
+                            .reduce((a, b) -> a.equals(b) ? a : b)));
             };
         // 3) Define a function that creates a Reader for handling validation error
         Function<String, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>>
@@ -86,30 +90,33 @@ public enum CityCriticalRestAPIAdapter {
                 validatedDtoEither.fold(constantErrorReader, dtoToCreateCity))
             .map(criticalRepositoryNotFoundByDependencyLocatorErrorICityEither ->
                 criticalRepositoryNotFoundByDependencyLocatorErrorICityEither.fold(
-                    createErrorResponse, createSuccessResponse)
-            );
+                    createErrorResponse, createSuccessResponse));
     }
 
     /**
      * @return HTTP Response with all cities fetched from the database
      */
     public Reader<AppScopedDependencyLocator, ServerResponse> findCities() {
-        return appScopedDependencyLocator ->
-            FindCitiesAPI.INSTANCE.execute()
-                .apply(appScopedDependencyLocator)
-                .fold(missingCityDbCriticalServiceError ->
-                        ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
-                            .body(
-                                missingCityDbCriticalServiceError.getMessage()),
-                    iCityList -> {
-                        logger.info("All cities were found");
-                        return ServerResponse.ok()
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .body(iCityList.stream()
-                                .map(CityResponseMapper.INSTANCE::toDto)
-                                .toList());
-                    }
-                );
+        // 1) Define function to create error response
+        Function<CriticalRepositoryNotFoundByDependencyLocatorError, ServerResponse> createErrorResponse =
+            criticalRepositoryNotFoundByDependencyLocatorError ->
+                ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
+                    .body(criticalRepositoryNotFoundByDependencyLocatorError.getMessage());
+        // 2) Define function to create a success response
+        Function<List<ICity>, ServerResponse> createSuccessResponse =
+            iCityList -> {
+                logger.info("All cities were found");
+                return ServerResponse.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(iCityList.stream()
+                        .map(CityResponseMapper.INSTANCE::toDto)
+                        .toList());
+            };
+        // 3) Compose operations with flatMap to explicitly avoid apply
+        return FindCitiesAPI.INSTANCE.execute()
+            .map(criticalRepositoryNotFoundByDependencyLocatorErrorListEither ->
+                criticalRepositoryNotFoundByDependencyLocatorErrorListEither.fold(
+                    createErrorResponse, createSuccessResponse));
     }
 
     /**
@@ -118,40 +125,46 @@ public enum CityCriticalRestAPIAdapter {
      */
     public Reader<AppScopedDependencyLocator, ServerResponse> findCityById(
         ServerRequest request) {
-        String id = request.pathVariable("id");
-        return appScopedDependencyLocator ->
-            CityCriteriaValidator.INSTANCE.validateCityCriteria(Long.parseLong(id))
-                .map(it ->
-                    FindCityByIdAPI.INSTANCE.execute(it)
-                        .apply(appScopedDependencyLocator))
-                .fold(
-                    validationErrorMessage -> {
-                        logger.error(validationErrorMessage);
-                        return ServerResponse.badRequest()
-                            .body(
-                                ApiErrorResponse.builder()
-                                    .reason(validationErrorMessage)
-                                    .build());
-                    },
-                    cityNotFoundErrorICityEither ->
-                        cityNotFoundErrorICityEither.fold(
-                            cityNotFoundError -> {
-                                logger.error(cityNotFoundError.getMessage());
-                                return ServerResponse.badRequest()
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .body(
-                                        ApiErrorResponse.builder()
-                                            .reason(cityNotFoundError.getMessage())
-                                            .build());
-                            },
-                            iCity -> {
-                                logger.info("A city with id {} is found", id);
-                                return ServerResponse.ok()
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .body(CityResponseMapper.INSTANCE.toDto(iCity));
-                            }
-                        )
-                );
+        String id = request.pathVariable("cityId");
+        // 1) Parse and validate ID
+        Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>> findCityById =
+            getAppScopedDependencyLocatorEitherReader(id);
+        // 2) Map city not found error to ServerResponse
+        Function<CityNotFoundError, ServerResponse> createErrorResponse =
+            cityNotFoundError -> {
+                logger.error(cityNotFoundError.getMessage());
+                return ServerResponse.badRequest()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(ApiErrorResponse.builder()
+                        .reason(cityNotFoundError.getMessage())
+                        .build());
+            };
+        // 3) Map a successful city result to ServerResponse
+        Function<ICity, ServerResponse> createSuccessResponse =
+            iCity -> {
+                logger.info("A city with id {} is found", id);
+                return ServerResponse.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(CityResponseMapper.INSTANCE.toDto(iCity));
+            };
+        // 4) Compose operations with flatMap to explicitly avoid apply
+        return findCityById.map(cityNotFoundErrorICityEither ->
+            cityNotFoundErrorICityEither.fold(createErrorResponse, createSuccessResponse));
+    }
+
+    private static Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>> getAppScopedDependencyLocatorEitherReader(
+        String id) {
+        Reader<AppScopedDependencyLocator, Validation<String, CityCriteriaDetails>> validateId =
+            __ ->
+                CityCriteriaValidator.INSTANCE.validateCityCriteria(Long.parseLong(id));
+        // 1) Define a function that creates a Reader for handling validation error
+        Function<String, Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>>> constantErrorReader =
+            errMsg ->
+                __ -> Either.left(new CityNotFoundError(errMsg));
+        // 2): Find a city by ID (using Reader composition)
+        return validateId.flatMap(stringCityCriteriaDetailsValidation ->
+            stringCityCriteriaDetailsValidation.fold(
+                constantErrorReader, FindCityByIdAPI.INSTANCE::execute));
     }
 
     public Reader<AppScopedDependencyLocator, ServerResponse> downloadCityPdfReport() {
