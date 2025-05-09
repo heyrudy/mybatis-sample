@@ -4,9 +4,8 @@ import com.heyrudy.mybatissample.controller.rest.dto.CityRequestDTO;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 
-public class CityRequestDTOValidator {
-
-    public static final CityRequestDTOValidator CITY_REQUEST_DTO_VALIDATOR = new CityRequestDTOValidator();
+public enum CityRequestDTOValidator {
+    INSTANCE;
 
     public Validation<Seq<String>, CityRequestDTO> validateCityRequestDTO(String name, String state,
         String country) {

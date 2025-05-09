@@ -19,11 +19,12 @@ public class TestConfig {
     @Bean
     @Primary
     public AppScopedDependencyLocator springTestAppScopedDependencyLocator() {
-        return new SpringTestAppScopedDependencyLocator();
+        return SpringTestAppScopedDependencyLocator.INSTANCE;
     }
 
-    public static class SpringTestAppScopedDependencyLocator
+    public enum SpringTestAppScopedDependencyLocator
         implements AppScopedDependencyLocator {
+        INSTANCE;
 
 //        private final ApplicationContext applicationContext;
 //

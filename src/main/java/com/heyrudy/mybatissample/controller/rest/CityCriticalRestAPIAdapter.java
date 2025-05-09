@@ -1,5 +1,6 @@
 package com.heyrudy.mybatissample.controller.rest;
 
+import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.controller.rest.dto.ApiErrorResponse;
 import com.heyrudy.mybatissample.controller.rest.dto.CityRequestDTO;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityRequestMapper;
@@ -9,7 +10,6 @@ import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOVal
 import com.heyrudy.mybatissample.domain.api.CreateCityAPI;
 import com.heyrudy.mybatissample.domain.api.FindCitiesAPI;
 import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
-import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
 import cyclops.control.Reader;
 import io.vavr.control.Try;
@@ -22,28 +22,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
-public final class CityCriticalRestAPIAdapter {
+public enum CityCriticalRestAPIAdapter {
+    INSTANCE;
 
     public static final Logger logger = LoggerFactory.getLogger(CityCriticalRestAPIAdapter.class);
-
-    public static final CityRequestDTOValidator CITY_REQUEST_DTO_VALIDATOR =
-        CityRequestDTOValidator.CITY_REQUEST_DTO_VALIDATOR;
-    public static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR =
-        CityCriteriaValidator.CITY_CRITERIA_VALIDATOR;
-
-    public static final CityRequestMapper CITY_REQUEST_MAPPER = CityRequestMapper.INSTANCE;
-    public static final CityResponseMapper CITY_RESPONSE_MAPPER = CityResponseMapper.INSTANCE;
-
-    public static final CreateCityAPI CREATE_CITY_API = CreateCityAPI.INSTANCE;
-    public static final FindCitiesAPI FIND_CITIES_API = FindCitiesAPI.INSTANCE;
-    public static final FindCityByIdAPI FIND_CITY_BY_ID_API = FindCityByIdAPI.INSTANCE;
-    public static final CreatePdfUtil CREATE_PDF_UTIL = CreatePdfUtil.INSTANCE;
-
-    public static final CityCriticalRestAPIAdapter INSTANCE = new CityCriticalRestAPIAdapter();
-
-    private CityCriticalRestAPIAdapter() {
-        super();
-    }
 
     /**
      * @param request city with all its details to persist in the database
@@ -55,18 +37,18 @@ public final class CityCriticalRestAPIAdapter {
             Try.of(() -> request.body(CityRequestDTO.class))
                 .toEither()
                 .fold(
-                    error -> {
-                        // Error handling for malformed JSON or validation failures
-                        return ServerResponse.badRequest()
+                    // Error handling for malformed JSON or validation failures
+                    error ->
+                        ServerResponse.badRequest()
                             .contentType(MediaType.APPLICATION_JSON)
-                            .body(Map.of("error", "Invalid request body: " + error.getMessage()));
-                    },
+                            .body(Map.of("error",
+                                "Invalid request body: %s".formatted(error.getMessage()))),
                     cityRequestDTO ->
-                        CITY_REQUEST_DTO_VALIDATOR.validateCityRequestDTO(
+                        CityRequestDTOValidator.INSTANCE.validateCityRequestDTO(
                                 cityRequestDTO.name(), cityRequestDTO.state(), cityRequestDTO.country())
-                            .map(CITY_REQUEST_MAPPER::toModel)
-                            .map(it ->
-                                CREATE_CITY_API.execute(it)
+                            .map(CityRequestMapper.INSTANCE::toModel)
+                            .map(iCity ->
+                                CreateCityAPI.INSTANCE.execute(iCity)
                                     .apply(appScopedDependencyLocator))
                             .fold(
                                 validationErrorMessages -> {
@@ -85,15 +67,14 @@ public final class CityCriticalRestAPIAdapter {
                                     missingCityDbCriticalServiceErrorICityEither
                                         .fold(
                                             missingCityDbSPICriticalServiceError ->
-                                                ServerResponse.status(
-                                                        HttpStatus.FAILED_DEPENDENCY)
+                                                ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
                                                     .body(
                                                         missingCityDbSPICriticalServiceError.getMessage()),
                                             iCity -> {
                                                 logger.info("A new city is created");
                                                 return ServerResponse.status(HttpStatus.CREATED)
                                                     .contentType(MediaType.APPLICATION_JSON)
-                                                    .body(CITY_RESPONSE_MAPPER.toDto(iCity));
+                                                    .body(CityResponseMapper.INSTANCE.toDto(iCity));
                                             }
                                         )
                             )
@@ -104,19 +85,21 @@ public final class CityCriticalRestAPIAdapter {
      * @return HTTP Response with all cities fetched from the database
      */
     public Reader<AppScopedDependencyLocator, ServerResponse> findCities() {
-        logger.info("All cities were found");
         return appScopedDependencyLocator ->
-            FIND_CITIES_API.execute()
+            FindCitiesAPI.INSTANCE.execute()
                 .apply(appScopedDependencyLocator)
                 .fold(missingCityDbCriticalServiceError ->
                         ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
                             .body(
                                 missingCityDbCriticalServiceError.getMessage()),
-                    iCityList -> ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(iCityList.stream()
-                            .map(CITY_RESPONSE_MAPPER::toDto)
-                            .toList())
+                    iCityList -> {
+                        logger.info("All cities were found");
+                        return ServerResponse.ok()
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .body(iCityList.stream()
+                                .map(CityResponseMapper.INSTANCE::toDto)
+                                .toList());
+                    }
                 );
     }
 
@@ -128,9 +111,9 @@ public final class CityCriticalRestAPIAdapter {
         ServerRequest request) {
         String id = request.pathVariable("id");
         return appScopedDependencyLocator ->
-            CITY_CRITERIA_VALIDATOR.validateCityCriteria(Long.parseLong(id))
+            CityCriteriaValidator.INSTANCE.validateCityCriteria(Long.parseLong(id))
                 .map(it ->
-                    FIND_CITY_BY_ID_API.execute(it)
+                    FindCityByIdAPI.INSTANCE.execute(it)
                         .apply(appScopedDependencyLocator))
                 .fold(
                     validationErrorMessage -> {
@@ -156,19 +139,19 @@ public final class CityCriticalRestAPIAdapter {
                                 logger.info("A city with id {} is found", id);
                                 return ServerResponse.ok()
                                     .contentType(MediaType.APPLICATION_JSON)
-                                    .body(CITY_RESPONSE_MAPPER.toDto(iCity));
+                                    .body(CityResponseMapper.INSTANCE.toDto(iCity));
                             }
                         )
                 );
     }
 
     public Reader<AppScopedDependencyLocator, ServerResponse> downloadCityPdfReport() {
-        return appScopedSecretLocator ->
+        return __ ->
             ServerResponse.ok()
                 .headers(httpHeaders ->
                     httpHeaders.add("content-disposition",
                         "attachment; filename=%s".formatted("cityReport.pdf")))
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new ByteArrayResource(CREATE_PDF_UTIL.createPdf()));
+                .body(new ByteArrayResource(CreatePdfUtil.INSTANCE.createPdf()));
     }
 }

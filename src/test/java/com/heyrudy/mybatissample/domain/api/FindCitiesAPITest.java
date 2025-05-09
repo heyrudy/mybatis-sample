@@ -5,29 +5,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.gateway.config.TestConfig;
+import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import io.vavr.control.Either;
 import java.util.List;
 import org.assertj.vavr.api.VavrAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Import;
 
-@Import(TestConfig.class)
 class FindCitiesAPITest {
 
-    AppScopedDependencyLocator mockedAppScopedDependencyLocator;
-
-    private final CreateCityAPI createCityAPI = CreateCityAPI.INSTANCE;
     private final FindCitiesAPI findCitiesAPIInstanceUnderTest = FindCitiesAPI.INSTANCE;
-
-    @BeforeEach
-    void setUp() {
-        // Initialize all mocks in setup
-        mockedAppScopedDependencyLocator = new TestConfig.SpringTestAppScopedDependencyLocator();
-    }
 
     @Test
     @DisplayName("fetch all cities details from database")
@@ -39,13 +26,15 @@ class FindCitiesAPITest {
             .name("Paris")
             .country("France")
             .state("Paris75").build();
-        createCityAPI.execute(cityZero).apply(mockedAppScopedDependencyLocator);
-        createCityAPI.execute(cityOne).apply(mockedAppScopedDependencyLocator);
+        CreateCityAPI.INSTANCE.execute(cityZero)
+            .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
+        CreateCityAPI.INSTANCE.execute(cityOne)
+            .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test
         Either<CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>> actual =
             findCitiesAPIInstanceUnderTest.execute()
-                .apply(mockedAppScopedDependencyLocator);
+                .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ASSERT - verify the result or output using assert statements
         VavrAssertions.assertThat(actual)

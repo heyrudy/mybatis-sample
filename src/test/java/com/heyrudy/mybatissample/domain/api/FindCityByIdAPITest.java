@@ -6,28 +6,15 @@ import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
-import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.gateway.config.TestConfig;
+import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Import;
 
-@Import(TestConfig.class)
 class FindCityByIdAPITest {
 
-    AppScopedDependencyLocator mockedAppScopedDependencyLocator;
-
-    private final CreateCityAPI createCityAPI = CreateCityAPI.INSTANCE;
     private final FindCityByIdAPI findCityByIdAPIInstanceUnderTest = FindCityByIdAPI.INSTANCE;
-
-    @BeforeEach
-    void setUp() {
-        // Initialize all mocks in setup
-        mockedAppScopedDependencyLocator = new TestConfig.SpringTestAppScopedDependencyLocator();
-    }
 
     @Test
     @DisplayName("fetch city details by id from database")
@@ -38,13 +25,14 @@ class FindCityByIdAPITest {
             .name("Paris")
             .state("Paris75")
             .country("France").build();
-        createCityAPI.execute(expectedCity).apply(mockedAppScopedDependencyLocator);
+        CreateCityAPI.INSTANCE.execute(expectedCity)
+            .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test
         Either<CityNotFoundError, ICity> actual =
             findCityByIdAPIInstanceUnderTest.execute(
                     CityCriteriaDetails.builder().cityId(cityId).build())
-                .apply(mockedAppScopedDependencyLocator);
+                .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ASSERT - verify the result or output using assert statements
         VavrAssertions.assertThat(actual)

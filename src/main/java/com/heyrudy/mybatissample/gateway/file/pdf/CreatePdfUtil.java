@@ -9,13 +9,8 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
-public class CreatePdfUtil {
-
-    public static final CreatePdfUtil INSTANCE = new CreatePdfUtil();
-
-    private CreatePdfUtil() {
-        super();
-    }
+public enum CreatePdfUtil {
+    INSTANCE;
 
     public byte[] createPdf() {
         try (PDDocument pdfDoc = new PDDocument()) {

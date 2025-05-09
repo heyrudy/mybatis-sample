@@ -34,9 +34,6 @@ public class CityRouterConfig {
 //    public static final Logger logger = LoggerFactory.getLogger(RouterConfig.class);
 //    private static final String SECRET_KEY = "your-secret-key"; // Use a secure method in production
 
-    public static final CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER =
-        CityCriticalRestAPIAdapter.INSTANCE;
-
     private final AppScopedDependencyLocator appScopedDependencyLocator;
 
     public CityRouterConfig(AppScopedDependencyLocator appScopedDependencyLocator) {
@@ -48,19 +45,19 @@ public class CityRouterConfig {
         return RouterFunctions.route()
             .POST("api/v1/cities",
                 request ->
-                    CITY_CRITICAL_REST_API_ADAPTER.createCity(request)
+                    CityCriticalRestAPIAdapter.INSTANCE.createCity(request)
                         .apply(appScopedDependencyLocator))
             .GET("api/v1/cities",
                 request ->
-                    CITY_CRITICAL_REST_API_ADAPTER.findCities()
+                    CityCriticalRestAPIAdapter.INSTANCE.findCities()
                         .apply(appScopedDependencyLocator))
             .GET("api/v1/cities/{cityId}",
                 request ->
-                    CITY_CRITICAL_REST_API_ADAPTER.findCityById(request)
+                    CityCriticalRestAPIAdapter.INSTANCE.findCityById(request)
                         .apply(appScopedDependencyLocator))
             .GET("api/v1/cities/download",
                 request ->
-                    CITY_CRITICAL_REST_API_ADAPTER.downloadCityPdfReport()
+                    CityCriticalRestAPIAdapter.INSTANCE.downloadCityPdfReport()
                         .apply(appScopedDependencyLocator))
             .build();
     }

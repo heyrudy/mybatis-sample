@@ -1,11 +1,11 @@
-package com.heyrudy.mybatissample.gateway.db.spring.relational.repository;
+package com.heyrudy.mybatissample.gateway.db.relational.repository;
 
+import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
-import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.List;
@@ -15,7 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
-public class MockedCityRepository implements ICityRepository {
+public enum MockedCityRepository
+    implements ICityRepository {
+    INSTANCE;
 
     private final static Map<Long, ICity> IN_MEMORY_DB = new ConcurrentHashMap<>();
 

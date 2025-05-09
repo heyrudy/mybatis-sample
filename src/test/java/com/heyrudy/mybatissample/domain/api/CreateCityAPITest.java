@@ -3,27 +3,15 @@ package com.heyrudy.mybatissample.domain.api;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.gateway.config.TestConfig;
+import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Import;
 
-@Import(TestConfig.class)
 class CreateCityAPITest {
 
-    AppScopedDependencyLocator mockedAppScopedDependencyLocator;
-
     private final CreateCityAPI createCityAPIInstanceUnderTest = CreateCityAPI.INSTANCE;
-
-    @BeforeEach
-    void setUp() {
-        // Initialize all mocks in setup
-        mockedAppScopedDependencyLocator = new TestConfig.SpringTestAppScopedDependencyLocator();
-    }
 
     @Test
     @DisplayName("insert a new city details into database")
@@ -37,7 +25,7 @@ class CreateCityAPITest {
         // ACT - action or behavior that we are going to test
         Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity> actual =
             createCityAPIInstanceUnderTest.execute(cityToSave)
-                .apply(mockedAppScopedDependencyLocator);
+                .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ASSERT - verify the result or output using assert statements
         VavrAssertions.assertThat(actual)
