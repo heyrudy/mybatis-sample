@@ -3,6 +3,7 @@ package com.heyrudy.mybatissample.context;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;
+import java.util.concurrent.ThreadFactory;
 
 public class HikariConfigBuilder {
 
@@ -53,6 +54,11 @@ public class HikariConfigBuilder {
 
     public HikariConfigBuilder withPoolName(String poolName) {
         config.setPoolName(poolName);
+        return this;
+    }
+
+    public HikariConfigBuilder withThreadFactory(ThreadFactory threadFactory) {
+        config.setThreadFactory(threadFactory);
         return this;
     }
 

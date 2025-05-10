@@ -5,9 +5,11 @@ import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyErr
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.Arrays;
+import java.util.concurrent.Executors;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.jooq.impl.DefaultConfiguration;
 
 public enum CriticalDSLContextKey
     implements CriticalConfigKey<DSLContext> {
@@ -23,26 +25,33 @@ public enum CriticalDSLContextKey
                             AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
                                 .formatted(INSTANCE))),
                     iDbSecretProperties ->
-                        Either.right(DSL.using(
-                            HikariConfigBuilder.create()
+                        Either.right(DSL.using(new DefaultConfiguration()
+                            .set(HikariConfigBuilder.create()
                                 // Database connection properties
                                 .withJdbcUrl(iDbSecretProperties.getJdbcUrl())
                                 .withUsername(iDbSecretProperties.username())
                                 .withPassword(Arrays.toString(iDbSecretProperties.password()))
-                                // Connection pool settings
-                                .withMaximumPoolSize(10)
-                                .withMinimumIdle(2)
-                                .withIdleTimeout(30000)
-                                .withConnectionTimeout(10000)
-                                .withPoolName("CityDbPool")
+                                // Dynamic connection pool sizing based on available processors
+                                .withMaximumPoolSize(
+                                    Math.max(10, Runtime.getRuntime().availableProcessors() * 2))
+                                .withMinimumIdle(
+                                    Math.max(2, Runtime.getRuntime().availableProcessors() / 2))
+                                .withIdleTimeout(20000)
+                                .withConnectionTimeout(5000)
+                                .withPoolName("OptimizedDbPool")
+                                // Performance optimization
+                                .withThreadFactory(Thread.ofVirtual()
+                                    .name("hikari-virtual-", 0)
+                                    .factory())
+                                .withDataSourceProperty("cachePrepStmts", "true")
+                                .withDataSourceProperty("prepStmtCacheSize", "350")
+                                .withDataSourceProperty("prepStmtCacheSqlLimit", "4096")
                                 // Optional: connection test query
                                 .withConnectionTestQuery("SELECT 1")
-                                // Performance optimization
-                                .withDataSourceProperty("cachePrepStmts", "true")
-                                .withDataSourceProperty("prepStmtCacheSize", "250")
-                                .withDataSourceProperty("prepStmtCacheSqlLimit", "2048")
-                                .buildDataSource(),
-                            SQLDialect.POSTGRES))));
+                                .withDataSourceProperty("autoReconnect", "true")
+                                .buildDataSource())  // Your HikariCP or other DataSource
+                            .set(SQLDialect.POSTGRES)
+                            .set(Executors.newVirtualThreadPerTaskExecutor())))));
     }
 
     @Override
