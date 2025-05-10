@@ -33,7 +33,7 @@ public class TestConfig {
 //        }
 
         @Override
-        public <T> T getBeanOrMock(Class<T> beanClass, Option<Supplier<T>> fallback) {
+        public <T> T getDependencyOrMock(Class<T> beanClass, Option<Supplier<T>> fallback) {
 //            return applicationContext.getBeanProvider(beanClass).getObject();
             return fallback.map(Supplier::get).getOrNull();
         }

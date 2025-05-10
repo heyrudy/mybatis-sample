@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 public non-sealed interface AppScopedDependencyLocator
     extends Environment {
 
-    <T> T getBeanOrMock(Class<T> beanClass, Option<Supplier<T>> fallback);
+    <T> T getDependencyOrMock(Class<T> beanClass, Option<Supplier<T>> fallback);
 
     class ErrorMessage {
 

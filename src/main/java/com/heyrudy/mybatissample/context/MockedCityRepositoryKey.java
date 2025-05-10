@@ -2,22 +2,22 @@ package com.heyrudy.mybatissample.context;
 
 import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
-import com.heyrudy.mybatissample.gateway.db.relational.repository.CityRepository;
+import com.heyrudy.mybatissample.gateway.db.relational.repository.MockedCityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 
-public enum CityRepositoryKey
+public enum MockedCityRepositoryKey
     implements CriticalRepositoryKey<ICityRepository> {
     INSTANCE;
 
     @Override
     public Reader<AppScopedDependencyLocator, Either<? extends MissingCriticalDependencyError, ICityRepository>> describeDependencyContext() {
         return __ ->
-            Either.right(CityRepository.INSTANCE);
+            Either.right(MockedCityRepository.INSTANCE);
     }
 
     @Override
     public String toString() {
-        return "CityRepositoryKey{}";
+        return "MockedCityRepositoryKey{}";
     }
 }

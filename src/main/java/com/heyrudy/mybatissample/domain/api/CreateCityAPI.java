@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.domain.api;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.context.CityRepositoryKey;
+import com.heyrudy.mybatissample.context.MockedCityRepositoryKey;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
@@ -34,7 +34,7 @@ public enum CreateCityAPI {
             saveWithRepository = iCityRepository ->
             iCityRepository.save(iCity).map(either -> either.mapLeft(mapSaveError));
         // Compose operations with flatMap to explicitly avoid apply
-        return CityRepositoryKey.INSTANCE.describeDependencyContext()
+        return MockedCityRepositoryKey.INSTANCE.describeDependencyContext()
             .map(iCityRepositoryEither ->
                 iCityRepositoryEither.mapLeft(mapDependencyError))
             .flatMap(criticalRepositoryNotFoundByDependencyLocatorErrorICityRepositoryEither ->

@@ -17,13 +17,13 @@ public enum CriticalDSLContextKey
     public Reader<AppScopedDependencyLocator, Either<? extends MissingCriticalDependencyError, DSLContext>> describeDependencyContext() {
         return CriticalDbSecretPropertiesKey.INSTANCE.describeDependencyContext()
             .map(missingCriticalDependencyErrorIDbSecretPropertiesEither ->
-                missingCriticalDependencyErrorIDbSecretPropertiesEither
-                    .mapLeft(__ ->
-                        new CriticalDSLContextNotFoundByDependencyLocatorError(
+                missingCriticalDependencyErrorIDbSecretPropertiesEither.fold(
+                    __ ->
+                        Either.left(new CriticalDSLContextNotFoundByDependencyLocatorError(
                             AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
-                                .formatted(INSTANCE)))
-                    .map(iDbSecretProperties ->
-                        DSL.using(
+                                .formatted(INSTANCE))),
+                    iDbSecretProperties ->
+                        Either.right(DSL.using(
                             HikariConfigBuilder.create()
                                 // Database connection properties
                                 .withJdbcUrl(iDbSecretProperties.getJdbcUrl())
@@ -42,7 +42,7 @@ public enum CriticalDSLContextKey
                                 .withDataSourceProperty("prepStmtCacheSize", "250")
                                 .withDataSourceProperty("prepStmtCacheSqlLimit", "2048")
                                 .buildDataSource(),
-                            SQLDialect.POSTGRES)));
+                            SQLDialect.POSTGRES))));
     }
 
     @Override
