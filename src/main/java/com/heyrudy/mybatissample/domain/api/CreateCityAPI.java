@@ -14,31 +14,29 @@ import java.util.function.Function;
 public enum CreateCityAPI {
     INSTANCE;
 
+    // Define error mapping functions
+    public static final Function<MissingCriticalDependencyError, CriticalRepositoryNotFoundByDependencyLocatorError> MAP_DEPENDENCY_ERROR = missingCriticalDependencyError ->
+        new CriticalRepositoryNotFoundByDependencyLocatorError(
+            missingCriticalDependencyError.getMessage());
+    public static final Function<CityNotSavedByRepositoryError, CriticalRepositoryNotFoundByDependencyLocatorError> MAP_SAVE_ERROR = cityNotSavedByRepositoryError ->
+        new CriticalRepositoryNotFoundByDependencyLocatorError(
+            cityNotSavedByRepositoryError.getMessage());
+    // A reader that always returns a specific error value
+    public static final Function<CriticalRepositoryNotFoundByDependencyLocatorError, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>> CONSTANT_REPOSITORY_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR_READER = criticalRepositoryNotFoundByDependencyLocatorError ->
+        __ -> Either.left(criticalRepositoryNotFoundByDependencyLocatorError);
+
     public Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>> execute(
         final ICity iCity) {
-        // Define error mapping functions
-        Function<MissingCriticalDependencyError, CriticalRepositoryNotFoundByDependencyLocatorError> mapDependencyError =
-            missingCriticalDependencyError ->
-                new CriticalRepositoryNotFoundByDependencyLocatorError(
-                    missingCriticalDependencyError.getMessage());
-        Function<CityNotSavedByRepositoryError, CriticalRepositoryNotFoundByDependencyLocatorError> mapSaveError =
-            cityNotSavedByRepositoryError ->
-                new CriticalRepositoryNotFoundByDependencyLocatorError(
-                    cityNotSavedByRepositoryError.getMessage());
-        // A reader that always returns a specific error value
-        Function<CriticalRepositoryNotFoundByDependencyLocatorError, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>>
-            constantErrorReader = criticalRepositoryNotFoundByDependencyLocatorError ->
-            __ -> Either.left(criticalRepositoryNotFoundByDependencyLocatorError);
-        // Function to convert a repository into a save operation
         Function<ICityRepository, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>>
             saveWithRepository = iCityRepository ->
-            iCityRepository.save(iCity).map(either -> either.mapLeft(mapSaveError));
+            iCityRepository.save(iCity).map(either -> either.mapLeft(MAP_SAVE_ERROR));
         // Compose operations with flatMap to explicitly avoid apply
         return MockedCityRepositoryKey.INSTANCE.describeDependencyContext()
             .map(iCityRepositoryEither ->
-                iCityRepositoryEither.mapLeft(mapDependencyError))
+                iCityRepositoryEither.mapLeft(MAP_DEPENDENCY_ERROR))
             .flatMap(criticalRepositoryNotFoundByDependencyLocatorErrorICityRepositoryEither ->
                 criticalRepositoryNotFoundByDependencyLocatorErrorICityRepositoryEither.fold(
-                    constantErrorReader, saveWithRepository));
+                    CONSTANT_REPOSITORY_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR_READER,
+                    saveWithRepository));
     }
 }

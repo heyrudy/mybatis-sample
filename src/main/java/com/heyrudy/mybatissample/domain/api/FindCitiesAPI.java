@@ -15,33 +15,30 @@ import java.util.function.Function;
 public enum FindCitiesAPI {
     INSTANCE;
 
+    // Define error mapping functions
+    public static final Function<MissingCriticalDependencyError, CriticalRepositoryNotFoundByDependencyLocatorError> MAP_DEPENDENCY_ERROR = missingCriticalDependencyError ->
+        new CriticalRepositoryNotFoundByDependencyLocatorError(
+            missingCriticalDependencyError.getMessage());
+    public static final Function<CriticalDSLContextNotFoundByDependencyLocatorError, CriticalRepositoryNotFoundByDependencyLocatorError> MAP_DSL_ERROR = criticalDSLContextNotFoundByDependencyLocatorError ->
+        new CriticalRepositoryNotFoundByDependencyLocatorError(
+            criticalDSLContextNotFoundByDependencyLocatorError.getMessage());
+    // A reader that always returns a specific error value
+    public static final Function<CriticalRepositoryNotFoundByDependencyLocatorError, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>>>> CONSTANT_REPOSITORY_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR_READER = criticalRepositoryNotFoundByDependencyLocatorError ->
+        __ -> Either.left(criticalRepositoryNotFoundByDependencyLocatorError);
+    public static final Function<ICityRepository, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>>>> FIND_ALL_WITH_REPOSITORY = iCityRepository ->
+        iCityRepository.findAll()
+            .map(criticalDSLContextNotFoundByDependencyLocatorErrorListEither ->
+                criticalDSLContextNotFoundByDependencyLocatorErrorListEither.mapLeft(
+                    MAP_DSL_ERROR));
+
     public Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>>> execute() {
-        // Define error mapping functions
-        Function<MissingCriticalDependencyError, CriticalRepositoryNotFoundByDependencyLocatorError> mapDependencyError =
-            missingCriticalDependencyError ->
-                new CriticalRepositoryNotFoundByDependencyLocatorError(
-                    missingCriticalDependencyError.getMessage());
-        Function<CriticalDSLContextNotFoundByDependencyLocatorError, CriticalRepositoryNotFoundByDependencyLocatorError> mapDSLError =
-            criticalDSLContextNotFoundByDependencyLocatorError ->
-                new CriticalRepositoryNotFoundByDependencyLocatorError(
-                    criticalDSLContextNotFoundByDependencyLocatorError.getMessage());
-        // A reader that always returns a specific error value
-        Function<CriticalRepositoryNotFoundByDependencyLocatorError, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>>>>
-            constantErrorReader = criticalRepositoryNotFoundByDependencyLocatorError ->
-            __ -> Either.left(criticalRepositoryNotFoundByDependencyLocatorError);
-        // Function to convert a repository to a findAll operation
-        Function<ICityRepository, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>>>>
-            findAllWithRepository = iCityRepository ->
-            iCityRepository.findAll()
-                .map(criticalDSLContextNotFoundByDependencyLocatorErrorListEither ->
-                    criticalDSLContextNotFoundByDependencyLocatorErrorListEither.mapLeft(
-                        mapDSLError));
         // Compose operations with flatMap to explicitly avoid apply
         return MockedCityRepositoryKey.INSTANCE.describeDependencyContext()
             .map(iCityRepositoryEither ->
-                iCityRepositoryEither.mapLeft(mapDependencyError))
+                iCityRepositoryEither.mapLeft(MAP_DEPENDENCY_ERROR))
             .flatMap(criticalRepositoryNotFoundByDependencyLocatorErrorICityRepositoryEither ->
                 criticalRepositoryNotFoundByDependencyLocatorErrorICityRepositoryEither.fold(
-                    constantErrorReader, findAllWithRepository));
+                    CONSTANT_REPOSITORY_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR_READER,
+                    FIND_ALL_WITH_REPOSITORY));
     }
 }
