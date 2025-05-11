@@ -8,9 +8,9 @@ import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundBy
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
+import io.vavr.control.Option;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
@@ -40,10 +40,10 @@ public enum MockedCityRepository
     }
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Optional<ICity>>> findById(
+    public Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Option<ICity>>> findById(
         long id) {
         return __ ->
-            Either.right(Optional.ofNullable(IN_MEMORY_DB.get(id)));
+            Either.right(Option.of(IN_MEMORY_DB.get(id)));
     }
 
     /**

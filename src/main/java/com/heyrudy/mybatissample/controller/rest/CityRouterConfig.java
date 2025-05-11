@@ -57,8 +57,7 @@ public class CityRouterConfig {
                         .apply(appScopedDependencyLocator))
             .GET("api/v1/cities/download",
                 request ->
-                    CityCriticalRestAPIAdapter.INSTANCE.downloadCityPdfReport()
-                        .apply(appScopedDependencyLocator))
+                    CityCriticalRestAPIAdapter.INSTANCE.downloadCityPdfReport())
             .build();
     }
 

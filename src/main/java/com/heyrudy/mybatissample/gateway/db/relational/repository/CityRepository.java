@@ -44,13 +44,32 @@ public enum CityRepository
             .orElse(null);
     }
 
+    private static final CriticalDSLContextKey CRITICAL_DSL_CONTEXT_KEY = CriticalDSLContextKey.INSTANCE;
+    // Define error mapping function
+    private static final Function<MissingCriticalDependencyError, CityNotSavedByRepositoryError> MISSING_CRITICAL_DEPENDENCY_ERROR_CITY_NOT_SAVED_BY_REPOSITORY_ERROR =
+        missingCriticalDependencyError ->
+            new CityNotSavedByRepositoryError(missingCriticalDependencyError.getMessage());
+    private static final Function<MissingCriticalDependencyError, CriticalDSLContextNotFoundByDependencyLocatorError> MISSING_CRITICAL_DEPENDENCY_ERROR_CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR =
+        missingCriticalDependencyError ->
+            new CriticalDSLContextNotFoundByDependencyLocatorError(
+                missingCriticalDependencyError.getMessage());
+    private static final Function<MissingCriticalDependencyError, CityNotFoundByRepositoryError> MISSING_CRITICAL_DEPENDENCY_ERROR_CITY_NOT_FOUND_BY_REPOSITORY_ERROR =
+        missingCriticalDependencyError ->
+            new CityNotFoundByRepositoryError(missingCriticalDependencyError.getMessage());
+    // A reader that always returns a specific error value
+    private static final Function<CityNotFoundByRepositoryError, Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Option<ICity>>>> CONSTANT_CITY_NOT_FOUND_BY_REPOSITORY_ERROR_READER =
+        cityNotFoundByRepositoryError ->
+            __ -> Either.left(cityNotFoundByRepositoryError);
+    private static final Function<CityNotSavedByRepositoryError, Reader<AppScopedDependencyLocator, Either<CityNotSavedByRepositoryError, ICity>>> CONSTANT_CITY_NOT_SAVED_BY_REPOSITORY_ERROR_READER =
+        cityNotSavedByRepositoryError ->
+            __ -> Either.left(cityNotSavedByRepositoryError);
+    private static final Function<CriticalDSLContextNotFoundByDependencyLocatorError, Reader<AppScopedDependencyLocator, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>>> CONSTANT_CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR_READER =
+        criticalDSLContextNotFoundByDependencyLocatorError ->
+            __ -> Either.left(criticalDSLContextNotFoundByDependencyLocatorError);
+
     @Override
     public Reader<AppScopedDependencyLocator, Either<CityNotSavedByRepositoryError, ICity>> save(
         ICity iCity) {
-        // Define error mapping function
-        Function<MissingCriticalDependencyError, CityNotSavedByRepositoryError> mapDependencyError =
-            missingCriticalDependencyError ->
-                new CityNotSavedByRepositoryError(missingCriticalDependencyError.getMessage());
         // Function that transforms a DSLContext into a Reader that produces the city insertion result
         // Perform the insert operation
         // Convert the result to Either
@@ -64,26 +83,18 @@ public enum CityRepository
                     .toEither(new CityNotSavedByRepositoryError(
                         "Failed to insert city: No record returned"))
                     .map(CityRepository::mapRecord);
-        // A reader that always returns a specific error value
-        Function<CityNotSavedByRepositoryError, Reader<AppScopedDependencyLocator, Either<CityNotSavedByRepositoryError, ICity>>>
-            constantErrorReader = cityNotSavedByRepositoryError ->
-            __ -> Either.left(cityNotSavedByRepositoryError);
         // Compose operations with flatMap to explicitly avoid apply
-        return CriticalDSLContextKey.INSTANCE.describeDependencyContext()
+        return CRITICAL_DSL_CONTEXT_KEY.describeDependencyContext()
             .map(dslContextEither ->
-                dslContextEither.mapLeft(mapDependencyError))
+                dslContextEither.mapLeft(
+                    MISSING_CRITICAL_DEPENDENCY_ERROR_CITY_NOT_SAVED_BY_REPOSITORY_ERROR))
             .flatMap(cityNotSavedByRepositoryErrorDSLContextEither ->
                 cityNotSavedByRepositoryErrorDSLContextEither.fold(
-                    constantErrorReader, dslContextToReader));
+                    CONSTANT_CITY_NOT_SAVED_BY_REPOSITORY_ERROR_READER, dslContextToReader));
     }
 
     @Override
     public Reader<AppScopedDependencyLocator, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>> findAll() {
-        // Define error mapping function
-        Function<MissingCriticalDependencyError, CriticalDSLContextNotFoundByDependencyLocatorError> mapDependencyError =
-            missingCriticalDependencyError ->
-                new CriticalDSLContextNotFoundByDependencyLocatorError(
-                    missingCriticalDependencyError.getMessage());
         // Function that transforms a DSLContext into a Reader that produces the cities lookup result
         // Perform the findAll operation
         // Convert the result to Either
@@ -95,29 +106,24 @@ public enum CityRepository
                     .stream()
                     .map(CityRepository::mapRecord)
                     .toList());
-        // A reader that always returns a specific error value
-        Function<CriticalDSLContextNotFoundByDependencyLocatorError, Reader<AppScopedDependencyLocator, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>>>
-            constantErrorReader = criticalDSLContextNotFoundByDependencyLocatorError ->
-            __ -> Either.left(criticalDSLContextNotFoundByDependencyLocatorError);
         // Compose operations with flatMap to explicitly avoid apply
-        return CriticalDSLContextKey.INSTANCE.describeDependencyContext()
+        return CRITICAL_DSL_CONTEXT_KEY.describeDependencyContext()
             .map(dslContextEither ->
-                dslContextEither.mapLeft(mapDependencyError))
+                dslContextEither.mapLeft(
+                    MISSING_CRITICAL_DEPENDENCY_ERROR_CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR))
             .flatMap(criticalDSLContextNotFoundByDependencyLocatorErrorDSLContextEither ->
                 criticalDSLContextNotFoundByDependencyLocatorErrorDSLContextEither.fold(
-                    constantErrorReader, dslContextToReader));
+                    CONSTANT_CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR_READER,
+                    dslContextToReader));
     }
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Optional<ICity>>> findById(
+    public Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Option<ICity>>> findById(
         long id) {
-        Function<MissingCriticalDependencyError, CityNotFoundByRepositoryError> mapDependencyError =
-            missingCriticalDependencyError ->
-                new CityNotFoundByRepositoryError(missingCriticalDependencyError.getMessage());
         // Function that transforms a DSLContext into a Reader that produces the cities lookup result
         // Perform the findAll operation
         // Convert the result to Either
-        Function<DSLContext, Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Optional<ICity>>>> dslContextToReader =
+        Function<DSLContext, Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Option<ICity>>>> dslContextToReader =
             dslContext ->
                 __ -> Option.of(dslContext.select(ID, NAME, STATE, COUNTRY)
                         .from(CITIES)
@@ -127,17 +133,14 @@ public enum CityRepository
                     .fold(
                         () -> Either.left(new CityNotFoundByRepositoryError(
                             "Failed to retrieve city with ID %d".formatted(id))),
-                        iCity -> Either.right(Optional.of(iCity)));
-        // A reader that always returns a specific error value
-        Function<CityNotFoundByRepositoryError, Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Optional<ICity>>>>
-            constantErrorReader = cityNotFoundByRepositoryError ->
-            __ -> Either.left(cityNotFoundByRepositoryError);
+                        iCity -> Either.right(Option.of(iCity)));
         // Compose operations with flatMap to explicitly avoid apply
-        return CriticalDSLContextKey.INSTANCE.describeDependencyContext()
+        return CRITICAL_DSL_CONTEXT_KEY.describeDependencyContext()
             .map(dslContextEither ->
-                dslContextEither.mapLeft(mapDependencyError))
+                dslContextEither.mapLeft(
+                    MISSING_CRITICAL_DEPENDENCY_ERROR_CITY_NOT_FOUND_BY_REPOSITORY_ERROR))
             .flatMap(cityNotFoundByRepositoryErrorDSLContextEither ->
                 cityNotFoundByRepositoryErrorDSLContextEither.fold(
-                    constantErrorReader, dslContextToReader));
+                    CONSTANT_CITY_NOT_FOUND_BY_REPOSITORY_ERROR_READER, dslContextToReader));
     }
 }

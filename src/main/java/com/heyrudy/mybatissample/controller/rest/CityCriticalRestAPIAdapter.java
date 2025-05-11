@@ -13,6 +13,8 @@ import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
+import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError.SuccessMessage;
+import com.heyrudy.mybatissample.domain.model.error.CityNotSavedError;
 import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
 import cyclops.control.Reader;
@@ -35,23 +37,31 @@ public enum CityCriticalRestAPIAdapter {
 
     public static final Logger logger = LoggerFactory.getLogger(CityCriticalRestAPIAdapter.class);
 
+    private static final CityRequestDTOValidator CITY_REQUEST_DTO_VALIDATOR = CityRequestDTOValidator.INSTANCE;
+    private static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR = CityCriteriaValidator.INSTANCE;
+    private static final CityRequestMapper CITY_REQUEST_MAPPER = CityRequestMapper.INSTANCE;
+    private static final CityResponseMapper CITY_RESPONSE_MAPPER = CityResponseMapper.INSTANCE;
+    private static final CreateCityAPI CREATE_CITY_API = CreateCityAPI.INSTANCE;
+    private static final FindCityByIdAPI FIND_CITY_BY_ID_API = FindCityByIdAPI.INSTANCE;
+    private static final FindCitiesAPI FIND_CITIES_API = FindCitiesAPI.INSTANCE;
+    private static final CreatePdfUtil CREATE_PDF_UTIL = CreatePdfUtil.INSTANCE;
     // A reader that always returns a specific error value
-    public static final Function<String, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>> CONSTANT_REPOSITORY_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR_READER =
+    private static final Function<String, Reader<AppScopedDependencyLocator, Either<CityNotSavedError, ICity>>> CONSTANT_CITY_NOY_SAVED_ERROR_READER =
         errMsg ->
             __ -> Either.left(
-                new CriticalRepositoryNotFoundByDependencyLocatorError(errMsg));
-    public static final Function<String, Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>>> CONSTANT_CITY_NOY_FOUND_ERROR_READER =
+                new CityNotSavedError(errMsg));
+    private static final Function<String, Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>>> CONSTANT_CITY_NOY_FOUND_ERROR_READER =
         errMsg ->
             __ -> Either.left(new CityNotFoundError(errMsg));
-    public static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>>> EITHER_FAILED_VALIDATION_OR_FIND_CITY_BY_ID =
+    private static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>>> EITHER_FAILED_VALIDATION_OR_FIND_CITY_BY_ID =
         stringCityCriteriaDetailsValidation ->
             stringCityCriteriaDetailsValidation.fold(
-                CONSTANT_CITY_NOY_FOUND_ERROR_READER, FindCityByIdAPI.INSTANCE::execute);
+                CONSTANT_CITY_NOY_FOUND_ERROR_READER, FIND_CITY_BY_ID_API::execute);
     // Define a function to validate a DTO
-    public static final Function<CityRequestDTO, Either<String, CityRequestDTO>> VALIDATE_DTO =
+    private static final Function<CityRequestDTO, Either<String, CityRequestDTO>> VALIDATE_DTO =
         cityRequestDTO -> {
             Validation<Seq<String>, CityRequestDTO> cityRequestDTOValidation =
-                CityRequestDTOValidator.INSTANCE.validateCityRequestDTO(
+                CITY_REQUEST_DTO_VALIDATOR.validateCityRequestDTO(
                     cityRequestDTO.name(), cityRequestDTO.state(), cityRequestDTO.country());
             return cityRequestDTOValidation.isValid()
                 ? Either.right(cityRequestDTO)
@@ -59,17 +69,15 @@ public enum CityCriticalRestAPIAdapter {
                     String.valueOf(cityRequestDTOValidation.toStream()
                         .reduce((a, b) -> a.equals(b) ? a : b)));
         };
-    public static final Function<Either<String, CityRequestDTO>, Either<String, CityRequestDTO>> VALIDATE_PARSED_CITY_POST_REQUEST_BODY =
+    private static final Function<Either<String, CityRequestDTO>, Either<String, CityRequestDTO>> VALIDATE_PARSED_CITY_POST_REQUEST_BODY =
         parsedBodyEither -> parsedBodyEither.flatMap(VALIDATE_DTO);
     // Define function to transform DTO to model and execute create operation
-    public static final Function<CityRequestDTO, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>> DTO_TO_CREATE_CITY =
+    private static final Function<CityRequestDTO, Reader<AppScopedDependencyLocator, Either<CityNotSavedError, ICity>>> DTO_TO_CREATE_CITY =
         cityRequestDTO ->
-            CreateCityAPI.INSTANCE.execute(CityRequestMapper.INSTANCE.toModel(cityRequestDTO));
-    public static final Function<Either<String, CityRequestDTO>, Reader<AppScopedDependencyLocator, Either<CriticalRepositoryNotFoundByDependencyLocatorError, ICity>>> EITHER_REPOSITORY_NOT_FOUND_ERROR_OR_CREATE_CITY_READER =
+            CREATE_CITY_API.execute(CITY_REQUEST_MAPPER.toModel(cityRequestDTO));
+    private static final Function<Either<String, CityRequestDTO>, Reader<AppScopedDependencyLocator, Either<CityNotSavedError, ICity>>> EITHER_REPOSITORY_NOT_FOUND_ERROR_OR_CREATE_CITY_READER =
         validatedDtoEither ->
-            validatedDtoEither.fold(
-                CONSTANT_REPOSITORY_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR_READER,
-                DTO_TO_CREATE_CITY);
+            validatedDtoEither.fold(CONSTANT_CITY_NOY_SAVED_ERROR_READER, DTO_TO_CREATE_CITY);
 
     /**
      * @param request city with all its details to persist in the database
@@ -82,15 +90,15 @@ public enum CityCriticalRestAPIAdapter {
                 Try.of(() -> request.body(CityRequestDTO.class))
                     .toEither()
                     .mapLeft(Throwable::getMessage);
-        Function<CriticalRepositoryNotFoundByDependencyLocatorError, ServerResponse> createErrorResponse =
-            criticalRepositoryNotFoundByDependencyLocatorError ->
+        Function<CityNotSavedError, ServerResponse> createErrorResponse =
+            cityNotSavedError ->
                 ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
-                    .body(criticalRepositoryNotFoundByDependencyLocatorError.getMessage());
+                    .body(cityNotSavedError.getMessage());
         Function<ICity, ServerResponse> createSuccessResponse =
             iCity ->
                 ServerResponse.status(HttpStatus.CREATED)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(CityResponseMapper.INSTANCE.toDto(iCity));
+                    .body(CITY_RESPONSE_MAPPER.toDto(iCity));
         // Compose operations with flatMap to explicitly avoid apply
         return parseBodyReader
             .map(VALIDATE_PARSED_CITY_POST_REQUEST_BODY)
@@ -114,11 +122,11 @@ public enum CityCriticalRestAPIAdapter {
                 return ServerResponse.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(iCityList.stream()
-                        .map(CityResponseMapper.INSTANCE::toDto)
+                        .map(CITY_RESPONSE_MAPPER::toDto)
                         .toList());
             };
         // Compose operations with flatMap to explicitly avoid apply
-        return FindCitiesAPI.INSTANCE.execute()
+        return FIND_CITIES_API.execute()
             .map(criticalRepositoryNotFoundByDependencyLocatorErrorListEither ->
                 criticalRepositoryNotFoundByDependencyLocatorErrorListEither.fold(
                     createErrorResponse, createSuccessResponse));
@@ -133,7 +141,7 @@ public enum CityCriticalRestAPIAdapter {
         String id = request.pathVariable("cityId");
         Reader<AppScopedDependencyLocator, Validation<String, CityCriteriaDetails>> validateIdReader =
             __ ->
-                CityCriteriaValidator.INSTANCE.validateCityCriteria(Long.parseLong(id));
+                CITY_CRITERIA_VALIDATOR.validateCityCriteria(Long.parseLong(id));
         Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>> findCityByIdReader =
             validateIdReader
                 .flatMap(EITHER_FAILED_VALIDATION_OR_FIND_CITY_BY_ID);
@@ -148,10 +156,10 @@ public enum CityCriticalRestAPIAdapter {
             };
         Function<ICity, ServerResponse> createSuccessResponse =
             iCity -> {
-                logger.info("A city with id {} is found", id);
+                logger.info(SuccessMessage.CITY_FOUND_SUCCESS_MESSAGE, id);
                 return ServerResponse.ok()
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(CityResponseMapper.INSTANCE.toDto(iCity));
+                    .body(CITY_RESPONSE_MAPPER.toDto(iCity));
             };
         // Compose operations with flatMap to explicitly avoid apply
         return findCityByIdReader
@@ -159,13 +167,12 @@ public enum CityCriticalRestAPIAdapter {
                 cityNotFoundErrorICityEither.fold(createErrorResponse, createSuccessResponse));
     }
 
-    public Reader<AppScopedDependencyLocator, ServerResponse> downloadCityPdfReport() {
-        return __ ->
-            ServerResponse.ok()
-                .headers(httpHeaders ->
-                    httpHeaders.add("content-disposition",
-                        "attachment; filename=%s".formatted("cityReport.pdf")))
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new ByteArrayResource(CreatePdfUtil.INSTANCE.createPdf()));
+    public ServerResponse downloadCityPdfReport() {
+        return ServerResponse.ok()
+            .headers(httpHeaders ->
+                httpHeaders.add("content-disposition",
+                    "attachment; filename=%s".formatted("cityReport.pdf")))
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(new ByteArrayResource(CREATE_PDF_UTIL.createPdf()));
     }
 }
