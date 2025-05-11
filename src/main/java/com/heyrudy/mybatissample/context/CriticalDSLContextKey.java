@@ -15,9 +15,11 @@ public enum CriticalDSLContextKey
     implements CriticalConfigKey<DSLContext> {
     INSTANCE;
 
+    private static final CriticalDbSecretPropertiesKey CRITICAL_DB_SECRET_PROPERTIES_KEY = CriticalDbSecretPropertiesKey.INSTANCE;
+
     @Override
     public Reader<AppScopedDependencyLocator, Either<? extends MissingCriticalDependencyError, DSLContext>> describeDependencyContext() {
-        return CriticalDbSecretPropertiesKey.INSTANCE.describeDependencyContext()
+        return CRITICAL_DB_SECRET_PROPERTIES_KEY.describeDependencyContext()
             .map(missingCriticalDependencyErrorIDbSecretPropertiesEither ->
                 missingCriticalDependencyErrorIDbSecretPropertiesEither.fold(
                     __ ->
