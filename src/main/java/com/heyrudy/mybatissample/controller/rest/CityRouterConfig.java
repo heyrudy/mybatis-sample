@@ -31,9 +31,9 @@ import org.springframework.web.servlet.function.ServerResponse;
 @Configuration
 public class CityRouterConfig {
 
-    public static final CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER = CityCriticalRestAPIAdapter.INSTANCE;
+    private static final CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER = CityCriticalRestAPIAdapter.INSTANCE;
 
-    //    public static final Logger logger = LoggerFactory.getLogger(RouterConfig.class);
+//    public static final Logger logger = LoggerFactory.getLogger(RouterConfig.class);
 //    private static final String SECRET_KEY = "your-secret-key"; // Use a secure method in production
 
     private final AppScopedDependencyLocator appScopedDependencyLocator;
