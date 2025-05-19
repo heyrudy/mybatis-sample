@@ -46,20 +46,20 @@ public enum CriticalDSLContextKey
                     .buildDataSource())  // Your HikariCP or other DataSource
                 .set(SQLDialect.POSTGRES)
                 .set(Executors.newVirtualThreadPerTaskExecutor())));
-    private static final Either<CriticalDSLContextNotFoundByDependencyLocatorError, DSLContext> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR =
+    private static final Either<CriticalDSLContextNotFoundByDependencyLocatorError, DSLContext> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
         Either.left(new CriticalDSLContextNotFoundByDependencyLocatorError(
             AppScopedDependencyLocator.ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY_ERROR_MESSAGE
                 .formatted(INSTANCE)));
-    private static final Function<Either<? extends MissingCriticalDependencyError, IDbSecretProperties>, Either<? extends MissingCriticalDependencyError, DSLContext>> DSL_CONTEXT_TRANSFORMER =
+    private static final Function<Either<? extends MissingCriticalDependencyError, IDbSecretProperties>, Either<? extends MissingCriticalDependencyError, DSLContext>> DSL_CONTEXT_TRANSFORMER_PATH =
         missingCriticalDependencyErrorIDbSecretPropertiesEither ->
             missingCriticalDependencyErrorIDbSecretPropertiesEither.fold(
-                __ -> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_ERROR,
+                __ -> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH,
                 DB_SECRET_PROPERTIES_TO_DSL_CONTEXT);
 
     @Override
     public Reader<AppScopedDependencyLocator, Either<? extends MissingCriticalDependencyError, DSLContext>> describeDependencyContext() {
         return CRITICAL_DB_SECRET_PROPERTIES_KEY.describeDependencyContext()
-            .map(DSL_CONTEXT_TRANSFORMER);
+            .map(DSL_CONTEXT_TRANSFORMER_PATH);
     }
 
     @Override

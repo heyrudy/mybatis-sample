@@ -45,14 +45,14 @@ public enum CityRepository
     }
 
     private static final CriticalDSLContextKey CRITICAL_DSL_CONTEXT_KEY = CriticalDSLContextKey.INSTANCE;
-    private static final Function<MissingCriticalDependencyError, Either<CityNotSavedByRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
-        missingCriticalDependencyError ->
-            Either.left(
-                new CityNotSavedByRepositoryError(missingCriticalDependencyError.getMessage()));
     private static final Function<MissingCriticalDependencyError, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
         missingCriticalDependencyError ->
             Either.left(new CriticalDSLContextNotFoundByDependencyLocatorError(
                 missingCriticalDependencyError.getMessage()));
+    private static final Function<MissingCriticalDependencyError, Either<CityNotSavedByRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
+        missingCriticalDependencyError ->
+            Either.left(
+                new CityNotSavedByRepositoryError(missingCriticalDependencyError.getMessage()));
     private static final Function<MissingCriticalDependencyError, Either<CityNotFoundByRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY_PATH =
         missingCriticalDependencyError ->
             Either.left(
