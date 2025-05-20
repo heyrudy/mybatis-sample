@@ -22,9 +22,10 @@ public enum CreateCityAPI {
     private static final Function<CityNotSavedByRepositoryError, Either<CityNotSavedError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
         cityNotSavedByRepositoryError ->
             Either.left(new CityNotSavedError(cityNotSavedByRepositoryError.getMessage()));
-    private static final Function<Either<CityNotSavedByRepositoryError, ICity>, Either<CityNotSavedError, ICity>> SAVE_CITY_PATH = cityNotSavedByRepositoryErrorICityEither ->
-        cityNotSavedByRepositoryErrorICityEither.fold(
-            CITY_NOT_SAVED_BY_REPOSITORY_PATH, Either::right);
+    private static final Function<Either<CityNotSavedByRepositoryError, ICity>, Either<CityNotSavedError, ICity>> SAVE_CITY_PATH =
+        cityNotSavedByRepositoryErrorICityEither ->
+            cityNotSavedByRepositoryErrorICityEither.fold(
+                CITY_NOT_SAVED_BY_REPOSITORY_PATH, Either::right);
 
     public Reader<AppScopedDependencyLocator, Either<CityNotSavedError, ICity>> execute(
         final ICity iCity) {
