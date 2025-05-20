@@ -17,8 +17,8 @@ public enum CreateCityAPI {
     // A reader that always returns a specific error value
     private static final Function<MissingCriticalDependencyError, Reader<AppScopedDependencyLocator, Either<CityNotSavedError, ICity>>> DEPENDENCY_NEVER_FOUND_PATH =
         missingCriticalDependencyError ->
-            __ -> Either.left(
-                new CityNotSavedError(missingCriticalDependencyError.getMessage()));
+            __ ->
+                Either.left(new CityNotSavedError(missingCriticalDependencyError.getMessage()));
     private static final Function<CityNotSavedByRepositoryError, Either<CityNotSavedError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
         cityNotSavedByRepositoryError ->
             Either.left(new CityNotSavedError(cityNotSavedByRepositoryError.getMessage()));
