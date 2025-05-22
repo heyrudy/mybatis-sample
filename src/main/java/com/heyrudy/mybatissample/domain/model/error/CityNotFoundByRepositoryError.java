@@ -1,9 +1,6 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public final class CityNotFoundByRepositoryError
-    extends CityRepositoryError {
+public record CityNotFoundByRepositoryError(String message)
+    implements CityRepositoryError {
 
-    public CityNotFoundByRepositoryError(String message) {
-        super(message);
-    }
 }

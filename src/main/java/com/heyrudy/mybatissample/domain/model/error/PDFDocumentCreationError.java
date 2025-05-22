@@ -1,9 +1,6 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public final class PDFDocumentCreationError
-    extends DomainServiceSPIError {
+public record PDFDocumentCreationError(String message)
+    implements DomainServiceSPIError {
 
-    public PDFDocumentCreationError(String message) {
-        super(message);
-    }
 }

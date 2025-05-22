@@ -10,7 +10,7 @@ public enum AuditSPIKey
     INSTANCE;
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<? extends MissingCriticalDependencyError, IAuditSPI>> describeDependencyContext() {
+    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, IAuditSPI>> describeDependencyContext() {
         return null;
     }
 

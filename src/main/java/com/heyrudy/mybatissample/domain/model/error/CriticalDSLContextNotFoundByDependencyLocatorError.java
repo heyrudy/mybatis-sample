@@ -1,9 +1,6 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public final class CriticalDSLContextNotFoundByDependencyLocatorError
-    extends MissingCriticalConfigError {
+public record CriticalDSLContextNotFoundByDependencyLocatorError(String message)
+    implements MissingCriticalConfigError {
 
-    public CriticalDSLContextNotFoundByDependencyLocatorError(String message) {
-        super(message);
-    }
 }

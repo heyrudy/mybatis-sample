@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import io.vavr.control.Either;
 import java.util.List;
@@ -32,7 +32,7 @@ class FindCitiesAPITest {
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test
-        Either<CriticalRepositoryNotFoundByDependencyLocatorError, List<ICity>> actual =
+        Either<DomainServiceAPIError, List<ICity>> actual =
             findCitiesAPIInstanceUnderTest.execute()
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 

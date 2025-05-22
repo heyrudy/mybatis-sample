@@ -1,11 +1,7 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public sealed class MissingCriticalConfigError
+public sealed interface MissingCriticalConfigError
     extends MissingCriticalDependencyError
     permits CriticalDSLContextNotFoundByDependencyLocatorError {
 
-    public MissingCriticalConfigError(String message) {
-        super(message);
-        this.message = message;
-    }
 }

@@ -1,17 +1,10 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public sealed class DomainServiceAPIError
-    implements DomainError
-    permits CityNotSavedError,
-    CityNotFoundError {
+public sealed interface DomainServiceAPIError
+    extends DomainError
+    permits CitiesNotFoundError,
+    CityNotFoundError,
+    CityNotSavedError {
 
-    protected String message;
-
-    public DomainServiceAPIError(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
+    String message();
 }

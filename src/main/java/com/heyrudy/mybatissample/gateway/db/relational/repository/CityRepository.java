@@ -10,6 +10,7 @@ import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.DomainRepositoryError;
 import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import cyclops.control.Reader;
@@ -44,21 +45,22 @@ public enum CityRepository
             .orElse(null);
     }
 
-    private static final CriticalDSLContextKey CRITICAL_DSL_CONTEXT_KEY = CriticalDSLContextKey.INSTANCE;
-    private static final Function<MissingCriticalDependencyError, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
+    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> GET_CRITICAL_DSL_CONTEXT_DEPENDENCY_PATH =
+        CriticalDSLContextKey.INSTANCE.describeDependencyContext();
+    private static final Function<MissingCriticalDependencyError, Either<MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
         missingCriticalDependencyError ->
             Either.left(new CriticalDSLContextNotFoundByDependencyLocatorError(
-                missingCriticalDependencyError.getMessage()));
-    private static final Function<MissingCriticalDependencyError, Either<CityNotSavedByRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
+                missingCriticalDependencyError.message()));
+    private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
         missingCriticalDependencyError ->
             Either.left(
-                new CityNotSavedByRepositoryError(missingCriticalDependencyError.getMessage()));
-    private static final Function<MissingCriticalDependencyError, Either<CityNotFoundByRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY_PATH =
+                new CityNotSavedByRepositoryError(missingCriticalDependencyError.message()));
+    private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY_PATH =
         missingCriticalDependencyError ->
             Either.left(
-                new CityNotFoundByRepositoryError(missingCriticalDependencyError.getMessage()));
+                new CityNotFoundByRepositoryError(missingCriticalDependencyError.message()));
     // A reader that always returns a specific error value
-    private static final Function<DSLContext, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>> FIND_CITIES_PATH =
+    private static final Function<DSLContext, Either<MissingCriticalDependencyError, List<ICity>>> FIND_CITIES_PATH =
         dslContext ->
             Either.right(dslContext.select(ID, NAME, STATE, COUNTRY)
                 .from(CITIES)
@@ -67,41 +69,41 @@ public enum CityRepository
                 .map(CityRepository::mapRecord)
                 .toList());
     private static final Function<ICity, Option<ICity>> TO_OPTIONAL_CITY_PATH = Option::of;
-    private static final Function<ICity, Either<CityNotFoundByRepositoryError, Option<ICity>>> TO_EITHER_CITY_PATH =
+    private static final Function<ICity, Either<DomainRepositoryError, Option<ICity>>> TO_EITHER_CITY_PATH =
         TO_OPTIONAL_CITY_PATH.andThen(Either::right);
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<CityNotSavedByRepositoryError, ICity>> save(
+    public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, ICity>> save(
         ICity iCity) {
-        Function<DSLContext, Either<CityNotSavedByRepositoryError, ICity>> saveCityPath =
+        Function<DSLContext, Either<DomainRepositoryError, ICity>> saveCityPath =
             dslContext ->
                 Option.of(dslContext.insertInto(CITIES)
                         .columns(NAME, STATE, COUNTRY)
                         .values(iCity.getName(), iCity.getState(), iCity.getCountry())
                         .returning()
                         .fetchOne())
+                    .map(CityRepository::mapRecord)
                     .toEither(new CityNotSavedByRepositoryError(
-                        "Failed to insert city: No record returned"))
-                    .map(CityRepository::mapRecord);
+                        "Failed to insert city: No record returned"));
         // Compose operations with flatMap to explicitly avoid apply
-        return CRITICAL_DSL_CONTEXT_KEY.describeDependencyContext()
+        return GET_CRITICAL_DSL_CONTEXT_DEPENDENCY_PATH
             .map(dslContextEither ->
                 dslContextEither.fold(CITY_NOT_SAVED_BY_REPOSITORY_PATH, saveCityPath));
     }
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>> findAll() {
+    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, List<ICity>>> findAll() {
         // Compose operations with flatMap to explicitly avoid apply
-        return CRITICAL_DSL_CONTEXT_KEY.describeDependencyContext()
+        return GET_CRITICAL_DSL_CONTEXT_DEPENDENCY_PATH
             .map(dslContextEither ->
                 dslContextEither.fold(
                     CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH, FIND_CITIES_PATH));
     }
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Option<ICity>>> findById(
+    public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, Option<ICity>>> findById(
         long id) {
-        Function<DSLContext, Either<CityNotFoundByRepositoryError, Option<ICity>>> findCityByIdPath =
+        Function<DSLContext, Either<DomainRepositoryError, Option<ICity>>> findCityByIdPath =
             dslContext ->
                 Option.of(dslContext.select(ID, NAME, STATE, COUNTRY)
                         .from(CITIES)
@@ -113,7 +115,7 @@ public enum CityRepository
                             "Failed to retrieve city with ID %d".formatted(id))),
                         TO_EITHER_CITY_PATH);
         // Compose operations with flatMap to explicitly avoid apply
-        return CRITICAL_DSL_CONTEXT_KEY.describeDependencyContext()
+        return GET_CRITICAL_DSL_CONTEXT_DEPENDENCY_PATH
             .map(dslContextEither ->
                 dslContextEither.fold(CITY_NOT_FOUND_BY_REPOSITORY_PATH, findCityByIdPath));
     }

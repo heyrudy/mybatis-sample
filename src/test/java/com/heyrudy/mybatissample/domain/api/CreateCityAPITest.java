@@ -2,7 +2,7 @@ package com.heyrudy.mybatissample.domain.api;
 
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.model.error.CityNotSavedError;
+import com.heyrudy.mybatissample.domain.model.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
@@ -23,7 +23,7 @@ class CreateCityAPITest {
             .state("Paris75").build();
 
         // ACT - action or behavior that we are going to test
-        Either<CityNotSavedError, ICity> actual =
+        Either<DomainServiceAPIError, ICity> actual =
             createCityAPIInstanceUnderTest.execute(cityToSave)
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 

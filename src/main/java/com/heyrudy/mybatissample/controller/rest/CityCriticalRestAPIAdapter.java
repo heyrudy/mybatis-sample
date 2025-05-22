@@ -15,7 +15,7 @@ import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError.SuccessMessage;
 import com.heyrudy.mybatissample.domain.model.error.CityNotSavedError;
-import com.heyrudy.mybatissample.domain.model.error.CriticalRepositoryNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
 import cyclops.control.Reader;
 import io.vavr.collection.Seq;
@@ -46,11 +46,11 @@ public enum CityCriticalRestAPIAdapter {
     private static final FindCitiesAPI FIND_CITIES_API = FindCitiesAPI.INSTANCE;
     private static final CreatePdfUtil CREATE_PDF_UTIL = CreatePdfUtil.INSTANCE;
     // A reader that always returns a specific error value
-    private static final Function<String, Reader<AppScopedDependencyLocator, Either<CityNotSavedError, ICity>>> CITY_NEVER_SAVED_PATH =
+    private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_SAVED_PATH =
         errMsg -> __ -> Either.left(new CityNotSavedError(errMsg));
-    private static final Function<String, Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>>> CITY_NEVER_FOUND_PATH =
+    private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_FOUND_PATH =
         errMsg -> __ -> Either.left(new CityNotFoundError(errMsg));
-    private static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>>> FAILED_VALIDATION_OR_FIND_CITY_BY_ID_PATH =
+    private static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_VALIDATION_OR_FIND_CITY_BY_ID_PATH =
         stringCityCriteriaDetailsValidation ->
             stringCityCriteriaDetailsValidation.fold(
                 CITY_NEVER_FOUND_PATH, FIND_CITY_BY_ID_API::execute);
@@ -71,7 +71,7 @@ public enum CityCriticalRestAPIAdapter {
     // Define function to transform DTO to model
     private static final Function<CityRequestDTO, ICity> MAP_TO_CITY_PATH =
         CITY_REQUEST_MAPPER::toModel;
-    private static final Function<Either<String, CityRequestDTO>, Reader<AppScopedDependencyLocator, Either<CityNotSavedError, ICity>>> FAILED_TO_CREATE_OR_CREATE_CITY_PATH =
+    private static final Function<Either<String, CityRequestDTO>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_TO_CREATE_OR_CREATE_CITY_PATH =
         validatedDtoEither ->
             validatedDtoEither.fold(
                 CITY_NEVER_SAVED_PATH, MAP_TO_CITY_PATH.andThen(CREATE_CITY_API::execute));
@@ -87,10 +87,10 @@ public enum CityCriticalRestAPIAdapter {
                 Try.of(() -> request.body(CityRequestDTO.class))
                     .toEither()
                     .mapLeft(Throwable::getMessage);
-        Function<CityNotSavedError, ServerResponse> createErrorResponse =
+        Function<DomainServiceAPIError, ServerResponse> createErrorResponse =
             cityNotSavedError ->
                 ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
-                    .body(cityNotSavedError.getMessage());
+                    .body(cityNotSavedError.message());
         Function<ICity, ServerResponse> createSuccessResponse =
             iCity ->
                 ServerResponse.status(HttpStatus.CREATED)
@@ -109,10 +109,10 @@ public enum CityCriticalRestAPIAdapter {
      * @return HTTP Response with all cities fetched from the database
      */
     public Reader<AppScopedDependencyLocator, ServerResponse> findCities() {
-        Function<CriticalRepositoryNotFoundByDependencyLocatorError, ServerResponse> createErrorResponse =
-            criticalRepositoryNotFoundByDependencyLocatorError ->
+        Function<DomainServiceAPIError, ServerResponse> createErrorResponse =
+            domainServiceAPIError ->
                 ServerResponse.status(HttpStatus.FAILED_DEPENDENCY)
-                    .body(criticalRepositoryNotFoundByDependencyLocatorError.getMessage());
+                    .body(domainServiceAPIError.message());
         Function<List<ICity>, ServerResponse> createSuccessResponse =
             iCityList -> {
                 logger.info("All cities were found");
@@ -139,16 +139,16 @@ public enum CityCriticalRestAPIAdapter {
         Reader<AppScopedDependencyLocator, Validation<String, CityCriteriaDetails>> validateIdReader =
             __ ->
                 CITY_CRITERIA_VALIDATOR.validateCityCriteria(Long.parseLong(id));
-        Reader<AppScopedDependencyLocator, Either<CityNotFoundError, ICity>> findCityByIdReader =
+        Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>> findCityByIdReader =
             validateIdReader
                 .flatMap(FAILED_VALIDATION_OR_FIND_CITY_BY_ID_PATH);
-        Function<CityNotFoundError, ServerResponse> createErrorResponse =
+        Function<DomainServiceAPIError, ServerResponse> createErrorResponse =
             cityNotFoundError -> {
-                logger.error(cityNotFoundError.getMessage());
+                logger.error(cityNotFoundError.message());
                 return ServerResponse.badRequest()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(ApiErrorResponse.builder()
-                        .reason(cityNotFoundError.getMessage())
+                        .reason(cityNotFoundError.message())
                         .build());
             };
         Function<ICity, ServerResponse> createSuccessResponse =

@@ -10,5 +10,5 @@ public sealed interface DependencyKey<T>
     CriticalRepositoryKey,
     NonCriticalSPIKey {
 
-    Reader<AppScopedDependencyLocator, Either<? extends MissingCriticalDependencyError, T>> describeDependencyContext();
+    Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, T>> describeDependencyContext();
 }

@@ -2,9 +2,8 @@ package com.heyrudy.mybatissample.gateway.db.relational.repository;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.model.error.CityNotFoundByRepositoryError;
-import com.heyrudy.mybatissample.domain.model.error.CityNotSavedByRepositoryError;
-import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.model.error.DomainRepositoryError;
+import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
@@ -22,7 +21,7 @@ public enum MockedCityRepository
     private final static Map<Long, ICity> IN_MEMORY_DB = new ConcurrentHashMap<>();
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<CityNotSavedByRepositoryError, ICity>> save(
+    public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, ICity>> save(
         ICity iCity) {
         return __ -> {
             Function<Map<Long, ICity>, Long> idGenerator = AutoIncrementMap.atomicGenerator();
@@ -34,13 +33,13 @@ public enum MockedCityRepository
     }
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<CriticalDSLContextNotFoundByDependencyLocatorError, List<ICity>>> findAll() {
+    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, List<ICity>>> findAll() {
         return __ ->
             Either.right(IN_MEMORY_DB.values().stream().toList());
     }
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<CityNotFoundByRepositoryError, Option<ICity>>> findById(
+    public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, Option<ICity>>> findById(
         long id) {
         return __ ->
             Either.right(Option.of(IN_MEMORY_DB.get(id)));

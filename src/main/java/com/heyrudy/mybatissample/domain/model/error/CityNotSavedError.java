@@ -1,11 +1,7 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public final class CityNotSavedError
-    extends DomainServiceAPIError {
-
-    public CityNotSavedError(String message) {
-        super(message);
-    }
+public record CityNotSavedError(String message)
+    implements DomainServiceAPIError {
 
     public static class ErrorMessage {
 

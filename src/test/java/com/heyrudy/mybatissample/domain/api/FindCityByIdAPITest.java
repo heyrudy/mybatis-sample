@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
-import com.heyrudy.mybatissample.domain.model.error.CityNotFoundError;
+import com.heyrudy.mybatissample.domain.model.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
@@ -29,7 +29,7 @@ class FindCityByIdAPITest {
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test
-        Either<CityNotFoundError, ICity> actual =
+        Either<DomainServiceAPIError, ICity> actual =
             findCityByIdAPIInstanceUnderTest.execute(
                     CityCriteriaDetails.builder().cityId(cityId).build())
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);

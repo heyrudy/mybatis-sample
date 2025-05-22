@@ -1,9 +1,6 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public final class CriticalDbSecretPropertiesNotFoundByDependencyLocatorError
-    extends MissingCriticalSecretError {
+public record CriticalDbSecretPropertiesNotFoundByDependencyLocatorError(String message)
+    implements MissingCriticalSecretError {
 
-    public CriticalDbSecretPropertiesNotFoundByDependencyLocatorError(String message) {
-        super(message);
-    }
 }

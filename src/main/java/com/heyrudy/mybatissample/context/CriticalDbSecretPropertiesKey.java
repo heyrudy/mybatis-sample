@@ -17,7 +17,7 @@ public enum CriticalDbSecretPropertiesKey
                 .formatted(INSTANCE));
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<? extends MissingCriticalDependencyError, IDbSecretProperties>> describeDependencyContext() {
+    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, IDbSecretProperties>> describeDependencyContext() {
         return appScopedDependencyLocator ->
             Option.of(
                     appScopedDependencyLocator.getDependencyOrMock(

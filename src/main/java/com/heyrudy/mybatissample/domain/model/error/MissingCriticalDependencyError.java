@@ -1,22 +1,10 @@
 package com.heyrudy.mybatissample.domain.model.error;
 
-public sealed class MissingCriticalDependencyError
-    implements DomainError
+public sealed interface MissingCriticalDependencyError
+    extends DomainError
     permits MissingCriticalSecretError,
     MissingCriticalConfigError,
     CriticalRepositoryNotFoundByDependencyLocatorError {
 
-    protected String message;
-
-    public MissingCriticalDependencyError(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public RuntimeException toException() {
-        return new RuntimeException(this.message);
-    }
+    String message();
 }
