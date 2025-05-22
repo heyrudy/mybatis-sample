@@ -2,8 +2,8 @@ package com.heyrudy.mybatissample.gateway.db.relational.repository;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.model.error.DomainRepositoryError;
-import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.error.DomainRepositoryError;
+import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;

@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.context;
 
-import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import com.heyrudy.mybatissample.gateway.db.relational.repository.CityRepository;
 import cyclops.control.Reader;

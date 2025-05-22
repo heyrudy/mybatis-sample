@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.context;
 
-import com.heyrudy.mybatissample.domain.model.error.CriticalDSLContextNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.error.CriticalDSLContextNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.Arrays;

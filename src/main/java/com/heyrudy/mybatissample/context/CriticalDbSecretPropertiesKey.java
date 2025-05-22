@@ -1,8 +1,8 @@
 package com.heyrudy.mybatissample.context;
 
 import com.heyrudy.mybatissample.context.IDbSecretProperties.MockedDbSecretProperties;
-import com.heyrudy.mybatissample.domain.model.error.CriticalDbSecretPropertiesNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.domain.model.error.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.error.CriticalDbSecretPropertiesNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import io.vavr.control.Option;

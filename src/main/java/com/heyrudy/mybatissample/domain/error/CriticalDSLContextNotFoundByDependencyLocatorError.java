@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.model.error;
+package com.heyrudy.mybatissample.domain.error;
 
 public record CriticalDSLContextNotFoundByDependencyLocatorError(String message)
     implements MissingCriticalConfigError {
