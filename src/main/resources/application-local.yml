@@ -5,9 +5,8 @@ spring:
     config:
         activate:
             on-profile: local
-        name: application,postgres,liquibase,oauth2,swagger-ui
+        name: application,liquibase,oauth2,swagger-ui
         import:
-            - classpath:additional-application/postgres.yml
             - classpath:additional-application/liquibase.yml
             - classpath:additional-application/oauth2.yml
             - classpath:additional-application/swagger-ui.yml

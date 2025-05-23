@@ -5,13 +5,13 @@ import static org.jooq.impl.DSL.table;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.context.CriticalDSLContextKey;
-import com.heyrudy.mybatissample.domain.model.city.FullCity;
-import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.error.CityNotFoundByRepositoryError;
 import com.heyrudy.mybatissample.domain.error.CityNotSavedByRepositoryError;
 import com.heyrudy.mybatissample.domain.error.CriticalDSLContextNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.error.DomainRepositoryError;
 import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.model.city.FullCity;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
@@ -45,12 +45,13 @@ public enum CityRepository
             .orElse(null);
     }
 
-    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> GET_CRITICAL_DSL_CONTEXT_DEPENDENCY_PATH =
-        CriticalDSLContextKey.INSTANCE.describeDependencyContext();
+    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH =
+        CriticalDSLContextKey.INSTANCE.lazyLoad();
     private static final Function<MissingCriticalDependencyError, Either<MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
         missingCriticalDependencyError ->
-            Either.left(new CriticalDSLContextNotFoundByDependencyLocatorError(
-                missingCriticalDependencyError.message()));
+            Either.left(
+                new CriticalDSLContextNotFoundByDependencyLocatorError(
+                    missingCriticalDependencyError.message()));
     private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
         missingCriticalDependencyError ->
             Either.left(
@@ -86,7 +87,7 @@ public enum CityRepository
                     .toEither(new CityNotSavedByRepositoryError(
                         "Failed to insert city: No record returned"));
         // Compose operations with flatMap to explicitly avoid apply
-        return GET_CRITICAL_DSL_CONTEXT_DEPENDENCY_PATH
+        return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
             .map(dslContextEither ->
                 dslContextEither.fold(CITY_NOT_SAVED_BY_REPOSITORY_PATH, saveCityPath));
     }
@@ -94,7 +95,7 @@ public enum CityRepository
     @Override
     public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, List<ICity>>> findAll() {
         // Compose operations with flatMap to explicitly avoid apply
-        return GET_CRITICAL_DSL_CONTEXT_DEPENDENCY_PATH
+        return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
             .map(dslContextEither ->
                 dslContextEither.fold(
                     CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH, FIND_CITIES_PATH));
@@ -115,7 +116,7 @@ public enum CityRepository
                             "Failed to retrieve city with ID %d".formatted(id))),
                         TO_EITHER_CITY_PATH);
         // Compose operations with flatMap to explicitly avoid apply
-        return GET_CRITICAL_DSL_CONTEXT_DEPENDENCY_PATH
+        return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
             .map(dslContextEither ->
                 dslContextEither.fold(CITY_NOT_FOUND_BY_REPOSITORY_PATH, findCityByIdPath));
     }

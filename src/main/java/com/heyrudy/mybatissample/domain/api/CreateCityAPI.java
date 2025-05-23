@@ -15,8 +15,8 @@ import java.util.function.Function;
 public enum CreateCityAPI {
     INSTANCE;
 
-    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> GET_MOCKED_CITY_REPOSITORY_DEPENDENCY_PATH =
-        MockedCityRepositoryKey.INSTANCE.describeDependencyContext();
+    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> MOCKED_CITY_REPOSITORY_DEPENDENCY_LAZY_LOADED_PATH =
+        MockedCityRepositoryKey.INSTANCE.lazyLoad();
     // A reader that always returns a specific error value
     private static final Function<MissingCriticalDependencyError, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> DEPENDENCY_NEVER_FOUND_PATH =
         missingCriticalDependencyError ->
@@ -32,7 +32,7 @@ public enum CreateCityAPI {
 
     public Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>> execute(
         final ICity iCity) {
-        return GET_MOCKED_CITY_REPOSITORY_DEPENDENCY_PATH
+        return MOCKED_CITY_REPOSITORY_DEPENDENCY_LAZY_LOADED_PATH
             .flatMap(missingCriticalDependencyErrorICityRepositoryEither ->
                 missingCriticalDependencyErrorICityRepositoryEither.fold(
                     DEPENDENCY_NEVER_FOUND_PATH,

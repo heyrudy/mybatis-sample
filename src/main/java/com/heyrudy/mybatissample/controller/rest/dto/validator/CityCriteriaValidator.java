@@ -24,6 +24,6 @@ public enum CityCriteriaValidator {
     public static class InvalidationErrorMessages {
 
         public static final String INVALID_INPUT_MESSAGE =
-            "ID must be greater than " + InvalidState.INCORRECT_CITY_ID;
+            "ID must be greater than %d".formatted(InvalidState.INCORRECT_CITY_ID);
     }
 }

@@ -23,9 +23,9 @@
         <project-build-sourceEncoding>UTF-8</project-build-sourceEncoding>
         <project-reporting-encoding>UTF-8</project-reporting-encoding>
         <java.version>21</java.version>
+        <config.version>1.4.3</config.version>
         <vavr.version>0.10.4</vavr.version>
         <cyclops.version>2.1.1</cyclops.version>
-        <hibernate-commons-annotations.version>5.0.4.Final</hibernate-commons-annotations.version>
         <org.liquibase.version>4.29.0</org.liquibase.version>
         <jooq.version>3.19.12</jooq.version>
         <org.posgresql.version>42.7.3</org.posgresql.version>
@@ -75,6 +75,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.typesafe</groupId>
+            <artifactId>config</artifactId>
+            <version>${config.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
             <version>${vavr.version}</version>
@@ -83,15 +88,6 @@
             <groupId>com.aol.simplereact</groupId>
             <artifactId>cyclops-react</artifactId>
             <version>${cyclops.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.common</groupId>
-            <artifactId>hibernate-commons-annotations</artifactId>
-            <version>${hibernate-commons-annotations.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -221,12 +217,12 @@
         <!--            <scope>test</scope>-->
         <!--        </dependency>-->
 
-        <dependency>
-            <groupId>org.instancio</groupId>
-            <artifactId>instancio-core</artifactId>
-            <version>${org.instancio.version}</version>
-            <scope>test</scope>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.instancio</groupId>-->
+        <!--            <artifactId>instancio-core</artifactId>-->
+        <!--            <version>${org.instancio.version}</version>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>

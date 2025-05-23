@@ -24,8 +24,8 @@ import java.util.function.Supplier;
 public enum FindCityByIdAPI {
     INSTANCE;
 
-    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> GET_MOCKED_CITY_REPOSITORY_DEPENDENCY_PATH =
-        MockedCityRepositoryKey.INSTANCE.describeDependencyContext();
+    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> MOCKED_CITY_REPOSITORY_DEPENDENCY_LAZY_LOADED_PATH =
+        MockedCityRepositoryKey.INSTANCE.lazyLoad();
     // A reader that always returns a specific error value
     private static final Function<MissingCriticalDependencyError, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> DEPENDENCY_NEVER_FOUND_PATH =
         missingCriticalDependencyError ->
@@ -44,7 +44,7 @@ public enum FindCityByIdAPI {
             () -> __ -> Either.left(
                 new CityNotFoundError(ErrorMessage.CITY_NOT_FOUND_ERROR_MESSAGE.formatted(cityId)));
         // Compose operations with flatMap to explicitly avoid apply
-        return GET_MOCKED_CITY_REPOSITORY_DEPENDENCY_PATH
+        return MOCKED_CITY_REPOSITORY_DEPENDENCY_LAZY_LOADED_PATH
             .flatMap(missingCriticalDependencyErrorICityRepositoryEither ->
                 missingCriticalDependencyErrorICityRepositoryEither.fold(
                     DEPENDENCY_NEVER_FOUND_PATH,

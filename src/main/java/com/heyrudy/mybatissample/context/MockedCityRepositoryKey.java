@@ -11,7 +11,7 @@ public enum MockedCityRepositoryKey
     INSTANCE;
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> describeDependencyContext() {
+    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> lazyLoad() {
         return __ ->
             Either.right(MockedCityRepository.INSTANCE);
     }

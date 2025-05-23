@@ -6,17 +6,17 @@ public sealed interface IDbSecretProperties
     permits DbSecretProperties,
     MockedDbSecretProperties {
 
-    String host();
+    String getProtocol();
 
-    String port();
+    String getHost();
 
-    String protocol();
+    int getPort();
 
-    String schema();
+    String getSchema();
 
-    String username();
+    String getUsername();
 
-    char[] password();
+    char[] getPassword();
 
     String getJdbcUrl();
 
@@ -25,43 +25,80 @@ public sealed interface IDbSecretProperties
     final class MockedDbSecretProperties implements IDbSecretProperties {
 
         @Override
-        public String host() {
-            return "localhost";
-        }
-
-        @Override
-        public String port() {
-            return "5432";
-        }
-
-        @Override
-        public String protocol() {
+        public String getProtocol() {
             return "jdbc:postgresql";
         }
 
         @Override
-        public String schema() {
+        public String getHost() {
+            return "localhost";
+        }
+
+        @Override
+        public int getPort() {
+            return 5432;
+        }
+
+        @Override
+        public String getSchema() {
             return "testdb";
         }
 
         @Override
-        public String username() {
+        public String getUsername() {
             return "pg_user";
         }
 
         @Override
-        public char[] password() {
+        public char[] getPassword() {
             return new char[0];
         }
 
         @Override
         public String getJdbcUrl() {
-            return "%s://%s:%s/%s".formatted(protocol(), host(), port(), schema());
+            return "%s://%s:%d/%s".formatted(getProtocol(), getHost(), getPort(), getSchema());
         }
 
         @Override
         public void clearPassword() {
 
+        }
+    }
+
+    enum IDbSecretPropertiesValidator {
+        INSTANCE;
+
+        public String validateNonEmpty(String value, String propertyName) {
+            if (value == null || value.trim().isEmpty()) {
+                throw new IllegalArgumentException(
+                    "Property '%s' cannot be null or empty".formatted(propertyName));
+            }
+            return value.trim();
+        }
+
+        public char[] validateNonEmpty(char[] value, String propertyName) {
+            if (value == null || String.valueOf(value).trim().isEmpty()) {
+                throw new IllegalArgumentException(
+                    "Property '%s' cannot be null or empty".formatted(propertyName));
+            }
+            return String.valueOf(value).trim().toCharArray();
+        }
+
+        public int validatePort(int port, String propertyName) {
+            if (port < 1 || port > 65535) {
+                throw new IllegalArgumentException(
+                    "Property '%s' must be between 1 and 65535, got: %d"
+                        .formatted(propertyName, port));
+            }
+            return port;
+        }
+
+        public int validatePositive(int value, String propertyName) {
+            if (value <= 0) {
+                throw new IllegalArgumentException(
+                    "Property '%s' must be positive, got: %d".formatted(propertyName, value));
+            }
+            return value;
         }
     }
 }

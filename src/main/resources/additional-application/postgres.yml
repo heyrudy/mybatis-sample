@@ -1,8 +1,0 @@
-db:
-    secret:
-        host: localhost
-        port: 5432
-        protocol: jdbc:postgresql
-        schema: demodb
-        username: postgres
-        password: mysecretpassword

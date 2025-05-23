@@ -14,7 +14,7 @@ public class SpringAppScopedDependencyLocator
     }
 
     @Override
-    public <T> T getDependencyOrMock(Class<T> beanClass, Option<Supplier<T>> fallback) {
+    public <T> T getDependency(Class<T> beanClass, Option<Supplier<T>> fallback) {
         return applicationContext
             .getBeanProvider(beanClass)
             .getIfAvailable(() -> fallback.map(Supplier::get).getOrNull());

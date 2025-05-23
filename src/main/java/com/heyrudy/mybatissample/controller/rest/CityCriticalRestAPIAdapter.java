@@ -10,12 +10,12 @@ import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOVal
 import com.heyrudy.mybatissample.domain.api.CreateCityAPI;
 import com.heyrudy.mybatissample.domain.api.FindCitiesAPI;
 import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
-import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.domain.error.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.error.CityNotFoundError.SuccessMessage;
 import com.heyrudy.mybatissample.domain.error.CityNotSavedError;
 import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
+import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
 import cyclops.control.Reader;
 import io.vavr.collection.Seq;
@@ -35,7 +35,7 @@ import org.springframework.web.servlet.function.ServerResponse;
 public enum CityCriticalRestAPIAdapter {
     INSTANCE;
 
-    public static final Logger logger = LoggerFactory.getLogger(CityCriticalRestAPIAdapter.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(CityCriticalRestAPIAdapter.class);
 
     private static final CityRequestDTOValidator CITY_REQUEST_DTO_VALIDATOR = CityRequestDTOValidator.INSTANCE;
     private static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR = CityCriteriaValidator.INSTANCE;
@@ -115,7 +115,7 @@ public enum CityCriticalRestAPIAdapter {
                     .body(domainServiceAPIError.message());
         Function<List<ICity>, ServerResponse> createSuccessResponse =
             iCityList -> {
-                logger.info("All cities were found");
+                LOGGER.info("All cities were found");
                 return ServerResponse.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(iCityList.stream()
@@ -144,7 +144,7 @@ public enum CityCriticalRestAPIAdapter {
                 .flatMap(FAILED_VALIDATION_OR_FIND_CITY_BY_ID_PATH);
         Function<DomainServiceAPIError, ServerResponse> createErrorResponse =
             cityNotFoundError -> {
-                logger.error(cityNotFoundError.message());
+                LOGGER.error(cityNotFoundError.message());
                 return ServerResponse.badRequest()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(ApiErrorResponse.builder()
@@ -153,7 +153,7 @@ public enum CityCriticalRestAPIAdapter {
             };
         Function<ICity, ServerResponse> createSuccessResponse =
             iCity -> {
-                logger.info(SuccessMessage.CITY_FOUND_SUCCESS_MESSAGE, id);
+                LOGGER.info(SuccessMessage.CITY_FOUND_SUCCESS_MESSAGE, id);
                 return ServerResponse.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(CITY_RESPONSE_MAPPER.toDto(iCity));

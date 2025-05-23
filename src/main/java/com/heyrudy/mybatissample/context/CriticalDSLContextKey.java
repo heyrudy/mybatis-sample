@@ -16,16 +16,16 @@ public enum CriticalDSLContextKey
     implements CriticalConfigKey<DSLContext> {
     INSTANCE;
 
-    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, IDbSecretProperties>> GET_CRITICAL_DB_SECRET_PROPERTIES_DEPENDENCY_PATH =
-        CriticalDbSecretPropertiesKey.INSTANCE.describeDependencyContext();
+    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, IDbSecretProperties>> CRITICAL_DB_SECRET_PROPERTIES_DEPENDENCY_LAZY_LOADED_PATH =
+        CriticalDbSecretPropertiesKey.INSTANCE.lazyLoad();
     private static final Function<IDbSecretProperties, Either<MissingCriticalDependencyError, DSLContext>> DB_SECRET_PROPERTIES_TO_DSL_CONTEXT =
         iDbSecretProperties ->
             Either.right(DSL.using(new DefaultConfiguration()
                 .set(HikariConfigBuilder.create()
                     // Database connection properties
                     .withJdbcUrl(iDbSecretProperties.getJdbcUrl())
-                    .withUsername(iDbSecretProperties.username())
-                    .withPassword(Arrays.toString(iDbSecretProperties.password()))
+                    .withUsername(iDbSecretProperties.getUsername())
+                    .withPassword(Arrays.toString(iDbSecretProperties.getPassword()))
                     // Dynamic connection pool sizing based on available processors
                     .withMaximumPoolSize(
                         Math.max(10, Runtime.getRuntime().availableProcessors() * 2))
@@ -35,9 +35,9 @@ public enum CriticalDSLContextKey
                     .withConnectionTimeout(5000)
                     .withPoolName("OptimizedDbPool")
                     // Performance optimization
-                    .withThreadFactory(Thread.ofVirtual()
-                        .name("hikari-virtual-", 0)
-                        .factory())
+                    .withThreadFactory(
+                        Thread.ofVirtual()
+                            .name("hikari-virtual-", 0).factory())
                     .withDataSourceProperty("cachePrepStmts", "true")
                     .withDataSourceProperty("prepStmtCacheSize", "350")
                     .withDataSourceProperty("prepStmtCacheSqlLimit", "4096")
@@ -58,8 +58,8 @@ public enum CriticalDSLContextKey
                 DB_SECRET_PROPERTIES_TO_DSL_CONTEXT);
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> describeDependencyContext() {
-        return GET_CRITICAL_DB_SECRET_PROPERTIES_DEPENDENCY_PATH
+    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> lazyLoad() {
+        return CRITICAL_DB_SECRET_PROPERTIES_DEPENDENCY_LAZY_LOADED_PATH
             .map(DSL_CONTEXT_TRANSFORMER_PATH);
     }
 

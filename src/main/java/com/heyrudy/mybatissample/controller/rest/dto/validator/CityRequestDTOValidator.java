@@ -7,8 +7,8 @@ import io.vavr.control.Validation;
 public enum CityRequestDTOValidator {
     INSTANCE;
 
-    public Validation<Seq<String>, CityRequestDTO> validateCityRequestDTO(String name, String state,
-        String country) {
+    public Validation<Seq<String>, CityRequestDTO> validateCityRequestDTO(
+        String name, String state, String country) {
         return Validation.combine(
             validateName(name),
             validateState(state),
