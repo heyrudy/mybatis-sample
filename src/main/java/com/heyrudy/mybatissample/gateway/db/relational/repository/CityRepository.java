@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.Table;
 
 public enum CityRepository
@@ -28,10 +29,10 @@ public enum CityRepository
 
     // Define the table structure using jOOQ
     private static final Table<?> CITIES = table("city");
-    private static final org.jooq.Field<Long> ID = field("id", Long.class);
-    private static final org.jooq.Field<String> NAME = field("name", String.class);
-    private static final org.jooq.Field<String> STATE = field("state", String.class);
-    private static final org.jooq.Field<String> COUNTRY = field("country", String.class);
+    private static final Field<Long> ID = field("id", Long.class);
+    private static final Field<String> NAME = field("name", String.class);
+    private static final Field<String> STATE = field("state", String.class);
+    private static final Field<String> COUNTRY = field("country", String.class);
 
     // Map jOOQ Record to our domain model
     private static ICity mapRecord(org.jooq.Record record) {
