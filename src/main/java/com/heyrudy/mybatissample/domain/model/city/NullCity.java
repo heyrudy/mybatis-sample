@@ -8,6 +8,10 @@ public final class NullCity implements ICity {
         super();
     }
 
+    public static NullCity builder() {
+        return new NullCity();
+    }
+
     @Override
     public long getId() {
         return id;
@@ -31,5 +35,9 @@ public final class NullCity implements ICity {
     @Override
     public String getCountry() {
         return "No country";
+    }
+
+    public NullCity build() {
+        return this;
     }
 }

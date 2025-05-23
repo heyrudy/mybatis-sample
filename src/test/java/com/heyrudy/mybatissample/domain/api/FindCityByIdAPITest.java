@@ -2,10 +2,10 @@ package com.heyrudy.mybatissample.domain.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
-import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
@@ -21,11 +21,12 @@ class FindCityByIdAPITest {
     void shouldFindCityById() {
         // ARRANGE - precondition or setup
         long cityId = 1L;
-        ICity expectedCity = FullCity.builder()
-            .name("Paris")
-            .state("Paris75")
-            .country("France").build();
-        CreateCityAPI.INSTANCE.execute(expectedCity)
+        ICity cityToSave =
+            FullCity.builder()
+                .name("Paris")
+                .state("Paris75")
+                .country("France").build();
+        CreateCityAPI.INSTANCE.execute(cityToSave)
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test
@@ -42,7 +43,7 @@ class FindCityByIdAPITest {
             .satisfies(iCity ->
                 assertThat(iCity)
                     .usingRecursiveComparison()
-                    .isEqualTo(expectedCity)
+                    .isEqualTo(cityToSave)
             );
     }
 }

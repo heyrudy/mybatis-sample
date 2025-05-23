@@ -7,7 +7,16 @@ public final class PartialCityProxy implements ICity {
     private String state;
     private String country;
 
+    public PartialCityProxy() {
+        super();
+    }
+
+    public static PartialCityProxy builder() {
+        return new PartialCityProxy();
+    }
+
     public PartialCityProxy(long id, String name, String country) {
+        super();
         this.id = id;
         this.name = name;
         this.country = country;
@@ -23,6 +32,11 @@ public final class PartialCityProxy implements ICity {
         this.id = id;
     }
 
+    public PartialCityProxy id(long id) {
+        this.id = id;
+        return this;
+    }
+
     @Override
     public String getName() {
         return null;
@@ -36,5 +50,9 @@ public final class PartialCityProxy implements ICity {
     @Override
     public String getCountry() {
         return null;
+    }
+
+    public PartialCityProxy build() {
+        return this;
     }
 }

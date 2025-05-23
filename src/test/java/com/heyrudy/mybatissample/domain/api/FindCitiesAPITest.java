@@ -2,9 +2,10 @@ package com.heyrudy.mybatissample.domain.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
+import com.heyrudy.mybatissample.domain.model.city.NullCity;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import io.vavr.control.Either;
 import java.util.List;
@@ -20,15 +21,17 @@ class FindCitiesAPITest {
     @DisplayName("fetch all cities details from database")
     void shouldFindAllCities() {
         // ARRANGE - precondition or setup
-        ICity cityZero = FullCity.builder().build();
-        ICity cityOne = FullCity.builder()
-            .id(1L)
-            .name("Paris")
-            .country("France")
-            .state("Paris75").build();
-        CreateCityAPI.INSTANCE.execute(cityZero)
+        ICity cityZeroToSave =
+            NullCity.builder().build();
+        ICity cityOneToSave =
+            FullCity.builder()
+                .id(1L)
+                .name("Paris")
+                .country("France")
+                .state("Paris75").build();
+        CreateCityAPI.INSTANCE.execute(cityZeroToSave)
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
-        CreateCityAPI.INSTANCE.execute(cityOne)
+        CreateCityAPI.INSTANCE.execute(cityOneToSave)
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test

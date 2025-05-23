@@ -8,6 +8,7 @@ public final class FullCity implements ICity {
     private String country;
 
     public FullCity() {
+        super();
     }
 
     public static FullCity builder() {
