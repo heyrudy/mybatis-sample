@@ -3,49 +3,55 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet author="kko"
-      id="insertIntoTable-fullCity"
+    <changeSet
+      author="kko"
+      id="insertIntoTable-city"
       failOnError="true">
 
-        <comment>create table to store fullCity information</comment>
+        <comment>create table to store city information</comment>
 
-        <insert dbms="postgresql"
+        <insert
+          dbms="h2"
           schemaName="public"
-          tableName="fullCity">
+          tableName="city">
             <column name="name" value="Paris"/>
             <column name="state" value="Paris75"/>
             <column name="country" value="France"/>
         </insert>
 
-        <insert dbms="postgresql"
+        <insert
+          dbms="h2"
           schemaName="public"
-          tableName="fullCity">
+          tableName="city">
             <column name="name" value="Saint-Denis"/>
             <column name="state" value="Seine-Saint-Denis"/>
             <column name="country" value="France"/>
         </insert>
 
-        <insert dbms="postgresql"
+        <insert
+          dbms="h2"
           schemaName="public"
-          tableName="fullCity">
+          tableName="city">
             <column name="name" value="Courneuve"/>
             <column name="state" value="Seine-Saint-Denis"/>
             <column name="country" value="France"/>
         </insert>
 
-        <insert dbms="postgresql"
+        <insert
+          dbms="h2"
           schemaName="public"
-          tableName="fullCity">
+          tableName="city">
             <column name="name" value="Bobigny"/>
             <column name="state" value="Seine-Saint-Denis"/>
             <column name="country" value="France"/>
         </insert>
 
-        <insert dbms="postgresql"
+        <insert
+          dbms="h2"
           schemaName="public"
-          tableName="fullCity">
+          tableName="city">
             <column name="name" value="Clichy"/>
             <column name="state" value="Haut-De-Seine"/>
             <column name="country" value="France"/>

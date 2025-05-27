@@ -153,7 +153,7 @@ public enum CityCriticalRestAPIAdapter {
             };
         Function<ICity, ServerResponse> createSuccessResponse =
             iCity -> {
-                LOGGER.info(SuccessMessage.CITY_FOUND_SUCCESS_MESSAGE, id);
+                LOGGER.info(SuccessMessage.CITY_FOUND, id);
                 return ServerResponse.ok()
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(CITY_RESPONSE_MAPPER.toDto(iCity));

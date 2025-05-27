@@ -7,5 +7,3 @@ public sealed interface DomainError
     DomainServiceAPIError {
 
 }
-
-

@@ -1,12 +1,13 @@
 spring:
-    application:
-        name: MYBATIS SAMPLE APP
-        # Inclusion des yml génériques
-    config:
-        activate:
-            on-profile: local
-        name: application,liquibase,oauth2,swagger-ui
-        import:
-            - classpath:additional-application/liquibase.yml
-            - classpath:additional-application/oauth2.yml
-            - classpath:additional-application/swagger-ui.yml
+  application:
+    name: MYBATIS SAMPLE APP
+    # Inclusion des yml génériques
+  config:
+    activate:
+      on-profile: local
+    name: application,liquibase,h2db,oauth2,swagger-ui
+    import:
+      - classpath:additional-application/liquibase.yml
+      - classpath:additional-application/h2db.yml
+      - classpath:additional-application/oauth2.yml
+      - classpath:additional-application/swagger-ui.yml

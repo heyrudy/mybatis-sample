@@ -1,71 +1,70 @@
 package com.heyrudy.mybatissample.context;
 
-import com.heyrudy.mybatissample.context.IDbSecretProperties.MockedDbSecretProperties;
+import com.heyrudy.mybatissample.context.IDbSecret.MockedDbSecret;
 
-public sealed interface IDbSecretProperties
-    permits DbSecretProperties,
-    MockedDbSecretProperties {
+public sealed interface IDbSecret
+    permits DbSecret, H2DbSecret, MockedDbSecret {
 
-    String getProtocol();
+    String driverClassName();
 
-    String getHost();
+    String protocol();
 
-    int getPort();
+    String host();
 
-    String getSchema();
+    int port();
 
-    String getUsername();
+    String schema();
 
-    char[] getPassword();
+    String username();
+
+    String password();
 
     String getJdbcUrl();
 
-    void clearPassword();
-
-    final class MockedDbSecretProperties implements IDbSecretProperties {
+    final class MockedDbSecret implements IDbSecret {
 
         @Override
-        public String getProtocol() {
+        public String driverClassName() {
+            return "";
+        }
+
+        @Override
+        public String protocol() {
             return "jdbc:postgresql";
         }
 
         @Override
-        public String getHost() {
+        public String host() {
             return "localhost";
         }
 
         @Override
-        public int getPort() {
+        public int port() {
             return 5432;
         }
 
         @Override
-        public String getSchema() {
+        public String schema() {
             return "testdb";
         }
 
         @Override
-        public String getUsername() {
+        public String username() {
             return "pg_user";
         }
 
         @Override
-        public char[] getPassword() {
-            return new char[0];
+        public String password() {
+            return "";
         }
 
         @Override
         public String getJdbcUrl() {
-            return "%s://%s:%d/%s".formatted(getProtocol(), getHost(), getPort(), getSchema());
-        }
-
-        @Override
-        public void clearPassword() {
-
+            return "%s://%s:%d/%s".formatted(protocol(), host(), port(), schema());
         }
     }
 
-    enum IDbSecretPropertiesValidator {
+    enum IDbSecretValidator {
         INSTANCE;
 
         public String validateNonEmpty(String value, String propertyName) {
@@ -74,14 +73,6 @@ public sealed interface IDbSecretProperties
                     "Property '%s' cannot be null or empty".formatted(propertyName));
             }
             return value.trim();
-        }
-
-        public char[] validateNonEmpty(char[] value, String propertyName) {
-            if (value == null || String.valueOf(value).trim().isEmpty()) {
-                throw new IllegalArgumentException(
-                    "Property '%s' cannot be null or empty".formatted(propertyName));
-            }
-            return String.valueOf(value).trim().toCharArray();
         }
 
         public int validatePort(int port, String propertyName) {

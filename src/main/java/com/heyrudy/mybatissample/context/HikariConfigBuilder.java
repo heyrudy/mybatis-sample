@@ -22,6 +22,11 @@ public class HikariConfigBuilder {
         return this;
     }
 
+    public HikariConfigBuilder withDriverClassName(String driverClassName) {
+        config.setDriverClassName(driverClassName);
+        return this;
+    }
+
     public HikariConfigBuilder withUsername(String username) {
         config.setUsername(username);
         return this;

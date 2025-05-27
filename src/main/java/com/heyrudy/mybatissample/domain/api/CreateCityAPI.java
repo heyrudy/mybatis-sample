@@ -1,12 +1,12 @@
 package com.heyrudy.mybatissample.domain.api;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.context.MockedCityRepositoryKey;
-import com.heyrudy.mybatissample.domain.model.city.ICity;
+import com.heyrudy.mybatissample.context.CityRepositoryKey;
 import com.heyrudy.mybatissample.domain.error.CityNotSavedError;
 import com.heyrudy.mybatissample.domain.error.DomainRepositoryError;
 import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
@@ -15,8 +15,8 @@ import java.util.function.Function;
 public enum CreateCityAPI {
     INSTANCE;
 
-    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> MOCKED_CITY_REPOSITORY_DEPENDENCY_LAZY_LOADED_PATH =
-        MockedCityRepositoryKey.INSTANCE.lazyLoad();
+    private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> CITY_REPOSITORY_DEPENDENCY_LAZY_LOADED_PATH =
+        CityRepositoryKey.INSTANCE.lazyLoad();
     // A reader that always returns a specific error value
     private static final Function<MissingCriticalDependencyError, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> DEPENDENCY_NEVER_FOUND_PATH =
         missingCriticalDependencyError ->
@@ -32,7 +32,7 @@ public enum CreateCityAPI {
 
     public Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>> execute(
         final ICity iCity) {
-        return MOCKED_CITY_REPOSITORY_DEPENDENCY_LAZY_LOADED_PATH
+        return CITY_REPOSITORY_DEPENDENCY_LAZY_LOADED_PATH
             .flatMap(missingCriticalDependencyErrorICityRepositoryEither ->
                 missingCriticalDependencyErrorICityRepositoryEither.fold(
                     DEPENDENCY_NEVER_FOUND_PATH,

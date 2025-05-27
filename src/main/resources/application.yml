@@ -1,16 +1,16 @@
 spring:
-    threads:
-        virtual:
-            enabled: true
-jwt:
-    auth:
-        converter:
-            principal-attribute: preferred_username
-            resource-id: city-api
+  threads:
+    virtual:
+      enabled: true
+#jwt:
+#    auth:
+#        converter:
+#            principal-attribute: preferred_username
+#            resource-id: city-api
 server:
-    port: 8080
-    servlet:
-        context-path: /
+  port: 8080
+  servlet:
+    context-path: /
 #    security:
 #        oauth2:
 #            client:

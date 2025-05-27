@@ -23,15 +23,15 @@
         <project-build-sourceEncoding>UTF-8</project-build-sourceEncoding>
         <project-reporting-encoding>UTF-8</project-reporting-encoding>
         <java.version>21</java.version>
-        <config.version>1.4.3</config.version>
         <vavr.version>0.10.4</vavr.version>
         <cyclops.version>2.1.1</cyclops.version>
+        <hibernate-commons-annotations.version>5.0.4.Final</hibernate-commons-annotations.version>
         <org.liquibase.version>4.29.0</org.liquibase.version>
         <jooq.version>3.19.12</jooq.version>
         <org.posgresql.version>42.7.3</org.posgresql.version>
         <org.springboot.version>3.3.2</org.springboot.version>
         <org.springsecurity.version>6.3.0</org.springsecurity.version>
-        <org.testcontainers.version>1.20.0</org.testcontainers.version>
+        <spring-security-oauth2-jose.version>6.0.2</spring-security-oauth2-jose.version>
 
         <!-- Spring Doc - Swagger OpenAPI 3 -->
         <!--        <version.jackson-databind-nullable>0.2.1</version.jackson-databind-nullable>-->
@@ -47,7 +47,8 @@
         <org.instancio.version>4.8.0</org.instancio.version>
         <assertj-core.version>3.26.3</assertj-core.version>
         <assertj-vavr.version>0.4.3</assertj-vavr.version>
-        <spring-security-oauth2-jose.version>6.0.2</spring-security-oauth2-jose.version>
+        <h2.version>2.2.224</h2.version>
+        <org.testcontainers.version>1.20.0</org.testcontainers.version>
         <spring-security-test.version>6.0.2</spring-security-test.version>
         <!--        <default.package>com.heyrudy.mybatissample</default.package>-->
         <!--        <openapi.inputSpec>-->
@@ -75,11 +76,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.typesafe</groupId>
-            <artifactId>config</artifactId>
-            <version>${config.version}</version>
-        </dependency>
-        <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
             <version>${vavr.version}</version>
@@ -89,17 +85,37 @@
             <artifactId>cyclops-react</artifactId>
             <version>${cyclops.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.common</groupId>
+            <artifactId>hibernate-commons-annotations</artifactId>
+            <version>${hibernate-commons-annotations.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
-            <version>${org.springboot.version}</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-actuator</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>${org.springboot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
 
         <!--        <dependency>-->
@@ -151,17 +167,22 @@
         <!--            <scope>provided</scope>-->
         <!--        </dependency>-->
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.liquibase</groupId>-->
-        <!--            <artifactId>liquibase-core</artifactId>-->
-        <!--            <version>${org.liquibase.version}</version>-->
-        <!--            <scope>runtime</scope>-->
-        <!--        </dependency>-->
-
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${org.liquibase.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
             <version>${jooq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -173,18 +194,6 @@
             <artifactId>HikariCP</artifactId>
             <version>3.4.5</version>
         </dependency>
-
-        <!--        <dependency>-->
-        <!--            <groupId>com.speedment.jpastreamer</groupId>-->
-        <!--            <artifactId>jpastreamer-core</artifactId>-->
-        <!--            <version>${jpastreamer-core.version}</version>-->
-        <!--        </dependency>-->
-
-        <!--        <dependency>-->
-        <!--            <groupId>com.speedment.jpastreamer.integration.spring</groupId>-->
-        <!--            <artifactId>spring-boot-jpastreamer-autoconfigure</artifactId>-->
-        <!--            <version>${jpastreamer-core.version}</version>-->
-        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
@@ -202,12 +211,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${org.springboot.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!--        <dependency>-->
@@ -227,25 +230,26 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj-core.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-vavr</artifactId>
             <version>${assertj-vavr.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${org.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${org.testcontainers.version}</version>
-            <scope>test</scope>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.testcontainers</groupId>-->
+        <!--            <artifactId>junit-jupiter</artifactId>-->
+        <!--            <version>${org.testcontainers.version}</version>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.testcontainers</groupId>-->
+        <!--            <artifactId>postgresql</artifactId>-->
+        <!--            <version>${org.testcontainers.version}</version>-->
+        <!--            <scope>test</scope>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -254,6 +258,124 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <!-- Liquibase Plugin for Database Migrations -->
+            <!--            <plugin>-->
+            <!--                <groupId>org.liquibase</groupId>-->
+            <!--                <artifactId>liquibase-maven-plugin</artifactId>-->
+            <!--                <version>${liquibase.version}</version>-->
+
+            <!--                <configuration>-->
+            <!--                    &lt;!&ndash;                    <propertyFile>&ndash;&gt;-->
+            <!--                    &lt;!&ndash;                        src/main/resources/infrastructure/liquibase.properties&ndash;&gt;-->
+            <!--                    &lt;!&ndash;                    </propertyFile>&ndash;&gt;-->
+            <!--                    <dropFirst>false</dropFirst>-->
+            <!--                    <changeLogFile>-->
+            <!--                        src/main/resources/db/changelog/db.changelog-hub.xml-->
+            <!--                    </changeLogFile>-->
+            <!--                    <driver>org.h2.Driver</driver>-->
+            <!--                    <url>-->
+            <!--                        jdbc:h2:file:./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_ON_EXIT=FALSE-->
+            <!--                    </url>-->
+            <!--                    <username>sa</username>-->
+            <!--                    <password></password>-->
+            <!--                </configuration>-->
+            <!--                <dependencies>-->
+            <!--                    <dependency>-->
+            <!--                        <groupId>com.h2database</groupId>-->
+            <!--                        <artifactId>h2</artifactId>-->
+            <!--                        <version>${h2.version}</version>-->
+            <!--                    </dependency>-->
+            <!--                </dependencies>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <phase>process-resources</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>update</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
+
+            <!-- jOOQ Code Generation Plugin -->
+            <!--            <plugin>-->
+            <!--                <groupId>org.jooq</groupId>-->
+            <!--                <artifactId>jooq-codegen-maven</artifactId>-->
+            <!--                <version>${jooq.version}</version>-->
+
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>jooq-codegen</id>-->
+            <!--                        <phase>generate-sources</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>generate</goal>-->
+            <!--                        </goals>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+
+            <!--                <dependencies>-->
+            <!--                    <dependency>-->
+            <!--                        <groupId>com.h2database</groupId>-->
+            <!--                        <artifactId>h2</artifactId>-->
+            <!--                        <version>${h2.version}</version>-->
+            <!--                    </dependency>-->
+            <!--                </dependencies>-->
+
+            <!--                <configuration>-->
+            <!--                    <jdbc>-->
+            <!--                        <driver>org.h2.Driver</driver>-->
+            <!--                        <url>jdbc:h2:file:./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE</url>-->
+            <!--                        <user>sa</user>-->
+            <!--                        <password></password>-->
+            <!--                    </jdbc>-->
+
+            <!--                    <generator>-->
+            <!--                        <database>-->
+            <!--                            <name>org.jooq.meta.h2.H2Database</name>-->
+            <!--                            <includes>.*</includes>-->
+            <!--                            <excludes>databasechangelog.*</excludes>-->
+            <!--                            <inputSchema>public</inputSchema>-->
+            <!--                        </database>-->
+
+            <!--                        <target>-->
+            <!--                            <packageName>-->
+            <!--                                com.heyrudy.mybatissample.domain.model.generated-->
+            <!--                            </packageName>-->
+            <!--                            <directory>target/generated-sources/jooq</directory>-->
+            <!--                        </target>-->
+
+            <!--                        <generate>-->
+            <!--                            &lt;!&ndash; Core immutable setup &ndash;&gt;-->
+            <!--                            <pojos>true</pojos>-->
+            <!--                            <immutablePojos>true</immutablePojos>-->
+            <!--                            <pojosAsJavaRecordClasses>true</pojosAsJavaRecordClasses>-->
+
+            <!--                            &lt;!&ndash; Essential components &ndash;&gt;-->
+            <!--                            <records>true</records>-->
+            <!--                            <interfaces>true</interfaces>-->
+            <!--                            <daos>false</daos>-->
+
+            <!--                            &lt;!&ndash; Modern Java &ndash;&gt;-->
+            <!--                            <javaTimeTypes>true</javaTimeTypes>-->
+            <!--                            &lt;!&ndash;                            <serialization>NONE</serialization>&ndash;&gt;-->
+
+            <!--                            &lt;!&ndash; Annotations &ndash;&gt;-->
+            <!--                            <validationAnnotations>false</validationAnnotations>-->
+            <!--                            <nonnullAnnotation>false</nonnullAnnotation>-->
+            <!--                            <constructorPropertiesAnnotation>false</constructorPropertiesAnnotation>-->
+
+            <!--                            &lt;!&ndash; Clean code &ndash;&gt;-->
+            <!--                            <pojosEqualsAndHashCode>false</pojosEqualsAndHashCode>-->
+            <!--                            <pojosToString>false</pojosToString>-->
+            <!--                            <fluentSetters>false</fluentSetters>-->
+
+            <!--                            &lt;!&ndash; Performance &ndash;&gt;-->
+            <!--                            <globalObjectReferences>true</globalObjectReferences>-->
+            <!--                            <fullyQualifiedTypes>false</fullyQualifiedTypes>-->
+            <!--                        </generate>-->
+            <!--                    </generator>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
         </plugins>
     </build>
 

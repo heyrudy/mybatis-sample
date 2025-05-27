@@ -3,21 +3,23 @@
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet author="kko"
-      id="addAutoIncrement-on-fullCity-primary-key"
+    <changeSet
+      author="kko"
+      id="addAutoIncrement-on-city-primary-key"
       failOnError="true">
 
-        <comment>add auto-increment constraint on fullCity table</comment>
+        <comment>add auto-increment constraint on city table</comment>
 
-        <addAutoIncrement columnDataType="BIGINT"
+        <addAutoIncrement
+          columnDataType="BIGINT"
           columnName="id"
           defaultOnNull="false"
           generationType="ALWAYS"
           incrementBy="1"
           schemaName="public"
-          tableName="fullCity"/>
+          tableName="city"/>
     </changeSet>
 
 </databaseChangeLog>

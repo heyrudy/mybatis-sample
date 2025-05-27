@@ -5,13 +5,13 @@ public record CityNotFoundError(String message)
 
     public static class ErrorMessage {
 
-        public static final String CITY_NOT_FOUND_ERROR_MESSAGE =
+        public static final String CITY_NOT_FOUND =
             "City with id %d was not found";
     }
 
     public static class SuccessMessage {
 
-        public static final String CITY_FOUND_SUCCESS_MESSAGE =
+        public static final String CITY_FOUND =
             "A city with id {} is found";
     }
 }

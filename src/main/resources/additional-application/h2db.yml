@@ -1,0 +1,9 @@
+h2:
+  db:
+    secret:
+      driver_class_name: org.h2.Driver
+      host: ./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_ON_EXIT=FALSE
+      protocol: jdbc:h2:file
+      schema: ${spring.liquibase.default_schema}
+      username: ${spring.liquibase.user}
+      password: ${spring.liquibase.password}

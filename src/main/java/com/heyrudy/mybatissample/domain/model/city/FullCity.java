@@ -2,7 +2,7 @@ package com.heyrudy.mybatissample.domain.model.city;
 
 public final class FullCity implements ICity {
 
-    private long id;
+    private Long id;
     private String name;
     private String state;
     private String country;
@@ -15,15 +15,15 @@ public final class FullCity implements ICity {
         return new FullCity();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public FullCity id(long id) {
+    public FullCity id(Long id) {
         this.id = id;
         return this;
     }

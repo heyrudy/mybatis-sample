@@ -5,9 +5,9 @@ public sealed interface ICity
     PartialCityProxy,
     NullCity {
 
-    long getId();
+    Long getId();
 
-    void setId(long id);
+    void setId(Long id);
 
     String getName();
 

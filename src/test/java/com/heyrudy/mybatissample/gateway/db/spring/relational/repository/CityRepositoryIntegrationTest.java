@@ -1,16 +1,16 @@
 package com.heyrudy.mybatissample.gateway.db.spring.relational.repository;
 
-import com.heyrudy.mybatissample.gateway.db.spring.relational.config.PostgresContainerInit;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.ContextConfiguration;
-import org.testcontainers.junit.jupiter.Testcontainers;
+//import com.heyrudy.mybatissample.gateway.db.spring.relational.config.PostgresContainerInit;
+//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+//import org.springframework.boot.test.context.SpringBootTest;
+//import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+//import org.springframework.test.context.ContextConfiguration;
+//import org.testcontainers.junit.jupiter.Testcontainers;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ContextConfiguration(initializers = {PostgresContainerInit.class})
-@Testcontainers
+//@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@ContextConfiguration(initializers = {PostgresContainerInit.class})
+//@Testcontainers
 class CityRepositoryIntegrationTest {
 
 //    @Autowired

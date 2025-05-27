@@ -15,14 +15,14 @@ public interface ICityRepository {
      * Saves a city.
      *
      * @param iCity The city to save
-     * @return A Reader monad as a Workflow that either results in an error or the saved city
+     * @return A Reader monad that either results in an error or the saved city
      */
     Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, ICity>> save(ICity iCity);
 
     /**
      * Finds all cities.
      *
-     * @return A Reader monad as a Reader that either results in an error or a list of cities
+     * @return A Reader monad that either results in an error or a list of cities
      */
     Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, List<ICity>>> findAll();
 
@@ -30,7 +30,7 @@ public interface ICityRepository {
      * Finds a city by its ID.
      *
      * @param id The ID of the city to find
-     * @return A Reader monad as a Reader that either results in an error or an optional city
+     * @return A Reader monad that either results in an error or an optional city
      */
     Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, Option<ICity>>> findById(
         long id);

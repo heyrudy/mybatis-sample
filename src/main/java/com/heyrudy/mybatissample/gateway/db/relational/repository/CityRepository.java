@@ -4,7 +4,7 @@ import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.context.CriticalDSLContextKey;
+import com.heyrudy.mybatissample.context.CriticalH2DSLContextConfigKey;
 import com.heyrudy.mybatissample.domain.error.CityNotFoundByRepositoryError;
 import com.heyrudy.mybatissample.domain.error.CityNotSavedByRepositoryError;
 import com.heyrudy.mybatissample.domain.error.CriticalDSLContextNotFoundByDependencyLocatorError;
@@ -47,7 +47,7 @@ public enum CityRepository
     }
 
     private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH =
-        CriticalDSLContextKey.INSTANCE.lazyLoad();
+        CriticalH2DSLContextConfigKey.INSTANCE.lazyLoad();
     private static final Function<MissingCriticalDependencyError, Either<MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
         missingCriticalDependencyError ->
             Either.left(

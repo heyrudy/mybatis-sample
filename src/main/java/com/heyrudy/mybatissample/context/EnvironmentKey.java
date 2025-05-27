@@ -3,7 +3,7 @@ package com.heyrudy.mybatissample.context;
 public sealed interface EnvironmentKey
     permits DependencyKey {
 
-//    sealed interface estSPICriticalServiceKey<T> extends ServiceKey<T> permits CityRestSPIKey {
+//    sealed interface RestSPICriticalServiceKey<T> extends ServiceKey<T> permits CityRestSPIKey {
 //
 //    }
 //
