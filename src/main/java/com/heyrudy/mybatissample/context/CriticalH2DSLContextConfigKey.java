@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
+import org.jooq.conf.Settings;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 
@@ -49,7 +50,8 @@ public enum CriticalH2DSLContextConfigKey
                     //.withAutoCommit(false)
                     .buildDataSource())  // Your HikariCP or other DataSource
                 .set(SQLDialect.H2)
-                .set(Executors.newVirtualThreadPerTaskExecutor())));
+                .set(Executors.newVirtualThreadPerTaskExecutor())
+                .set(new Settings().withExecuteLogging(false))));
     private static final Either<MissingCriticalDependencyError, DSLContext> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
         Either.left(new CriticalDSLContextNotFoundByDependencyLocatorError(
             ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY.formatted(INSTANCE)));

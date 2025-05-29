@@ -26,7 +26,20 @@
         <vavr.version>0.10.4</vavr.version>
         <cyclops.version>2.1.1</cyclops.version>
         <hibernate-commons-annotations.version>5.0.4.Final</hibernate-commons-annotations.version>
+
+        <!-- Database Properties -->
+        <database.url>
+            jdbc:h2:file:./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+        </database.url>
+        <database.username>sa</database.username>
+        <database.password></database.password>
+        <database.driver>org.h2.Driver</database.driver>
+
+        <!-- Liquibase Properties -->
         <org.liquibase.version>4.29.0</org.liquibase.version>
+        <liquibase.changeLogFile>src/main/resources/db/changelog/db.changelog-hub.xml
+        </liquibase.changeLogFile>
+        <liquibase.contexts>test,local</liquibase.contexts>
         <jooq.version>3.19.12</jooq.version>
         <org.posgresql.version>42.7.3</org.posgresql.version>
         <org.springboot.version>3.3.2</org.springboot.version>
@@ -252,130 +265,244 @@
         <!--        </dependency>-->
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>test</id>
+            <activation>
+                <property>
+                    <name>maven.test.skip</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- Clean Plugin - Remove H2 files -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.basedir}/data</directory>
+                                    <includes>
+                                        <include>*.db</include>
+                                        <include>*.h2.db</include>
+                                        <include>*.mv.db</include>
+                                        <include>*.trace.db</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+
+                    <!-- Liquibase Plugin -->
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <configuration>
+                            <changeLogFile>${liquibase.changeLogFile}</changeLogFile>
+                            <url>${database.url}</url>
+                            <username>${database.username}</username>
+                            <password>${database.password}</password>
+                            <driver>${database.driver}</driver>
+                            <contexts>${liquibase.contexts}</contexts>
+                            <dropFirst>false</dropFirst>
+                            <logging>info</logging>
+                            <verbose>true</verbose>
+                        </configuration>
+                        <executions>
+                            <!-- Run migrations before tests -->
+                            <execution>
+                                <id>update-schema</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.h2database</groupId>
+                                <artifactId>h2</artifactId>
+                                <version>${h2.version}</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+
+                    <!-- Surefire Plugin for Tests -->
+                    <!--                    <plugin>-->
+                    <!--                        <groupId>org.apache.maven.plugins</groupId>-->
+                    <!--                        <artifactId>maven-surefire-plugin</artifactId>-->
+                    <!--                        <configuration>-->
+                    <!--                            <includes>-->
+                    <!--                                <include>**/*Test.java</include>-->
+                    <!--                                <include>**/*Tests.java</include>-->
+                    <!--                            </includes>-->
+                    <!--                            <systemPropertyVariables>-->
+                    <!--                                <spring.profiles.active>test</spring.profiles.active>-->
+                    <!--                                <database.url>${database.url}</database.url>-->
+                    <!--                                <database.username>${database.username}</database.username>-->
+                    <!--                                <database.password>${database.password}</database.password>-->
+                    <!--                            </systemPropertyVariables>-->
+                    <!--                            <argLine>-->
+                    <!--                                &#45;&#45;add-opens java.base/java.lang=ALL-UNNAMED-->
+                    <!--                                &#45;&#45;add-opens java.base/java.util=ALL-UNNAMED-->
+                    <!--                            </argLine>-->
+                    <!--                        </configuration>-->
+                    <!--                    </plugin>-->
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Development Profile with Different Database -->
+        <profile>
+            <id>local</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>./data</directory>
+                                    <includes>
+                                        <include>*.db</include>
+                                        <include>*.h2.db</include>
+                                        <include>*.mv.db</include>
+                                        <include>*.trace.db</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+
+                    <!-- Liquibase Plugin -->
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <version>${liquibase.version}</version>
+                        <configuration>
+                            <changeLogFile>${liquibase.changeLogFile}</changeLogFile>
+                            <url>${database.url}</url>
+                            <username>${database.username}</username>
+                            <password>${database.password}</password>
+                            <driver>${database.driver}</driver>
+                            <contexts>${liquibase.contexts}</contexts>
+                            <dropFirst>false</dropFirst>
+                            <logging>info</logging>
+                            <verbose>true</verbose>
+                        </configuration>
+                        <executions>
+                            <!-- Run migrations before tests -->
+                            <execution>
+                                <id>update-schema</id>
+                                <phase>process-test-classes</phase>
+                                <goals>
+                                    <goal>update</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.h2database</groupId>
+                                <artifactId>h2</artifactId>
+                                <version>${h2.version}</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+
+                    <!-- jOOQ Code Generation Plugin -->
+                    <!--            <plugin>-->
+                    <!--                <groupId>org.jooq</groupId>-->
+                    <!--                <artifactId>jooq-codegen-maven</artifactId>-->
+                    <!--                <version>${jooq.version}</version>-->
+
+                    <!--                <executions>-->
+                    <!--                    <execution>-->
+                    <!--                        <id>jooq-codegen</id>-->
+                    <!--                        <phase>generate-sources</phase>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>generate</goal>-->
+                    <!--                        </goals>-->
+                    <!--                    </execution>-->
+                    <!--                </executions>-->
+
+                    <!--                <dependencies>-->
+                    <!--                    <dependency>-->
+                    <!--                        <groupId>com.h2database</groupId>-->
+                    <!--                        <artifactId>h2</artifactId>-->
+                    <!--                        <version>${h2.version}</version>-->
+                    <!--                    </dependency>-->
+                    <!--                </dependencies>-->
+
+                    <!--                <configuration>-->
+                    <!--                    <jdbc>-->
+                    <!--                        <driver>org.h2.Driver</driver>-->
+                    <!--                        <url>jdbc:h2:file:./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE</url>-->
+                    <!--                        <user>sa</user>-->
+                    <!--                        <password></password>-->
+                    <!--                    </jdbc>-->
+
+                    <!--                    <generator>-->
+                    <!--                        <database>-->
+                    <!--                            <name>org.jooq.meta.h2.H2Database</name>-->
+                    <!--                            <includes>.*</includes>-->
+                    <!--                            <excludes>databasechangelog.*</excludes>-->
+                    <!--                            <inputSchema>public</inputSchema>-->
+                    <!--                        </database>-->
+
+                    <!--                        <target>-->
+                    <!--                            <packageName>-->
+                    <!--                                com.heyrudy.mybatissample.domain.model.generated-->
+                    <!--                            </packageName>-->
+                    <!--                            <directory>target/generated-sources/jooq</directory>-->
+                    <!--                        </target>-->
+
+                    <!--                        <generate>-->
+                    <!--                            &lt;!&ndash; Core immutable setup &ndash;&gt;-->
+                    <!--                            <pojos>true</pojos>-->
+                    <!--                            <immutablePojos>true</immutablePojos>-->
+                    <!--                            <pojosAsJavaRecordClasses>true</pojosAsJavaRecordClasses>-->
+
+                    <!--                            &lt;!&ndash; Essential components &ndash;&gt;-->
+                    <!--                            <records>true</records>-->
+                    <!--                            <interfaces>true</interfaces>-->
+                    <!--                            <daos>false</daos>-->
+
+                    <!--                            &lt;!&ndash; Modern Java &ndash;&gt;-->
+                    <!--                            <javaTimeTypes>true</javaTimeTypes>-->
+                    <!--                            &lt;!&ndash;                            <serialization>NONE</serialization>&ndash;&gt;-->
+
+                    <!--                            &lt;!&ndash; Annotations &ndash;&gt;-->
+                    <!--                            <validationAnnotations>false</validationAnnotations>-->
+                    <!--                            <nonnullAnnotation>false</nonnullAnnotation>-->
+                    <!--                            <constructorPropertiesAnnotation>false</constructorPropertiesAnnotation>-->
+
+                    <!--                            &lt;!&ndash; Clean code &ndash;&gt;-->
+                    <!--                            <pojosEqualsAndHashCode>false</pojosEqualsAndHashCode>-->
+                    <!--                            <pojosToString>false</pojosToString>-->
+                    <!--                            <fluentSetters>false</fluentSetters>-->
+
+                    <!--                            &lt;!&ndash; Performance &ndash;&gt;-->
+                    <!--                            <globalObjectReferences>true</globalObjectReferences>-->
+                    <!--                            <fullyQualifiedTypes>false</fullyQualifiedTypes>-->
+                    <!--                        </generate>-->
+                    <!--                    </generator>-->
+                    <!--                </configuration>-->
+                    <!--            </plugin>-->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
-            <!-- Liquibase Plugin for Database Migrations -->
-            <!--            <plugin>-->
-            <!--                <groupId>org.liquibase</groupId>-->
-            <!--                <artifactId>liquibase-maven-plugin</artifactId>-->
-            <!--                <version>${liquibase.version}</version>-->
-
-            <!--                <configuration>-->
-            <!--                    &lt;!&ndash;                    <propertyFile>&ndash;&gt;-->
-            <!--                    &lt;!&ndash;                        src/main/resources/infrastructure/liquibase.properties&ndash;&gt;-->
-            <!--                    &lt;!&ndash;                    </propertyFile>&ndash;&gt;-->
-            <!--                    <dropFirst>false</dropFirst>-->
-            <!--                    <changeLogFile>-->
-            <!--                        src/main/resources/db/changelog/db.changelog-hub.xml-->
-            <!--                    </changeLogFile>-->
-            <!--                    <driver>org.h2.Driver</driver>-->
-            <!--                    <url>-->
-            <!--                        jdbc:h2:file:./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_ON_EXIT=FALSE-->
-            <!--                    </url>-->
-            <!--                    <username>sa</username>-->
-            <!--                    <password></password>-->
-            <!--                </configuration>-->
-            <!--                <dependencies>-->
-            <!--                    <dependency>-->
-            <!--                        <groupId>com.h2database</groupId>-->
-            <!--                        <artifactId>h2</artifactId>-->
-            <!--                        <version>${h2.version}</version>-->
-            <!--                    </dependency>-->
-            <!--                </dependencies>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <phase>process-resources</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>update</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
-
-            <!-- jOOQ Code Generation Plugin -->
-            <!--            <plugin>-->
-            <!--                <groupId>org.jooq</groupId>-->
-            <!--                <artifactId>jooq-codegen-maven</artifactId>-->
-            <!--                <version>${jooq.version}</version>-->
-
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>jooq-codegen</id>-->
-            <!--                        <phase>generate-sources</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>generate</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-
-            <!--                <dependencies>-->
-            <!--                    <dependency>-->
-            <!--                        <groupId>com.h2database</groupId>-->
-            <!--                        <artifactId>h2</artifactId>-->
-            <!--                        <version>${h2.version}</version>-->
-            <!--                    </dependency>-->
-            <!--                </dependencies>-->
-
-            <!--                <configuration>-->
-            <!--                    <jdbc>-->
-            <!--                        <driver>org.h2.Driver</driver>-->
-            <!--                        <url>jdbc:h2:file:./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE</url>-->
-            <!--                        <user>sa</user>-->
-            <!--                        <password></password>-->
-            <!--                    </jdbc>-->
-
-            <!--                    <generator>-->
-            <!--                        <database>-->
-            <!--                            <name>org.jooq.meta.h2.H2Database</name>-->
-            <!--                            <includes>.*</includes>-->
-            <!--                            <excludes>databasechangelog.*</excludes>-->
-            <!--                            <inputSchema>public</inputSchema>-->
-            <!--                        </database>-->
-
-            <!--                        <target>-->
-            <!--                            <packageName>-->
-            <!--                                com.heyrudy.mybatissample.domain.model.generated-->
-            <!--                            </packageName>-->
-            <!--                            <directory>target/generated-sources/jooq</directory>-->
-            <!--                        </target>-->
-
-            <!--                        <generate>-->
-            <!--                            &lt;!&ndash; Core immutable setup &ndash;&gt;-->
-            <!--                            <pojos>true</pojos>-->
-            <!--                            <immutablePojos>true</immutablePojos>-->
-            <!--                            <pojosAsJavaRecordClasses>true</pojosAsJavaRecordClasses>-->
-
-            <!--                            &lt;!&ndash; Essential components &ndash;&gt;-->
-            <!--                            <records>true</records>-->
-            <!--                            <interfaces>true</interfaces>-->
-            <!--                            <daos>false</daos>-->
-
-            <!--                            &lt;!&ndash; Modern Java &ndash;&gt;-->
-            <!--                            <javaTimeTypes>true</javaTimeTypes>-->
-            <!--                            &lt;!&ndash;                            <serialization>NONE</serialization>&ndash;&gt;-->
-
-            <!--                            &lt;!&ndash; Annotations &ndash;&gt;-->
-            <!--                            <validationAnnotations>false</validationAnnotations>-->
-            <!--                            <nonnullAnnotation>false</nonnullAnnotation>-->
-            <!--                            <constructorPropertiesAnnotation>false</constructorPropertiesAnnotation>-->
-
-            <!--                            &lt;!&ndash; Clean code &ndash;&gt;-->
-            <!--                            <pojosEqualsAndHashCode>false</pojosEqualsAndHashCode>-->
-            <!--                            <pojosToString>false</pojosToString>-->
-            <!--                            <fluentSetters>false</fluentSetters>-->
-
-            <!--                            &lt;!&ndash; Performance &ndash;&gt;-->
-            <!--                            <globalObjectReferences>true</globalObjectReferences>-->
-            <!--                            <fullyQualifiedTypes>false</fullyQualifiedTypes>-->
-            <!--                        </generate>-->
-            <!--                    </generator>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
         </plugins>
     </build>
 

@@ -9,7 +9,7 @@
       relativeToChangelogFile="true"/>
     <include file="../features/db.changelog-002-add-auto-increment-constraint-city-table.xml"
       relativeToChangelogFile="true"/>
-    <include file="../features/db.changelog-003-populate-city-table.xml"
-      relativeToChangelogFile="true"/>
+<!--    <include file="../features/db.changelog-003-populate-city-table.xml"-->
+<!--      relativeToChangelogFile="true"/>-->
 
 </databaseChangeLog>

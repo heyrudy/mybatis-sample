@@ -25,32 +25,32 @@ public sealed interface IDbSecret
 
         @Override
         public String driverClassName() {
-            return "";
+            return "org.h2.Driver";
         }
 
         @Override
         public String protocol() {
-            return "jdbc:postgresql";
+            return "jdbc:h2:file";
         }
 
         @Override
         public String host() {
-            return "localhost";
+            return "";
         }
 
         @Override
         public int port() {
-            return 5432;
+            return 1;
         }
 
         @Override
         public String schema() {
-            return "testdb";
+            return "./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE";
         }
 
         @Override
         public String username() {
-            return "pg_user";
+            return "SA";
         }
 
         @Override
@@ -60,7 +60,7 @@ public sealed interface IDbSecret
 
         @Override
         public String getJdbcUrl() {
-            return "%s://%s:%d/%s".formatted(protocol(), host(), port(), schema());
+            return "%s:%s".formatted(protocol(), schema());
         }
     }
 

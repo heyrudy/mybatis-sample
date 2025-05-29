@@ -7,5 +7,5 @@ import java.util.function.Supplier;
 public non-sealed interface AppScopedDependencyLocator
     extends Environment {
 
-    <T> T getDependency(Class<T> beanClass, Option<Supplier<T>> fallback);
+    <T> T getDependency(Class<T> dependencyClass, Option<Supplier<T>> fallback);
 }

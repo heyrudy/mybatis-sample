@@ -7,15 +7,23 @@ import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.city.NullCity;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
+import com.heyrudy.mybatissample.gateway.db.relational.repository.CityRepository;
 import io.vavr.control.Either;
 import java.util.List;
 import org.assertj.vavr.api.VavrAssertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class FindCitiesAPITest {
 
     private final FindCitiesAPI findCitiesAPIInstanceUnderTest = FindCitiesAPI.INSTANCE;
+
+    @AfterEach
+    void tearDown() {
+        CityRepository.INSTANCE.emptyTable()
+            .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
+    }
 
     @Test
     @DisplayName("fetch all cities details from database")

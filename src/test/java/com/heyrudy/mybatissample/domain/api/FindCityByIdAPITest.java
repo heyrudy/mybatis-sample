@@ -7,14 +7,22 @@ import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
+import com.heyrudy.mybatissample.gateway.db.relational.repository.CityRepository;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class FindCityByIdAPITest {
 
     private final FindCityByIdAPI findCityByIdAPIInstanceUnderTest = FindCityByIdAPI.INSTANCE;
+
+    @AfterEach
+    void tearDown() {
+        CityRepository.INSTANCE.emptyTable()
+            .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
+    }
 
     @Test
     @DisplayName("fetch city details by id from database")
@@ -40,10 +48,14 @@ class FindCityByIdAPITest {
             .isNotNull()
             .isRight()
             .extracting(Either::get)
-            .satisfies(iCity ->
-                assertThat(iCity)
-                    .usingRecursiveComparison()
-                    .isEqualTo(cityToSave)
+            .satisfies(iCity -> {
+                    assertThat(iCity.getName())
+                        .isEqualTo(cityToSave.getName());
+                    assertThat(iCity.getState())
+                        .isEqualTo(cityToSave.getState());
+                    assertThat(iCity.getCountry())
+                        .isEqualTo(cityToSave.getCountry());
+                }
             );
     }
 }

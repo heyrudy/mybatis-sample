@@ -11,3 +11,8 @@ spring:
       - classpath:additional-application/h2db.yml
       - classpath:additional-application/oauth2.yml
       - classpath:additional-application/swagger-ui.yml
+
+logging:
+  level:
+    org.jooq.tools.LoggerListener: WARN
+    org.jooq: WARN

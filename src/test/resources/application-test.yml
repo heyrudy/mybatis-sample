@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: MYBATIS SAMPLE APP
+    # Inclusion des yml génériques
+  config:
+    activate:
+      on-profile: test
+    name: application,h2db
+    import:
+      - classpath:additional-application/h2db.yml
