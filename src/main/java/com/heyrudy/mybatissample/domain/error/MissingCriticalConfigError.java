@@ -2,6 +2,15 @@ package com.heyrudy.mybatissample.domain.error;
 
 public sealed interface MissingCriticalConfigError
     extends MissingCriticalDependencyError
-    permits CriticalDSLContextNotFoundByDependencyLocatorError {
+    permits MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError {
 
+    record CriticalDSLContextNotFoundByDependencyLocatorError(String message)
+        implements MissingCriticalConfigError {
+
+        public static class ErrorMessage {
+
+            public static final String NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY =
+                "No critical dsl context config found for key: %s";
+        }
+    }
 }

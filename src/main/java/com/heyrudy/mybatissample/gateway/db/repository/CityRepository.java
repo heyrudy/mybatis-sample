@@ -1,19 +1,19 @@
-package com.heyrudy.mybatissample.gateway.db.relational.repository;
+package com.heyrudy.mybatissample.gateway.db.repository;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.context.CriticalH2DSLContextConfigKey;
-import com.heyrudy.mybatissample.domain.error.CityNotFoundByRepositoryError;
-import com.heyrudy.mybatissample.domain.error.CityNotSavedByRepositoryError;
-import com.heyrudy.mybatissample.domain.error.CityTableNotTruncatedError;
-import com.heyrudy.mybatissample.domain.error.CriticalDSLContextNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.error.CityRepositoryError;
+import com.heyrudy.mybatissample.domain.error.CityRepositoryError.CityNotFoundByRepositoryError;
+import com.heyrudy.mybatissample.domain.error.CityRepositoryError.CityNotSavedByRepositoryError;
+import com.heyrudy.mybatissample.domain.error.CityRepositoryError.CityTableNotTruncatedError;
 import com.heyrudy.mybatissample.domain.error.DomainRepositoryError;
+import com.heyrudy.mybatissample.domain.error.MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.domain.spi.ICityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -50,24 +50,20 @@ public enum CityRepository
 
     private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH =
         CriticalH2DSLContextConfigKey.INSTANCE.lazyLoad();
+    private static final Function<MissingCriticalDependencyError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
+        MissingCriticalDependencyError::message;
     private static final Function<MissingCriticalDependencyError, Either<MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
-        missingCriticalDependencyError ->
-            Either.left(
-                new CriticalDSLContextNotFoundByDependencyLocatorError(
-                    missingCriticalDependencyError.message()));
+        MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
+            .andThen(CriticalDSLContextNotFoundByDependencyLocatorError::new).andThen(Either::left);
     private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
-        missingCriticalDependencyError ->
-            Either.left(
-                new CityNotSavedByRepositoryError(missingCriticalDependencyError.message()));
+        MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
+            .andThen(CityRepositoryError.CityNotSavedByRepositoryError::new).andThen(Either::left);
     private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY_PATH =
-        missingCriticalDependencyError ->
-            Either.left(
-                new CityNotFoundByRepositoryError(missingCriticalDependencyError.message()));
+        MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
+            .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new).andThen(Either::left);
     private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, Integer>> CITY_NOT_DELETED_BY_REPOSITORY_PATH =
-        missingCriticalDependencyError ->
-            Either.left(
-                new CityNotFoundByRepositoryError(missingCriticalDependencyError.message()));
-    // A reader that always returns a specific error value
+        MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
+            .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new).andThen(Either::left);
     private static final Function<DSLContext, Either<MissingCriticalDependencyError, List<ICity>>> FIND_CITIES_PATH =
         dslContext ->
             Either.right(dslContext.select(ID, NAME, STATE, COUNTRY)
@@ -76,7 +72,8 @@ public enum CityRepository
                 .stream()
                 .map(CityRepository::mapRecord)
                 .toList());
-    private static final Function<ICity, Option<ICity>> TO_OPTIONAL_CITY_PATH = Option::of;
+    private static final Function<ICity, Option<ICity>> TO_OPTIONAL_CITY_PATH =
+        Option::of;
     private static final Function<ICity, Either<DomainRepositoryError, Option<ICity>>> TO_EITHER_CITY_PATH =
         TO_OPTIONAL_CITY_PATH.andThen(Either::right);
 
@@ -92,7 +89,7 @@ public enum CityRepository
                         .fetchOne())
                     .map(CityRepository::mapRecord)
                     .toEither(
-                        new CityNotSavedByRepositoryError(
+                        new CityRepositoryError.CityNotSavedByRepositoryError(
                             CityNotSavedByRepositoryError.ErrorMessage.CITY_NOT_SAVED));
         // Compose operations with flatMap to explicitly avoid apply
         return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
@@ -122,7 +119,7 @@ public enum CityRepository
                     .fold(
                         () ->
                             Either.left(
-                                new CityNotFoundByRepositoryError(
+                                new CityRepositoryError.CityNotFoundByRepositoryError(
                                     CityNotFoundByRepositoryError.ErrorMessage.CITY_NOT_FOUND_BY_ID
                                         .formatted(id))),
                         TO_EITHER_CITY_PATH);
@@ -146,7 +143,7 @@ public enum CityRepository
                     .toEither()
                     .bimap(
                         throwable ->
-                            new CityTableNotTruncatedError(
+                            new CityRepositoryError.CityTableNotTruncatedError(
                                 CityTableNotTruncatedError.ErrorMessage.CITY_TABLE_NOT_TRUNCATED
                                     .formatted(throwable.getMessage())),
                         Function.identity());

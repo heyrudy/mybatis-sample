@@ -2,21 +2,24 @@ package com.heyrudy.mybatissample.domain.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.heyrudy.mybatissample.controller.interactor.CreateCityInteractor;
+import com.heyrudy.mybatissample.controller.interactor.FindCityByIdInteractor;
 import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
-import com.heyrudy.mybatissample.gateway.db.relational.repository.CityRepository;
+import com.heyrudy.mybatissample.gateway.db.repository.CityRepository;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class FindCityByIdAPITest {
+class FindCityByIdInteractorTest {
 
-    private final FindCityByIdAPI findCityByIdAPIInstanceUnderTest = FindCityByIdAPI.INSTANCE;
+    private static final FindCityByIdInteractor findCityByIdInteractorInstanceUnderTest =
+        FindCityByIdInteractor.INSTANCE;
 
     @AfterEach
     void tearDown() {
@@ -34,12 +37,12 @@ class FindCityByIdAPITest {
                 .name("Paris")
                 .state("Paris75")
                 .country("France").build();
-        CreateCityAPI.INSTANCE.execute(cityToSave)
+        CreateCityInteractor.INSTANCE.execute(cityToSave)
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test
         Either<DomainServiceAPIError, ICity> actual =
-            findCityByIdAPIInstanceUnderTest.execute(
+            findCityByIdInteractorInstanceUnderTest.execute(
                     CityCriteriaDetails.builder().cityId(cityId).build())
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 

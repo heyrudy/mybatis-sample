@@ -2,12 +2,14 @@ package com.heyrudy.mybatissample.domain.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.heyrudy.mybatissample.controller.interactor.CreateCityInteractor;
+import com.heyrudy.mybatissample.controller.interactor.FindCitiesInteractor;
 import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.city.NullCity;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
-import com.heyrudy.mybatissample.gateway.db.relational.repository.CityRepository;
+import com.heyrudy.mybatissample.gateway.db.repository.CityRepository;
 import io.vavr.control.Either;
 import java.util.List;
 import org.assertj.vavr.api.VavrAssertions;
@@ -15,9 +17,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class FindCitiesAPITest {
+class FindCitiesInteractorTest {
 
-    private final FindCitiesAPI findCitiesAPIInstanceUnderTest = FindCitiesAPI.INSTANCE;
+    private static final FindCitiesInteractor findCitiesInteractorInstanceUnderTest =
+        FindCitiesInteractor.INSTANCE;
 
     @AfterEach
     void tearDown() {
@@ -37,14 +40,14 @@ class FindCitiesAPITest {
                 .name("Paris")
                 .country("France")
                 .state("Paris75").build();
-        CreateCityAPI.INSTANCE.execute(cityZeroToSave)
+        CreateCityInteractor.INSTANCE.execute(cityZeroToSave)
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
-        CreateCityAPI.INSTANCE.execute(cityOneToSave)
+        CreateCityInteractor.INSTANCE.execute(cityOneToSave)
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test
         Either<DomainServiceAPIError, List<ICity>> actual =
-            findCitiesAPIInstanceUnderTest.execute()
+            findCitiesInteractorInstanceUnderTest.execute()
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ASSERT - verify the result or output using assert statements

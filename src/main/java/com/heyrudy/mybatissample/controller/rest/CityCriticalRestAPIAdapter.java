@@ -1,19 +1,17 @@
 package com.heyrudy.mybatissample.controller.rest;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.controller.interactor.CreateCityInteractor;
+import com.heyrudy.mybatissample.controller.interactor.FindCitiesInteractor;
+import com.heyrudy.mybatissample.controller.interactor.FindCityByIdInteractor;
 import com.heyrudy.mybatissample.controller.rest.dto.ApiErrorResponse;
 import com.heyrudy.mybatissample.controller.rest.dto.CityRequestDTO;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityRequestMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.mapper.CityResponseMapper;
 import com.heyrudy.mybatissample.controller.rest.dto.validator.CityCriteriaValidator;
 import com.heyrudy.mybatissample.controller.rest.dto.validator.CityRequestDTOValidator;
-import com.heyrudy.mybatissample.domain.api.CreateCityAPI;
-import com.heyrudy.mybatissample.domain.api.FindCitiesAPI;
-import com.heyrudy.mybatissample.domain.api.FindCityByIdAPI;
-import com.heyrudy.mybatissample.domain.error.CityNotFoundError;
-import com.heyrudy.mybatissample.domain.error.CityNotFoundError.SuccessMessage;
-import com.heyrudy.mybatissample.domain.error.CityNotSavedError;
 import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
+import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError.CityNotFoundError.SuccessMessage;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.domain.model.common.CityCriteriaDetails;
 import com.heyrudy.mybatissample.gateway.file.pdf.CreatePdfUtil;
@@ -41,19 +39,19 @@ public enum CityCriticalRestAPIAdapter {
     private static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR = CityCriteriaValidator.INSTANCE;
     private static final CityRequestMapper CITY_REQUEST_MAPPER = CityRequestMapper.INSTANCE;
     private static final CityResponseMapper CITY_RESPONSE_MAPPER = CityResponseMapper.INSTANCE;
-    private static final CreateCityAPI CREATE_CITY_API = CreateCityAPI.INSTANCE;
-    private static final FindCityByIdAPI FIND_CITY_BY_ID_API = FindCityByIdAPI.INSTANCE;
-    private static final FindCitiesAPI FIND_CITIES_API = FindCitiesAPI.INSTANCE;
+    private static final CreateCityInteractor CREATE_CITY_INTERACTOR = CreateCityInteractor.INSTANCE;
+    private static final FindCityByIdInteractor FIND_CITY_BY_ID_INTERACTOR = FindCityByIdInteractor.INSTANCE;
+    private static final FindCitiesInteractor FIND_CITIES_INTERACTOR = FindCitiesInteractor.INSTANCE;
     private static final CreatePdfUtil CREATE_PDF_UTIL = CreatePdfUtil.INSTANCE;
     // A reader that always returns a specific error value
     private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_SAVED_PATH =
-        errMsg -> __ -> Either.left(new CityNotSavedError(errMsg));
+        errMsg -> __ -> Either.left(new DomainServiceAPIError.CityNotSavedError(errMsg));
     private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_FOUND_PATH =
-        errMsg -> __ -> Either.left(new CityNotFoundError(errMsg));
+        errMsg -> __ -> Either.left(new DomainServiceAPIError.CityNotFoundError(errMsg));
     private static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_VALIDATION_OR_FIND_CITY_BY_ID_PATH =
         stringCityCriteriaDetailsValidation ->
             stringCityCriteriaDetailsValidation.fold(
-                CITY_NEVER_FOUND_PATH, FIND_CITY_BY_ID_API::execute);
+                CITY_NEVER_FOUND_PATH, FIND_CITY_BY_ID_INTERACTOR::execute);
     // Define a function to validate a DTO
     private static final Function<CityRequestDTO, Either<String, CityRequestDTO>> VALIDATE_CITY_POST_REQUEST_DTO_PATH =
         cityRequestDTO -> {
@@ -74,7 +72,7 @@ public enum CityCriticalRestAPIAdapter {
     private static final Function<Either<String, CityRequestDTO>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_TO_CREATE_OR_CREATE_CITY_PATH =
         validatedDtoEither ->
             validatedDtoEither.fold(
-                CITY_NEVER_SAVED_PATH, MAP_TO_CITY_PATH.andThen(CREATE_CITY_API::execute));
+                CITY_NEVER_SAVED_PATH, MAP_TO_CITY_PATH.andThen(CREATE_CITY_INTERACTOR::execute));
 
     /**
      * @param request city with all its details to persist in the database
@@ -123,7 +121,7 @@ public enum CityCriticalRestAPIAdapter {
                         .toList());
             };
         // Compose operations with flatMap to explicitly avoid apply
-        return FIND_CITIES_API.execute()
+        return FIND_CITIES_INTERACTOR.execute()
             .map(criticalRepositoryNotFoundByDependencyLocatorErrorListEither ->
                 criticalRepositoryNotFoundByDependencyLocatorErrorListEither.fold(
                     createErrorResponse, createSuccessResponse));

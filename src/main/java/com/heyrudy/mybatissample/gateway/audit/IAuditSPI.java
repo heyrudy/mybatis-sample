@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.spi;
+package com.heyrudy.mybatissample.gateway.audit;
 
 public interface IAuditSPI {
 

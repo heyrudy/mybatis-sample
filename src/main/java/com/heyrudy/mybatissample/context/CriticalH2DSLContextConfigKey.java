@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.context;
 
-import com.heyrudy.mybatissample.domain.error.CriticalDSLContextNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.domain.error.CriticalDSLContextNotFoundByDependencyLocatorError.ErrorMessage;
+import com.heyrudy.mybatissample.domain.error.MissingCriticalConfigError;
+import com.heyrudy.mybatissample.domain.error.MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError.ErrorMessage;
 import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
@@ -53,8 +53,9 @@ public enum CriticalH2DSLContextConfigKey
                 .set(Executors.newVirtualThreadPerTaskExecutor())
                 .set(new Settings().withExecuteLogging(false))));
     private static final Either<MissingCriticalDependencyError, DSLContext> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
-        Either.left(new CriticalDSLContextNotFoundByDependencyLocatorError(
-            ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY.formatted(INSTANCE)));
+        Either.left(
+            new MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError(
+                ErrorMessage.NO_CRITICAL_DSL_CONTEXT_CONFIG_FOUND_FOR_KEY.formatted(INSTANCE)));
     private static final Function<Either<MissingCriticalDependencyError, IDbSecret>, Either<MissingCriticalDependencyError, DSLContext>> DSL_CONTEXT_TRANSFORMER_PATH =
         missingCriticalDependencyErrorIDbSecretPropertiesEither ->
             missingCriticalDependencyErrorIDbSecretPropertiesEither.fold(

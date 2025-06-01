@@ -1,8 +1,8 @@
 package com.heyrudy.mybatissample.context;
 
 import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
-import com.heyrudy.mybatissample.domain.spi.ICityRepository;
-import com.heyrudy.mybatissample.gateway.db.relational.repository.CityRepository;
+import com.heyrudy.mybatissample.gateway.db.repository.ICityRepository;
+import com.heyrudy.mybatissample.gateway.db.repository.CityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 
@@ -12,8 +12,7 @@ public enum CityRepositoryKey
 
     @Override
     public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, ICityRepository>> lazyLoad() {
-        return __ ->
-            Either.right(CityRepository.INSTANCE);
+        return __ -> Either.right(CityRepository.INSTANCE);
     }
 
     @Override

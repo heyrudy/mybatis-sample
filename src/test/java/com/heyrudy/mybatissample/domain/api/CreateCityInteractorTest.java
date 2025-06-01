@@ -6,16 +6,18 @@ import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.model.city.FullCity;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
-import com.heyrudy.mybatissample.gateway.db.relational.repository.CityRepository;
+import com.heyrudy.mybatissample.gateway.db.repository.CityRepository;
+import com.heyrudy.mybatissample.controller.interactor.CreateCityInteractor;
 import io.vavr.control.Either;
 import org.assertj.vavr.api.VavrAssertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class CreateCityAPITest {
+class CreateCityInteractorTest {
 
-    private final CreateCityAPI createCityAPIInstanceUnderTest = CreateCityAPI.INSTANCE;
+    private static final CreateCityInteractor createCityInteractorInstanceUnderTest =
+        CreateCityInteractor.INSTANCE;
 
     @AfterEach
     void tearDown() {
@@ -35,7 +37,7 @@ class CreateCityAPITest {
 
         // ACT - action or behavior that we are going to test
         Either<DomainServiceAPIError, ICity> actual =
-            createCityAPIInstanceUnderTest.execute(cityToSave)
+            createCityInteractorInstanceUnderTest.execute(cityToSave)
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ASSERT - verify the result or output using assert statements

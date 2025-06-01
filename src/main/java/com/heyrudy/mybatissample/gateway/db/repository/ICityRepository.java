@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.spi;
+package com.heyrudy.mybatissample.gateway.db.repository;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
