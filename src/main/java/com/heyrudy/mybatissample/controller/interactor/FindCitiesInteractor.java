@@ -2,11 +2,10 @@ package com.heyrudy.mybatissample.controller.interactor;
 
 import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
-import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError.CitiesNotFoundError;
 import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.model.city.ICity;
-import com.heyrudy.mybatissample.gateway.db.repository.ICityRepository;
 import com.heyrudy.mybatissample.gateway.db.repository.CityRepository;
+import com.heyrudy.mybatissample.gateway.db.repository.ICityRepository;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.List;
@@ -17,9 +16,12 @@ public enum FindCitiesInteractor {
 
     private static final ICityRepository CITY_REPOSITORY_DEPENDENCY_PATH =
         CityRepository.INSTANCE;
+    private static final Function<MissingCriticalDependencyError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
+        MissingCriticalDependencyError::message;
     private static final Function<MissingCriticalDependencyError, Either<DomainServiceAPIError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_PATH =
-        missingCriticalDependencyError ->
-            Either.left(new CitiesNotFoundError(missingCriticalDependencyError.message()));
+        MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
+            .andThen(DomainServiceAPIError.CitiesNotFoundError::new)
+            .andThen(Either::left);
     private static final Function<Either<MissingCriticalDependencyError, List<ICity>>, Either<DomainServiceAPIError, List<ICity>>> FIND_CITIES_PATH =
         missingCriticalDependencyErrorListEither ->
             missingCriticalDependencyErrorListEither.fold(
