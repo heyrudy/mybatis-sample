@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 class CreateCityInteractorTest {
 
-    private static final CreateCityInteractor createCityInteractorInstanceUnderTest =
+    private static final CreateCityInteractor CREATE_CITY_INTERACTOR_INSTANCE_UNDER_TEST =
         CreateCityInteractor.INSTANCE;
 
     @AfterEach
@@ -37,7 +37,7 @@ class CreateCityInteractorTest {
 
         // ACT - action or behavior that we are going to test
         Either<DomainServiceAPIError, ICity> actual =
-            createCityInteractorInstanceUnderTest.execute(cityToSave)
+            CREATE_CITY_INTERACTOR_INSTANCE_UNDER_TEST.execute(cityToSave)
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ASSERT - verify the result or output using assert statements

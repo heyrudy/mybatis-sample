@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 class FindCitiesInteractorTest {
 
-    private static final FindCitiesInteractor findCitiesInteractorInstanceUnderTest =
+    private static final FindCitiesInteractor FIND_CITIES_INTERACTOR_INSTANCE_UNDER_TEST =
         FindCitiesInteractor.INSTANCE;
 
     @AfterEach
@@ -47,7 +47,7 @@ class FindCitiesInteractorTest {
 
         // ACT - action or behavior that we are going to test
         Either<DomainServiceAPIError, List<ICity>> actual =
-            findCitiesInteractorInstanceUnderTest.execute()
+            FIND_CITIES_INTERACTOR_INSTANCE_UNDER_TEST.execute()
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ASSERT - verify the result or output using assert statements

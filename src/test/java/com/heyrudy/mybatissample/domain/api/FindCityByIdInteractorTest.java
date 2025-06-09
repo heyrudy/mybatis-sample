@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
 
 class FindCityByIdInteractorTest {
 
-    private static final FindCityByIdInteractor findCityByIdInteractorInstanceUnderTest =
+    private static final FindCityByIdInteractor FIND_CITY_BY_ID_INTERACTOR_INSTANCE_UNDER_TEST =
         FindCityByIdInteractor.INSTANCE;
 
     @AfterEach
@@ -42,7 +42,7 @@ class FindCityByIdInteractorTest {
 
         // ACT - action or behavior that we are going to test
         Either<DomainServiceAPIError, ICity> actual =
-            findCityByIdInteractorInstanceUnderTest.execute(
+            FIND_CITY_BY_ID_INTERACTOR_INSTANCE_UNDER_TEST.execute(
                     CityCriteriaDetails.builder().cityId(cityId).build())
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
