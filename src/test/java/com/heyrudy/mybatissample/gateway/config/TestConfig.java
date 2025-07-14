@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.gateway.config;
 
-import com.heyrudy.mybatissample.context.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import io.vavr.control.Option;
 import java.util.function.Supplier;
 import org.springframework.boot.test.context.TestConfiguration;
