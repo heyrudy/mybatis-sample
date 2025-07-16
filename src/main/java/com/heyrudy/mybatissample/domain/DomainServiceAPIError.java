@@ -1,10 +1,14 @@
-package com.heyrudy.mybatissample.domain.error;
+package com.heyrudy.mybatissample.domain;
+
+import com.heyrudy.mybatissample.domain.DomainServiceAPIError.CitiesNotFoundError;
+import com.heyrudy.mybatissample.domain.DomainServiceAPIError.CityNotFoundError;
+import com.heyrudy.mybatissample.domain.DomainServiceAPIError.CityNotSavedError;
 
 public sealed interface DomainServiceAPIError
     extends DomainError
-    permits DomainServiceAPIError.CitiesNotFoundError,
-    DomainServiceAPIError.CityNotFoundError,
-    DomainServiceAPIError.CityNotSavedError {
+    permits CitiesNotFoundError,
+    CityNotFoundError,
+    CityNotSavedError {
 
     String message();
 

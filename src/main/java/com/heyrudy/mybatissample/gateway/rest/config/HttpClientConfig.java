@@ -3,7 +3,7 @@ package com.heyrudy.mybatissample.gateway.rest.config;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class HttpClientConfiguration {
+public class HttpClientConfig {
 
 //    @Bean
 //    CityClient cityClient() {

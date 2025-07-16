@@ -1,8 +1,10 @@
-package com.heyrudy.mybatissample.domain.error;
+package com.heyrudy.mybatissample.domain;
+
+import com.heyrudy.mybatissample.domain.MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError;
 
 public sealed interface MissingCriticalSecretError
     extends MissingCriticalDependencyError
-    permits MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError {
+    permits CriticalDbSecretNotFoundByDependencyLocatorError {
 
     record CriticalDbSecretNotFoundByDependencyLocatorError(String message)
         implements MissingCriticalSecretError {

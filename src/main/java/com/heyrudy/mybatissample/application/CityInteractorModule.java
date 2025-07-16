@@ -7,12 +7,12 @@ import static io.vavr.Patterns.$None;
 import static io.vavr.Patterns.$Some;
 
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.domain.error.DomainRepositoryError;
-import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
-import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError.CityNotFoundError;
-import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
-import com.heyrudy.mybatissample.domain.model.CityModelModule.CityCriteriaDetails;
-import com.heyrudy.mybatissample.domain.model.CityModelModule.ICity;
+import com.heyrudy.mybatissample.domain.DomainRepositoryError;
+import com.heyrudy.mybatissample.domain.DomainServiceAPIError;
+import com.heyrudy.mybatissample.domain.DomainServiceAPIError.CityNotFoundError;
+import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails;
+import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
 import com.heyrudy.mybatissample.gateway.db.CityDbModule.CityRepository;
 import com.heyrudy.mybatissample.gateway.db.CityDbModule.ICityRepository;
 import cyclops.control.Reader;
@@ -36,8 +36,7 @@ public interface CityInteractorModule {
                 .andThen(Either::left);
         private static final Function<Either<DomainRepositoryError, ICity>, Either<DomainServiceAPIError, ICity>> MAP_TO_CITY_PATH =
             domainRepositoryErrorICityEither ->
-                domainRepositoryErrorICityEither.fold(CITY_NOT_SAVED_PATH,
-                    Either::right);
+                domainRepositoryErrorICityEither.fold(CITY_NOT_SAVED_PATH, Either::right);
 
         public Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>> execute(
             final ICity iCity) {

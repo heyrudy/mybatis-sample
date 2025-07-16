@@ -1,10 +1,12 @@
-package com.heyrudy.mybatissample.domain.error;
+package com.heyrudy.mybatissample.domain;
+
+import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError.CriticalRepositoryNotFoundByDependencyLocatorError;
 
 public sealed interface MissingCriticalDependencyError
     extends DomainError
     permits MissingCriticalSecretError,
     MissingCriticalConfigError,
-    MissingCriticalDependencyError.CriticalRepositoryNotFoundByDependencyLocatorError {
+    CriticalRepositoryNotFoundByDependencyLocatorError {
 
     String message();
 

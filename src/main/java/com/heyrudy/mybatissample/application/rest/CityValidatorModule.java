@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.application.rest;
 
 import com.heyrudy.mybatissample.application.rest.CityDTOModule.CityRequestDTO;
-import com.heyrudy.mybatissample.domain.model.CityModelModule.CityCriteriaDetails;
+import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 

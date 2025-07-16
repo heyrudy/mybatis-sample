@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.model;
+package com.heyrudy.mybatissample.domain;
 
 public interface CityModelModule {
 

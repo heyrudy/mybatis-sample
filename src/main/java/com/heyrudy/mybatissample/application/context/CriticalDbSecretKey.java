@@ -1,9 +1,9 @@
 package com.heyrudy.mybatissample.application.context;
 
 import com.heyrudy.mybatissample.application.context.IDbSecret.MockedDbSecret;
-import com.heyrudy.mybatissample.domain.error.MissingCriticalDependencyError;
-import com.heyrudy.mybatissample.domain.error.MissingCriticalSecretError;
-import com.heyrudy.mybatissample.domain.error.MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError.ErrorMessage;
+import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError;
+import com.heyrudy.mybatissample.domain.MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError.ErrorMessage;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -12,8 +12,8 @@ public enum CriticalDbSecretKey
     implements CriticalSecretKey<IDbSecret> {
     INSTANCE;
 
-    private static final MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError CRITICAL_DB_SECRET_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
-        new MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError(
+    private static final CriticalDbSecretNotFoundByDependencyLocatorError CRITICAL_DB_SECRET_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
+        new CriticalDbSecretNotFoundByDependencyLocatorError(
             ErrorMessage.CRITICAL_DB_SECRET_NOT_FOUND.formatted(INSTANCE));
 
     @Override

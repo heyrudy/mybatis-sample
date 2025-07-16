@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.domain.error;
+package com.heyrudy.mybatissample.domain;
 
 public sealed interface DomainError
     permits MissingCriticalDependencyError,

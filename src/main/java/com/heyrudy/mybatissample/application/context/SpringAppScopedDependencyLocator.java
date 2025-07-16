@@ -4,14 +4,8 @@ import io.vavr.control.Option;
 import java.util.function.Supplier;
 import org.springframework.context.ApplicationContext;
 
-public class SpringAppScopedDependencyLocator
+public record SpringAppScopedDependencyLocator(ApplicationContext applicationContext)
     implements AppScopedDependencyLocator {
-
-    private final ApplicationContext applicationContext;
-
-    public SpringAppScopedDependencyLocator(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 
     @Override
     public <T> T getDependency(Class<T> dependencyClass, Option<Supplier<T>> fallback) {

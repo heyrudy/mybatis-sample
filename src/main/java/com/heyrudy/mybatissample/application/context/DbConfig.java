@@ -1,5 +1,6 @@
 package com.heyrudy.mybatissample.application.context;
 
+import com.heyrudy.mybatissample.application.context.IDbSecret.H2DbSecret;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,6 +10,6 @@ import org.springframework.context.annotation.Configuration;
         H2DbSecret.class
     }
 )
-public class DbConfiguration {
+public class DbConfig {
 
 }

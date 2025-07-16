@@ -10,10 +10,10 @@ import com.heyrudy.mybatissample.application.rest.CityMapperModule.CityRequestMa
 import com.heyrudy.mybatissample.application.rest.CityMapperModule.CityResponseMapper;
 import com.heyrudy.mybatissample.application.rest.CityValidatorModule.CityCriteriaValidator;
 import com.heyrudy.mybatissample.application.rest.CityValidatorModule.CityRequestDTOValidator;
-import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError;
-import com.heyrudy.mybatissample.domain.error.DomainServiceAPIError.CityNotFoundError.SuccessMessage;
-import com.heyrudy.mybatissample.domain.model.CityModelModule.CityCriteriaDetails;
-import com.heyrudy.mybatissample.domain.model.CityModelModule.ICity;
+import com.heyrudy.mybatissample.domain.DomainServiceAPIError;
+import com.heyrudy.mybatissample.domain.DomainServiceAPIError.CityNotFoundError.SuccessMessage;
+import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails;
+import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
 import com.heyrudy.mybatissample.gateway.file.PDFResourceModule.CreatePdfUtil;
 import cyclops.control.Reader;
 import io.vavr.collection.Seq;
@@ -163,11 +163,18 @@ public enum CityCriticalRestAPIAdapter {
     }
 
     public ServerResponse downloadCityPdfReport() {
-        return ServerResponse.ok()
-            .headers(httpHeaders ->
-                httpHeaders.add("content-disposition",
-                    "attachment; filename=%s".formatted("cityReport.pdf")))
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .body(new ByteArrayResource(CREATE_PDF_UTIL.createPdf()));
+        return CREATE_PDF_UTIL.createPdf()
+            .fold(
+                pdfDocumentCreationError ->
+                    ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(pdfDocumentCreationError.message()),
+                bytes ->
+                    ServerResponse.ok()
+                        .headers(httpHeaders ->
+                            httpHeaders.add("content-disposition",
+                                "attachment; filename=%s".formatted("cityReport.pdf")))
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .body(new ByteArrayResource(bytes))
+            );
     }
 }
