@@ -7,20 +7,20 @@ import static io.vavr.Patterns.$None;
 import static io.vavr.Patterns.$Some;
 
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.domain.CityModelModule;
 import com.heyrudy.mybatissample.domain.DomainRepositoryError;
 import com.heyrudy.mybatissample.domain.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.DomainServiceAPIError.CityNotFoundError;
 import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError;
-import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails;
-import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
-import com.heyrudy.mybatissample.gateway.db.CityDbModule.CityRepository;
-import com.heyrudy.mybatissample.gateway.db.CityDbModule.ICityRepository;
+import com.heyrudy.mybatissample.gateway.db.CityDbModule;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.List;
 import java.util.function.Function;
 
-public interface CityInteractorModule {
+public interface CityInteractorModule
+    extends CityModelModule,
+    CityDbModule {
 
     ICityRepository CITY_REPOSITORY_DEPENDENCY =
         CityRepository.INSTANCE;

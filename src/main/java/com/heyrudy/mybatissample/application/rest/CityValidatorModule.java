@@ -1,11 +1,12 @@
 package com.heyrudy.mybatissample.application.rest;
 
-import com.heyrudy.mybatissample.application.rest.CityDTOModule.CityRequestDTO;
-import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails;
+import com.heyrudy.mybatissample.domain.CityModelModule;
 import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 
-public interface CityValidatorModule {
+public interface CityValidatorModule
+    extends CityModelModule,
+    CityDTOModule {
 
     enum CityRequestDTOValidator {
         INSTANCE;

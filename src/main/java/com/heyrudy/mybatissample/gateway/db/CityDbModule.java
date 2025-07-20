@@ -5,6 +5,7 @@ import static org.jooq.impl.DSL.table;
 
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.application.context.CriticalConfigKey.CriticalH2DSLContextConfigKey;
+import com.heyrudy.mybatissample.domain.CityModelModule;
 import com.heyrudy.mybatissample.domain.CityRepositoryError;
 import com.heyrudy.mybatissample.domain.CityRepositoryError.CityNotFoundByRepositoryError;
 import com.heyrudy.mybatissample.domain.CityRepositoryError.CityNotSavedByRepositoryError;
@@ -12,8 +13,6 @@ import com.heyrudy.mybatissample.domain.CityRepositoryError.CityTableNotTruncate
 import com.heyrudy.mybatissample.domain.DomainRepositoryError;
 import com.heyrudy.mybatissample.domain.MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError;
-import com.heyrudy.mybatissample.domain.CityModelModule.FullCity;
-import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -28,7 +27,7 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 
-public interface CityDbModule {
+public interface CityDbModule extends CityModelModule {
 
     interface ICityRepository {
 
@@ -134,7 +133,8 @@ public interface CityDbModule {
              * Creates an efficient next key generator using AtomicLong
              */
             public static <V> Function<Map<Long, V>, Long> atomicGenerator() {
-                AtomicLong sequence = new AtomicLong(1); // Start from 1 like typical DB auto-increment
+                // Start from 1 like typical DB auto-increment
+                AtomicLong sequence = new AtomicLong(1);
 
                 return map -> {
                     // If a map is empty, reset to 1
@@ -189,16 +189,20 @@ public interface CityDbModule {
             MissingCriticalDependencyError::message;
         private static final Function<MissingCriticalDependencyError, Either<MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
-                .andThen(CriticalDSLContextNotFoundByDependencyLocatorError::new).andThen(Either::left);
+                .andThen(CriticalDSLContextNotFoundByDependencyLocatorError::new)
+                .andThen(Either::left);
         private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
-                .andThen(CityRepositoryError.CityNotSavedByRepositoryError::new).andThen(Either::left);
+                .andThen(CityRepositoryError.CityNotSavedByRepositoryError::new)
+                .andThen(Either::left);
         private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY_PATH =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
-                .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new).andThen(Either::left);
+                .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new)
+                .andThen(Either::left);
         private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, Integer>> CITY_NOT_DELETED_BY_REPOSITORY_PATH =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
-                .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new).andThen(Either::left);
+                .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new)
+                .andThen(Either::left);
         private static final Function<DSLContext, Either<MissingCriticalDependencyError, List<ICity>>> FIND_CITIES_PATH =
             dslContext ->
                 Either.right(dslContext.select(ID, NAME, STATE, COUNTRY)
@@ -238,7 +242,8 @@ public interface CityDbModule {
             return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
                 .map(dslContextEither ->
                     dslContextEither.fold(
-                        CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH, FIND_CITIES_PATH));
+                        CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH,
+                        FIND_CITIES_PATH));
         }
 
         @Override

@@ -1,11 +1,10 @@
 package com.heyrudy.mybatissample.application.rest;
 
-import com.heyrudy.mybatissample.application.rest.CityDTOModule.CityRequestDTO;
-import com.heyrudy.mybatissample.application.rest.CityDTOModule.CityResponseDTO;
-import com.heyrudy.mybatissample.domain.CityModelModule.FullCity;
-import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
+import com.heyrudy.mybatissample.domain.CityModelModule;
 
-public interface CityMapperModule {
+public interface CityMapperModule
+    extends CityModelModule,
+    CityDTOModule {
 
     enum CityRequestMapper {
         INSTANCE;

@@ -1,20 +1,10 @@
 package com.heyrudy.mybatissample.application.rest;
 
-import com.heyrudy.mybatissample.application.CityInteractorModule.CreateCityInteractor;
-import com.heyrudy.mybatissample.application.CityInteractorModule.FindCitiesInteractor;
-import com.heyrudy.mybatissample.application.CityInteractorModule.FindCityByIdInteractor;
+import com.heyrudy.mybatissample.application.CityInteractorModule;
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
-import com.heyrudy.mybatissample.application.rest.APIErrorModule.ApiErrorResponse;
-import com.heyrudy.mybatissample.application.rest.CityDTOModule.CityRequestDTO;
-import com.heyrudy.mybatissample.application.rest.CityMapperModule.CityRequestMapper;
-import com.heyrudy.mybatissample.application.rest.CityMapperModule.CityResponseMapper;
-import com.heyrudy.mybatissample.application.rest.CityValidatorModule.CityCriteriaValidator;
-import com.heyrudy.mybatissample.application.rest.CityValidatorModule.CityRequestDTOValidator;
 import com.heyrudy.mybatissample.domain.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.DomainServiceAPIError.CityNotFoundError.SuccessMessage;
-import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails;
-import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
-import com.heyrudy.mybatissample.gateway.file.PDFResourceModule.CreatePdfUtil;
+import com.heyrudy.mybatissample.gateway.file.PDFResourceModule;
 import cyclops.control.Reader;
 import io.vavr.collection.Seq;
 import io.vavr.control.Either;
@@ -30,7 +20,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
-public enum CityCriticalRestAPIAdapter {
+public enum CityCriticalRestAPIAdapter
+    implements CityValidatorModule,
+    CityMapperModule,
+    CityInteractorModule,
+    PDFResourceModule,
+    APIErrorModule {
     INSTANCE;
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CityCriticalRestAPIAdapter.class);
