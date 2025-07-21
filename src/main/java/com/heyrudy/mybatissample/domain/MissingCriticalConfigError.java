@@ -1,10 +1,8 @@
 package com.heyrudy.mybatissample.domain;
 
-import com.heyrudy.mybatissample.domain.MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError;
-
 public sealed interface MissingCriticalConfigError
-    extends MissingCriticalDependencyError
-    permits CriticalDSLContextNotFoundByDependencyLocatorError {
+    extends DomainErrorModule.MissingCriticalDependencyError
+    permits MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError {
 
     record CriticalDSLContextNotFoundByDependencyLocatorError(String message)
         implements MissingCriticalConfigError {

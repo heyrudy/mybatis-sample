@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.gateway.file;
 
-import com.heyrudy.mybatissample.domain.DomainServiceSPIError.PDFDocumentCreationError;
+import com.heyrudy.mybatissample.domain.DomainErrorModule.DomainServiceSPIError.PDFDocumentCreationError;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import java.io.ByteArrayOutputStream;

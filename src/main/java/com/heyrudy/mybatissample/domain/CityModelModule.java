@@ -1,6 +1,9 @@
 package com.heyrudy.mybatissample.domain;
 
-public interface CityModelModule {
+import java.util.Arrays;
+import java.util.Objects;
+
+public interface CityModelModule extends UtilsModule {
 
     final class FullCity implements ICity {
 
@@ -13,87 +16,88 @@ public interface CityModelModule {
             super();
         }
 
-        public static FullCity builder() {
-            return new FullCity();
+        @SafeVarargs
+        public static FullCity with(MutatorOption<FullCity>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(new FullCity(), (model, option) -> option.apply(model), (a, b) -> a);
         }
 
         public Long getId() {
             return id;
         }
 
+        @Override
         public void setId(Long id) {
             this.id = id;
-        }
-
-        public FullCity id(Long id) {
-            this.id = id;
-            return this;
         }
 
         public String getName() {
             return name;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public FullCity name(String name) {
-            this.name = name;
-            return this;
-        }
-
         public String getState() {
             return state;
-        }
-
-        public void setState(String state) {
-            this.state = state;
-        }
-
-        public FullCity state(String state) {
-            this.state = state;
-            return this;
         }
 
         public String getCountry() {
             return country;
         }
 
-        public void setCountry(String country) {
-            this.country = country;
-        }
+        public enum FullCityMutatorOptions {
+            INSTANCE;
 
-        public FullCity country(String country) {
-            this.country = country;
-            return this;
-        }
+            public MutatorOption<FullCity> id(Long id) {
+                return MutatorOption.of(
+                    id,
+                    (it, v) -> {
+                        it.id = id;
+                        return it;
+                    });
+            }
 
-        public FullCity build() {
-            return this;
+            public MutatorOption<FullCity> name(String name) {
+                return MutatorOption.of(
+                    name,
+                    (it, v) -> {
+                        it.name = name;
+                        return it;
+                    });
+            }
+
+            public MutatorOption<FullCity> state(String state) {
+                return MutatorOption.of(
+                    state,
+                    (it, v) -> {
+                        it.state = state;
+                        return it;
+                    });
+            }
+
+            public MutatorOption<FullCity> country(String country) {
+                return MutatorOption.of(
+                    country,
+                    (it, v) -> {
+                        it.country = country;
+                        return it;
+                    });
+            }
         }
     }
 
     final class PartialCityProxy implements ICity {
 
         private Long id;
-        private String name;
-        private String state;
-        private String country;
 
         public PartialCityProxy() {
             super();
         }
 
-        public static PartialCityProxy builder() {
-            return new PartialCityProxy();
-        }
-
-        public PartialCityProxy(Long id, String name, String country) {
-            super();
-            this.id = id;
-            this.name = name;
-            this.country = country;
+        @SafeVarargs
+        public static PartialCityProxy with(MutatorOption<PartialCityProxy>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(new PartialCityProxy(), (model, option) -> option.apply(model), (a, b) -> a);
         }
 
         @Override
@@ -106,11 +110,6 @@ public interface CityModelModule {
             this.id = id;
         }
 
-        public PartialCityProxy id(long id) {
-            this.id = id;
-            return this;
-        }
-
         @Override
         public String getName() {
             return null;
@@ -126,8 +125,17 @@ public interface CityModelModule {
             return null;
         }
 
-        public PartialCityProxy build() {
-            return this;
+        public enum PartialCityProxyMutatorOptions {
+            INSTANCE;
+
+            public MutatorOption<PartialCityProxy> id(Long id) {
+                return MutatorOption.of(
+                    id,
+                    (it, v) -> {
+                        it.id = id;
+                        return it;
+                    });
+            }
         }
     }
 
@@ -147,14 +155,12 @@ public interface CityModelModule {
 
     final class NullCity implements ICity {
 
+        public static final NullCity INSTANCE = new NullCity();
+
         private Long id;
 
         public NullCity() {
             super();
-        }
-
-        public static NullCity builder() {
-            return new NullCity();
         }
 
         @Override
@@ -181,32 +187,29 @@ public interface CityModelModule {
         public String getCountry() {
             return "No country";
         }
-
-        public NullCity build() {
-            return this;
-        }
     }
 
     record CityCriteriaDetails(long cityId) {
 
-        public static CityCriteriaDTOBuilder builder() {
-            return new CityCriteriaDTOBuilder();
+        public CityCriteriaDetails() {
+            this(0L);
         }
 
-        public static class CityCriteriaDTOBuilder {
+        @SafeVarargs
+        public static CityCriteriaDetails with(MutatorOption<CityCriteriaDetails>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(new CityCriteriaDetails(), (model, option) -> option.apply(model), (a, b) -> a);
+        }
 
-            private long cityId;
+        public enum CityCriteriaDetailsMutatorOptions {
+            INSTANCE;
 
-            public CityCriteriaDTOBuilder() {
-            }
-
-            public CityCriteriaDTOBuilder cityId(long cityId) {
-                this.cityId = cityId;
-                return this;
-            }
-
-            public CityCriteriaDetails build() {
-                return new CityCriteriaDetails(cityId);
+            public MutatorOption<CityCriteriaDetails> cityId(Long cityId) {
+                return MutatorOption.of(
+                    cityId,
+                    (it, v) -> new CityCriteriaDetails(cityId)
+                );
             }
         }
     }

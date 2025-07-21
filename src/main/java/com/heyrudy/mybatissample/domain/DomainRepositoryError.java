@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.domain;
 
 public sealed interface DomainRepositoryError
-    extends DomainError
+    extends DomainErrorModule.DomainError
     permits CityRepositoryError {
 
     String message();

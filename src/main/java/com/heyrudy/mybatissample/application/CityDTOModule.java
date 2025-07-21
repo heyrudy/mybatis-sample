@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.application.rest;
+package com.heyrudy.mybatissample.application;
 
 public interface CityDTOModule {
 

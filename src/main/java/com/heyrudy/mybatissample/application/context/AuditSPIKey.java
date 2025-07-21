@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.application.context;
 
-import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.DomainErrorModule.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.gateway.audit.IAuditSPI;
 import cyclops.control.Reader;
 import io.vavr.control.Either;

@@ -3,7 +3,7 @@ package com.heyrudy.mybatissample.domain;
 import com.heyrudy.mybatissample.domain.MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError;
 
 public sealed interface MissingCriticalSecretError
-    extends MissingCriticalDependencyError
+    extends DomainErrorModule.MissingCriticalDependencyError
     permits CriticalDbSecretNotFoundByDependencyLocatorError {
 
     record CriticalDbSecretNotFoundByDependencyLocatorError(String message)

@@ -1,6 +1,7 @@
-package com.heyrudy.mybatissample.application.rest;
+package com.heyrudy.mybatissample.application;
 
 import com.heyrudy.mybatissample.domain.CityModelModule;
+import com.heyrudy.mybatissample.domain.CityModelModule.FullCity.FullCityMutatorOptions;
 
 public interface CityMapperModule
     extends CityModelModule,
@@ -10,10 +11,10 @@ public interface CityMapperModule
         INSTANCE;
 
         public ICity toModel(CityRequestDTO dto) {
-            return FullCity.builder()
-                .name(dto.name())
-                .state(dto.state())
-                .country(dto.country()).build();
+            return FullCity.with(
+                    FullCityMutatorOptions.INSTANCE.name(dto.name()),
+                    FullCityMutatorOptions.INSTANCE.state(dto.state()),
+                    FullCityMutatorOptions.INSTANCE.country(dto.country()));
         }
     }
 

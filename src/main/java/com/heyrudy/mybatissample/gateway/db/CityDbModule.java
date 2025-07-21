@@ -6,13 +6,11 @@ import static org.jooq.impl.DSL.table;
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.application.context.CriticalConfigKey.CriticalH2DSLContextConfigKey;
 import com.heyrudy.mybatissample.domain.CityModelModule;
+import com.heyrudy.mybatissample.domain.CityModelModule.FullCity.FullCityMutatorOptions;
 import com.heyrudy.mybatissample.domain.CityRepositoryError;
-import com.heyrudy.mybatissample.domain.CityRepositoryError.CityNotFoundByRepositoryError;
-import com.heyrudy.mybatissample.domain.CityRepositoryError.CityNotSavedByRepositoryError;
-import com.heyrudy.mybatissample.domain.CityRepositoryError.CityTableNotTruncatedError;
+import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.DomainRepositoryError;
 import com.heyrudy.mybatissample.domain.MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError;
-import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -27,7 +25,9 @@ import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Table;
 
-public interface CityDbModule extends CityModelModule {
+public interface CityDbModule
+    extends CityModelModule,
+    DomainErrorModule {
 
     interface ICityRepository {
 
@@ -44,7 +44,7 @@ public interface CityDbModule extends CityModelModule {
          *
          * @return A Reader monad that either results in an error or a list of cities
          */
-        Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, List<ICity>>> findAll();
+        Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> findAll();
 
         /**
          * Finds a city by its ID.
@@ -75,7 +75,7 @@ public interface CityDbModule extends CityModelModule {
         }
 
         @Override
-        public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, List<ICity>>> findAll() {
+        public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> findAll() {
             return __ ->
                 Either.right(IN_MEMORY_DB.values().stream().toList());
         }
@@ -175,35 +175,35 @@ public interface CityDbModule extends CityModelModule {
         private static ICity mapRecord(org.jooq.Record record) {
             return Optional.ofNullable(record)
                 .map(it ->
-                    FullCity.builder()
-                        .id(it.get(ID))
-                        .name(it.get(NAME))
-                        .state(it.get(STATE))
-                        .country(it.get(COUNTRY)))
+                    FullCity.with(
+                        FullCityMutatorOptions.INSTANCE.id(it.get(ID)),
+                        FullCityMutatorOptions.INSTANCE.name(it.get(NAME)),
+                        FullCityMutatorOptions.INSTANCE.state(it.get(STATE)),
+                        FullCityMutatorOptions.INSTANCE.country(it.get(COUNTRY))))
                 .orElse(null);
         }
 
-        private static final Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH =
+        private static final Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext>> CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH =
             CriticalH2DSLContextConfigKey.INSTANCE.lazyLoad();
-        private static final Function<MissingCriticalDependencyError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
-            MissingCriticalDependencyError::message;
-        private static final Function<MissingCriticalDependencyError, Either<MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
+            DomainErrorModule.MissingCriticalDependencyError::message;
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CriticalDSLContextNotFoundByDependencyLocatorError::new)
                 .andThen(Either::left);
-        private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotSavedByRepositoryError::new)
                 .andThen(Either::left);
-        private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY_PATH =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new)
                 .andThen(Either::left);
-        private static final Function<MissingCriticalDependencyError, Either<DomainRepositoryError, Integer>> CITY_NOT_DELETED_BY_REPOSITORY_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, Integer>> CITY_NOT_DELETED_BY_REPOSITORY_PATH =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new)
                 .andThen(Either::left);
-        private static final Function<DSLContext, Either<MissingCriticalDependencyError, List<ICity>>> FIND_CITIES_PATH =
+        private static final Function<DSLContext, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> FIND_CITIES_PATH =
             dslContext ->
                 Either.right(dslContext.select(ID, NAME, STATE, COUNTRY)
                     .from(CITIES)
@@ -229,7 +229,7 @@ public interface CityDbModule extends CityModelModule {
                         .map(CityRepository::mapRecord)
                         .toEither(
                             new CityRepositoryError.CityNotSavedByRepositoryError(
-                                CityNotSavedByRepositoryError.ErrorMessage.CITY_NOT_SAVED));
+                                CityRepositoryError.CityNotSavedByRepositoryError.CityNotSavedByRepositoryError.ErrorMessage.CITY_NOT_SAVED));
             // Compose operations with flatMap to explicitly avoid apply
             return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
                 .map(dslContextEither ->
@@ -260,7 +260,7 @@ public interface CityDbModule extends CityModelModule {
                             () ->
                                 Either.left(
                                     new CityRepositoryError.CityNotFoundByRepositoryError(
-                                        CityNotFoundByRepositoryError.ErrorMessage.CITY_NOT_FOUND_BY_ID
+                                        CityRepositoryError.CityNotFoundByRepositoryError.CityNotFoundByRepositoryError.ErrorMessage.CITY_NOT_FOUND_BY_ID
                                             .formatted(id))),
                             TO_EITHER_CITY_PATH);
             // Compose operations with flatMap to explicitly avoid apply
@@ -284,7 +284,7 @@ public interface CityDbModule extends CityModelModule {
                         .bimap(
                             throwable ->
                                 new CityRepositoryError.CityTableNotTruncatedError(
-                                    CityTableNotTruncatedError.ErrorMessage.CITY_TABLE_NOT_TRUNCATED
+                                    CityRepositoryError.CityTableNotTruncatedError.CityTableNotTruncatedError.ErrorMessage.CITY_TABLE_NOT_TRUNCATED
                                         .formatted(throwable.getMessage())),
                             Function.identity());
             // Compose operations with flatMap to explicitly avoid apply

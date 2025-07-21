@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.application.rest;
+package com.heyrudy.mybatissample.application;
 
 //import com.heyrudy.mybatissample.controller.rest.CityController;
 //import io.jsonwebtoken.Claims;
@@ -34,8 +34,8 @@ public class CityRouterConfig {
 //    public static final Logger logger = LoggerFactory.getLogger(RouterConfig.class);
 //    private static final String SECRET_KEY = "your-secret-key"; // Use a secure method in production
 
-    private static final CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER =
-        CityCriticalRestAPIAdapter.INSTANCE;
+    private static final CityRestAPIModule.CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER =
+        CityRestAPIModule.CityCriticalRestAPIAdapter.INSTANCE;
 
     private final AppScopedDependencyLocator appScopedDependencyLocator;
 

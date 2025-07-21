@@ -1,10 +1,8 @@
 package com.heyrudy.mybatissample.application.context;
 
-import com.heyrudy.mybatissample.application.context.Environment.NoEnv;
-
 public sealed interface Environment
     permits AppScopedDependencyLocator,
-    NoEnv {
+    Environment.NoEnv {
 
     record NoEnv() implements Environment {
 

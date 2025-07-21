@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.application.context;
 
 import com.heyrudy.mybatissample.application.context.IDbSecret.MockedDbSecret;
-import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError;
 import com.heyrudy.mybatissample.domain.MissingCriticalSecretError.CriticalDbSecretNotFoundByDependencyLocatorError.ErrorMessage;
 import cyclops.control.Reader;
@@ -17,7 +17,7 @@ public enum CriticalDbSecretKey
             ErrorMessage.CRITICAL_DB_SECRET_NOT_FOUND.formatted(INSTANCE));
 
     @Override
-    public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, IDbSecret>> lazyLoad() {
+    public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, IDbSecret>> lazyLoad() {
         return appScopedDependencyLocator ->
             Option.of(
                     appScopedDependencyLocator.getDependency(

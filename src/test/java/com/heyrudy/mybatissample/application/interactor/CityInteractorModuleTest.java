@@ -5,11 +5,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.heyrudy.mybatissample.application.CityInteractorModule.CreateCityInteractor;
 import com.heyrudy.mybatissample.application.CityInteractorModule.FindCitiesInteractor;
 import com.heyrudy.mybatissample.application.CityInteractorModule.FindCityByIdInteractor;
-import com.heyrudy.mybatissample.domain.DomainServiceAPIError;
 import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails;
+import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails.CityCriteriaDetailsMutatorOptions;
 import com.heyrudy.mybatissample.domain.CityModelModule.FullCity;
+import com.heyrudy.mybatissample.domain.CityModelModule.FullCity.FullCityMutatorOptions;
 import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
 import com.heyrudy.mybatissample.domain.CityModelModule.NullCity;
+import com.heyrudy.mybatissample.domain.DomainErrorModule;
+import com.heyrudy.mybatissample.domain.DomainErrorModule.DomainServiceAPIError;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
 import com.heyrudy.mybatissample.gateway.db.CityDbModule.CityRepository;
 import io.vavr.control.Either;
@@ -39,13 +42,13 @@ class CityInteractorModuleTest {
     void shouldInsertCity() {
         // ARRANGE - precondition or setup
         ICity cityToSave =
-            FullCity.builder()
-                .name("Paris")
-                .country("France")
-                .state("Paris75").build();
+            FullCity.with(
+                FullCityMutatorOptions.INSTANCE.name("Paris"),
+                FullCityMutatorOptions.INSTANCE.state("France"),
+                FullCityMutatorOptions.INSTANCE.country("Paris75"));
 
         // ACT - action or behavior that we are going to test
-        Either<DomainServiceAPIError, ICity> actual =
+        Either<DomainErrorModule.DomainServiceAPIError, ICity> actual =
             CREATE_CITY_INTERACTOR_INSTANCE_UNDER_TEST.execute(cityToSave)
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
@@ -71,17 +74,18 @@ class CityInteractorModuleTest {
         // ARRANGE - precondition or setup
         long cityId = 1L;
         ICity cityToSave =
-            FullCity.builder()
-                .name("Paris")
-                .state("Paris75")
-                .country("France").build();
+            FullCity.with(
+                FullCityMutatorOptions.INSTANCE.name("Paris"),
+                FullCityMutatorOptions.INSTANCE.state("Paris75"),
+                FullCityMutatorOptions.INSTANCE.country("France"));
         CreateCityInteractor.INSTANCE.execute(cityToSave)
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ACT - action or behavior that we are going to test
-        Either<DomainServiceAPIError, ICity> actual =
+        Either<DomainErrorModule.DomainServiceAPIError, ICity> actual =
             FIND_CITY_BY_ID_INTERACTOR_INSTANCE_UNDER_TEST.execute(
-                    CityCriteriaDetails.builder().cityId(cityId).build())
+                    CityCriteriaDetails.with(
+                        CityCriteriaDetailsMutatorOptions.INSTANCE.cityId(cityId)))
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
         // ASSERT - verify the result or output using assert statements
@@ -105,13 +109,13 @@ class CityInteractorModuleTest {
     void shouldFindAllCities() {
         // ARRANGE - precondition or setup
         ICity cityZeroToSave =
-            NullCity.builder().build();
+            NullCity.INSTANCE;
         ICity cityOneToSave =
-            FullCity.builder()
-                .id(1L)
-                .name("Paris")
-                .country("France")
-                .state("Paris75").build();
+            FullCity.with(
+                FullCityMutatorOptions.INSTANCE.id(1L),
+                FullCityMutatorOptions.INSTANCE.name("Paris"),
+                FullCityMutatorOptions.INSTANCE.state("France"),
+                FullCityMutatorOptions.INSTANCE.country("Paris75"));
         CreateCityInteractor.INSTANCE.execute(cityZeroToSave)
             .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
         CreateCityInteractor.INSTANCE.execute(cityOneToSave)

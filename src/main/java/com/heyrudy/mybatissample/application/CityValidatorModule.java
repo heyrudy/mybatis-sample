@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.application.rest;
+package com.heyrudy.mybatissample.application;
 
 import com.heyrudy.mybatissample.domain.CityModelModule;
 import io.vavr.collection.Seq;

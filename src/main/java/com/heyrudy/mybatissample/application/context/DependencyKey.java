@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.application.context;
 
-import com.heyrudy.mybatissample.domain.MissingCriticalDependencyError;
+import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 
@@ -10,5 +10,5 @@ public sealed interface DependencyKey<T>
     CriticalRepositoryKey,
     NonCriticalSPIKey {
 
-    Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, T>> lazyLoad();
+    Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, T>> lazyLoad();
 }

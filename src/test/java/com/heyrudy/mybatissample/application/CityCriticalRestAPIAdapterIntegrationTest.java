@@ -6,8 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heyrudy.mybatissample.application.rest.CityDTOModule.CityRequestDTO;
-import com.heyrudy.mybatissample.application.rest.CityRouterConfig;
+import com.heyrudy.mybatissample.application.CityDTOModule.CityRequestDTO;
 import com.heyrudy.mybatissample.gateway.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
