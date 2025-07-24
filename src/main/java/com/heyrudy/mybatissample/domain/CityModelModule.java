@@ -5,22 +5,43 @@ import java.util.Objects;
 
 public interface CityModelModule extends UtilsModule {
 
-    final class FullCity implements ICity {
+    sealed interface ICity
+        permits FullCity, PartialCityProxy, NullCity {
 
-        private Long id;
-        private String name;
-        private String state;
-        private String country;
+        Long getId();
+
+        void setId(Long id);
+
+        String getName();
+
+        String getState();
+
+        String getCountry();
+    }
+
+    record FullCity(
+        Long id,
+        String name,
+        String state,
+        String country)
+        implements ICity {
 
         public FullCity() {
-            super();
+            this(0L, null, null, null);
         }
 
         @SafeVarargs
-        public static FullCity with(MutatorOption<FullCity>... options) {
+        public static FullCity of(MutatorOption<FullCity>... options) {
             return Arrays.stream(options)
                 .filter(Objects::nonNull)
                 .reduce(new FullCity(), (model, option) -> option.apply(model), (a, b) -> a);
+        }
+
+        @SafeVarargs
+        public final FullCity with(MutatorOption<FullCity>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(this, (model, option) -> option.apply(model), (a, b) -> b);
         }
 
         public Long getId() {
@@ -29,7 +50,7 @@ public interface CityModelModule extends UtilsModule {
 
         @Override
         public void setId(Long id) {
-            this.id = id;
+            new FullCity(id, name, state, country);
         }
 
         public String getName() {
@@ -50,54 +71,52 @@ public interface CityModelModule extends UtilsModule {
             public MutatorOption<FullCity> id(Long id) {
                 return MutatorOption.of(
                     id,
-                    (it, v) -> {
-                        it.id = id;
-                        return it;
-                    });
+                    (it, v) -> new FullCity(id, it.name, it.state, it.country)
+                );
             }
 
             public MutatorOption<FullCity> name(String name) {
                 return MutatorOption.of(
                     name,
-                    (it, v) -> {
-                        it.name = name;
-                        return it;
-                    });
+                    (it, v) -> new FullCity(it.id, name, it.state, it.country)
+                );
             }
 
             public MutatorOption<FullCity> state(String state) {
                 return MutatorOption.of(
                     state,
-                    (it, v) -> {
-                        it.state = state;
-                        return it;
-                    });
+                    (it, v) -> new FullCity(it.id, it.name, state, it.country)
+                );
             }
 
             public MutatorOption<FullCity> country(String country) {
                 return MutatorOption.of(
                     country,
-                    (it, v) -> {
-                        it.country = country;
-                        return it;
-                    });
+                    (it, v) -> new FullCity(it.id, it.name, it.state, country)
+                );
             }
         }
     }
 
-    final class PartialCityProxy implements ICity {
-
-        private Long id;
+    record PartialCityProxy(Long id) implements ICity {
 
         public PartialCityProxy() {
-            super();
+            this(0L);
         }
 
         @SafeVarargs
-        public static PartialCityProxy with(MutatorOption<PartialCityProxy>... options) {
+        public static PartialCityProxy of(MutatorOption<PartialCityProxy>... options) {
             return Arrays.stream(options)
                 .filter(Objects::nonNull)
-                .reduce(new PartialCityProxy(), (model, option) -> option.apply(model), (a, b) -> a);
+                .reduce(new PartialCityProxy(), (model, option) -> option.apply(model),
+                    (a, b) -> a);
+        }
+
+        @SafeVarargs
+        public final PartialCityProxy with(MutatorOption<PartialCityProxy>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(this, (model, option) -> option.apply(model), (a, b) -> a);
         }
 
         @Override
@@ -107,7 +126,7 @@ public interface CityModelModule extends UtilsModule {
 
         @Override
         public void setId(Long id) {
-            this.id = id;
+            new PartialCityProxy(id);
         }
 
         @Override
@@ -131,36 +150,24 @@ public interface CityModelModule extends UtilsModule {
             public MutatorOption<PartialCityProxy> id(Long id) {
                 return MutatorOption.of(
                     id,
-                    (it, v) -> {
-                        it.id = id;
-                        return it;
-                    });
+                    (it, v) -> new PartialCityProxy(id)
+                );
             }
         }
     }
 
-    sealed interface ICity
-        permits FullCity, NullCity, PartialCityProxy {
-
-        Long getId();
-
-        void setId(Long id);
-
-        String getName();
-
-        String getState();
-
-        String getCountry();
-    }
-
-    final class NullCity implements ICity {
-
-        public static final NullCity INSTANCE = new NullCity();
-
-        private Long id;
+    record NullCity(Long id) implements ICity {
 
         public NullCity() {
-            super();
+            this(0L);
+        }
+
+        @SafeVarargs
+        public static NullCity of(MutatorOption<NullCity>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(new NullCity(), (model, option) -> option.apply(model),
+                    (a, b) -> a);
         }
 
         @Override
@@ -170,7 +177,7 @@ public interface CityModelModule extends UtilsModule {
 
         @Override
         public void setId(Long id) {
-            this.id = id;
+            new NullCity(id);
         }
 
         @Override
@@ -187,6 +194,17 @@ public interface CityModelModule extends UtilsModule {
         public String getCountry() {
             return "No country";
         }
+
+        public enum NullCityMutatorOptions {
+            INSTANCE;
+
+            public MutatorOption<NullCity> id(Long id) {
+                return MutatorOption.of(
+                    id,
+                    (it, v) -> new NullCity(id)
+                );
+            }
+        }
     }
 
     record CityCriteriaDetails(long cityId) {
@@ -196,10 +214,18 @@ public interface CityModelModule extends UtilsModule {
         }
 
         @SafeVarargs
-        public static CityCriteriaDetails with(MutatorOption<CityCriteriaDetails>... options) {
+        public static CityCriteriaDetails of(MutatorOption<CityCriteriaDetails>... options) {
             return Arrays.stream(options)
                 .filter(Objects::nonNull)
-                .reduce(new CityCriteriaDetails(), (model, option) -> option.apply(model), (a, b) -> a);
+                .reduce(new CityCriteriaDetails(), (model, option) -> option.apply(model),
+                    (a, b) -> a);
+        }
+
+        @SafeVarargs
+        public final CityCriteriaDetails with(MutatorOption<CityCriteriaDetails>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(this, (model, option) -> option.apply(model), (a, b) -> a);
         }
 
         public enum CityCriteriaDetailsMutatorOptions {

@@ -11,7 +11,7 @@ public interface CityMapperModule
         INSTANCE;
 
         public ICity toModel(CityRequestDTO dto) {
-            return FullCity.with(
+            return FullCity.of(
                     FullCityMutatorOptions.INSTANCE.name(dto.name()),
                     FullCityMutatorOptions.INSTANCE.state(dto.state()),
                     FullCityMutatorOptions.INSTANCE.country(dto.country()));

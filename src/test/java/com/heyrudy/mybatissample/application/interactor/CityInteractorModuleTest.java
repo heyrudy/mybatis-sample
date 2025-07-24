@@ -42,7 +42,7 @@ class CityInteractorModuleTest {
     void shouldInsertCity() {
         // ARRANGE - precondition or setup
         ICity cityToSave =
-            FullCity.with(
+            FullCity.of(
                 FullCityMutatorOptions.INSTANCE.name("Paris"),
                 FullCityMutatorOptions.INSTANCE.state("France"),
                 FullCityMutatorOptions.INSTANCE.country("Paris75"));
@@ -74,7 +74,7 @@ class CityInteractorModuleTest {
         // ARRANGE - precondition or setup
         long cityId = 1L;
         ICity cityToSave =
-            FullCity.with(
+            FullCity.of(
                 FullCityMutatorOptions.INSTANCE.name("Paris"),
                 FullCityMutatorOptions.INSTANCE.state("Paris75"),
                 FullCityMutatorOptions.INSTANCE.country("France"));
@@ -84,7 +84,7 @@ class CityInteractorModuleTest {
         // ACT - action or behavior that we are going to test
         Either<DomainErrorModule.DomainServiceAPIError, ICity> actual =
             FIND_CITY_BY_ID_INTERACTOR_INSTANCE_UNDER_TEST.execute(
-                    CityCriteriaDetails.with(
+                    CityCriteriaDetails.of(
                         CityCriteriaDetailsMutatorOptions.INSTANCE.cityId(cityId)))
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);
 
@@ -109,9 +109,9 @@ class CityInteractorModuleTest {
     void shouldFindAllCities() {
         // ARRANGE - precondition or setup
         ICity cityZeroToSave =
-            NullCity.INSTANCE;
+            NullCity.of();
         ICity cityOneToSave =
-            FullCity.with(
+            FullCity.of(
                 FullCityMutatorOptions.INSTANCE.id(1L),
                 FullCityMutatorOptions.INSTANCE.name("Paris"),
                 FullCityMutatorOptions.INSTANCE.state("France"),

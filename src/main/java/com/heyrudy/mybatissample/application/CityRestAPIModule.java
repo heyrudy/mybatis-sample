@@ -146,7 +146,7 @@ public interface CityRestAPIModule
                     LOGGER.error(cityNotFoundError.message());
                     return ServerResponse.badRequest()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(ApiErrorResponse.with(
+                        .body(ApiErrorResponse.of(
                             ApiErrorResponseMutatorOptions.INSTANCE.reason(
                                 cityNotFoundError.message())));
                 };

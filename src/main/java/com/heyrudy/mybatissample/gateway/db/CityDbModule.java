@@ -175,7 +175,7 @@ public interface CityDbModule
         private static ICity mapRecord(org.jooq.Record record) {
             return Optional.ofNullable(record)
                 .map(it ->
-                    FullCity.with(
+                    FullCity.of(
                         FullCityMutatorOptions.INSTANCE.id(it.get(ID)),
                         FullCityMutatorOptions.INSTANCE.name(it.get(NAME)),
                         FullCityMutatorOptions.INSTANCE.state(it.get(STATE)),
