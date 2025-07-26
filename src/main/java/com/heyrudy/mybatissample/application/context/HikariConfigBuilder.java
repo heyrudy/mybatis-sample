@@ -1,96 +1,152 @@
 package com.heyrudy.mybatissample.application.context;
 
+import com.heyrudy.mybatissample.domain.UtilsModule.MutatorOption;
 import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
-import javax.sql.DataSource;
 
 public enum HikariConfigBuilder {
     INSTANCE;
 
-    public Builder create() {
-        return new Builder();
+    @SafeVarargs
+    public static HikariConfig of(MutatorOption<HikariConfig>... options) {
+        return Arrays.stream(options)
+            .filter(Objects::nonNull)
+            .reduce(new HikariConfig(), (model, option) -> option.apply(model), (a, b) -> a);
     }
 
-    public static class Builder {
+    public enum HikariConfigMutatorOptions {
+        INSTANCE;
 
-        private final HikariConfig config = new HikariConfig();
-
-        private Builder() {
-            super();
+        public MutatorOption<HikariConfig> jdbcUrl(String jdbcUrl) {
+            return MutatorOption.of(
+                jdbcUrl,
+                (it, v) -> {
+                    it.setJdbcUrl(jdbcUrl);
+                    return it;
+                }
+            );
         }
 
-        public Builder withJdbcUrl(String jdbcUrl) {
-            config.setJdbcUrl(jdbcUrl);
-            return this;
+        public MutatorOption<HikariConfig> driverClassName(String driverClassName) {
+            return MutatorOption.of(
+                driverClassName,
+                (it, v) -> {
+                    it.setDriverClassName(driverClassName);
+                    return it;
+                }
+            );
         }
 
-        public Builder withDriverClassName(String driverClassName) {
-            config.setDriverClassName(driverClassName);
-            return this;
+        public MutatorOption<HikariConfig> username(String username) {
+            return MutatorOption.of(
+                username,
+                (it, v) -> {
+                    it.setUsername(username);
+                    return it;
+                }
+            );
         }
 
-        public Builder withUsername(String username) {
-            config.setUsername(username);
-            return this;
+        public MutatorOption<HikariConfig> password(String password) {
+            return MutatorOption.of(
+                password,
+                (it, v) -> {
+                    it.setPassword(password);
+                    return it;
+                }
+            );
         }
 
-        public Builder withPassword(String password) {
-            config.setPassword(password);
-            return this;
+        public MutatorOption<HikariConfig> maximumPoolSize(int maximumPoolSize) {
+            return MutatorOption.of(
+                maximumPoolSize,
+                (it, v) -> {
+                    it.setMaximumPoolSize(maximumPoolSize);
+                    return it;
+                }
+            );
         }
 
-        public Builder withMaximumPoolSize(int maximumPoolSize) {
-            config.setMaximumPoolSize(maximumPoolSize);
-            return this;
+        public MutatorOption<HikariConfig> minimumIdle(int minimumIdle) {
+            return MutatorOption.of(
+                minimumIdle,
+                (it, v) -> {
+                    it.setMinimumIdle(minimumIdle);
+                    return it;
+                }
+            );
         }
 
-        public Builder withMinimumIdle(int minimumIdle) {
-            config.setMinimumIdle(minimumIdle);
-            return this;
+        public MutatorOption<HikariConfig> idleTimeout(long idleTimeoutMs) {
+            return MutatorOption.of(
+                idleTimeoutMs,
+                (it, v) -> {
+                    it.setIdleTimeout(idleTimeoutMs);
+                    return it;
+                }
+            );
         }
 
-        public Builder withIdleTimeout(long idleTimeoutMs) {
-            config.setIdleTimeout(idleTimeoutMs);
-            return this;
+        public MutatorOption<HikariConfig> connectionTimeout(long connectionTimeoutMs) {
+            return MutatorOption.of(
+                connectionTimeoutMs,
+                (it, v) -> {
+                    it.setConnectionTimeout(connectionTimeoutMs);
+                    return it;
+                }
+            );
         }
 
-        public Builder withConnectionTimeout(long connectionTimeoutMs) {
-            config.setConnectionTimeout(connectionTimeoutMs);
-            return this;
+        public MutatorOption<HikariConfig> poolName(String poolName) {
+            return MutatorOption.of(
+                poolName,
+                (it, v) -> {
+                    it.setPoolName(poolName);
+                    return it;
+                }
+            );
         }
 
-        public Builder withPoolName(String poolName) {
-            config.setPoolName(poolName);
-            return this;
+        public MutatorOption<HikariConfig> threadFactory(ThreadFactory threadFactory) {
+            return MutatorOption.of(
+                threadFactory,
+                (it, v) -> {
+                    it.setThreadFactory(threadFactory);
+                    return it;
+                }
+            );
         }
 
-        public Builder withThreadFactory(ThreadFactory threadFactory) {
-            config.setThreadFactory(threadFactory);
-            return this;
+        public MutatorOption<HikariConfig> connectionTestQuery(String testQuery) {
+            return MutatorOption.of(
+                testQuery,
+                (it, v) -> {
+                    it.setConnectionTestQuery(testQuery);
+                    return it;
+                }
+            );
         }
 
-        public Builder withConnectionTestQuery(String testQuery) {
-            config.setConnectionTestQuery(testQuery);
-            return this;
+        public MutatorOption<HikariConfig> dataSourceProperty(String propertyName, String value) {
+            return MutatorOption.of2(
+                propertyName, value,
+                (it, v1, v2) -> {
+                    it.addDataSourceProperty(propertyName, value);
+                    return it;
+                }
+            );
         }
 
-        public Builder withDataSourceProperty(String propertyName, String value) {
-            config.addDataSourceProperty(propertyName, value);
-            return this;
-        }
-
-        public Builder withAutoCommit(boolean autoCommit) {
-            config.setAutoCommit(autoCommit);
-            return this;
-        }
-
-        public HikariConfig build() {
-            return config;
-        }
-
-        public DataSource buildDataSource() {
-            return new HikariDataSource(config);
+        public MutatorOption<HikariConfig> autoCommit(boolean autoCommit) {
+            return MutatorOption.of(
+                autoCommit,
+                (it, v) -> {
+                    it.setAutoCommit(autoCommit);
+                    return it;
+                }
+            );
         }
     }
 }

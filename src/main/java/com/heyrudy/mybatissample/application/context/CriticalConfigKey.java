@@ -1,5 +1,7 @@
 package com.heyrudy.mybatissample.application.context;
 
+import com.heyrudy.mybatissample.application.context.HikariConfigBuilder.HikariConfigMutatorOptions;
+import com.heyrudy.mybatissample.application.context.HikariDataSourceBuilder.DataSourceMutatorOptions;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.MissingCriticalConfigError;
 import cyclops.control.Reader;
@@ -25,33 +27,48 @@ public sealed interface CriticalConfigKey<T>
             CriticalDbSecretKey.INSTANCE.lazyLoad();
         private static final Function<IDbSecret, Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext>> DB_SECRET_TO_DSL_CONTEXT =
             iDbSecret ->
-                Either.right(DSL.using(new DefaultConfiguration()
-                    .set(HikariConfigBuilder.INSTANCE.create()
-                        // Database connection properties
-                        .withJdbcUrl(iDbSecret.getJdbcUrl())
-                        .withUsername(iDbSecret.username())
-                        .withPassword(iDbSecret.password())
-                        // Dynamic connection pool sizing based on available processors
-                        .withMaximumPoolSize(
-                            Math.max(10, Runtime.getRuntime().availableProcessors() * 2))
-                        .withMinimumIdle(
-                            Math.max(2, Runtime.getRuntime().availableProcessors() / 2))
-                        .withIdleTimeout(20000)
-                        .withConnectionTimeout(5000)
-                        .withPoolName("OptimizedPostgresDbPool")
-                        // Performance optimization
-                        .withThreadFactory(
-                            Thread.ofVirtual()
-                                .name("hikari-virtual-", 0).factory())
-                        .withDataSourceProperty("cachePrepStmts", "true")
-                        .withDataSourceProperty("prepStmtCacheSize", "350")
-                        .withDataSourceProperty("prepStmtCacheSqlLimit", "4096")
-                        // Optional: connection test query
-                        .withConnectionTestQuery("SELECT 1")
-                        .withDataSourceProperty("autoReconnect", "true")
-                        .buildDataSource())  // Your HikariCP or other DataSource
-                    .set(SQLDialect.POSTGRES)
-                    .set(Executors.newVirtualThreadPerTaskExecutor())));
+                Either.right(
+                    DSL.using(new DefaultConfiguration()
+                        // Your HikariCP or other DataSource
+                        .set(HikariDataSourceBuilder.of(
+                            DataSourceMutatorOptions.INSTANCE.config(
+                                HikariConfigBuilder.of(
+                                    // Database connection properties
+                                    HikariConfigMutatorOptions.INSTANCE.jdbcUrl(
+                                        iDbSecret.getJdbcUrl()),
+                                    HikariConfigMutatorOptions.INSTANCE.username(
+                                        iDbSecret.username()),
+                                    HikariConfigMutatorOptions.INSTANCE.password(
+                                        iDbSecret.password()),
+                                    // Dynamic connection pool sizing based on available processors
+                                    HikariConfigMutatorOptions.INSTANCE.maximumPoolSize(
+                                        Math.max(
+                                            10, Runtime.getRuntime().availableProcessors() * 2)),
+                                    HikariConfigMutatorOptions.INSTANCE.minimumIdle(
+                                        Math.max(
+                                            2, Runtime.getRuntime().availableProcessors() / 2)),
+                                    HikariConfigMutatorOptions.INSTANCE.idleTimeout(20000),
+                                    HikariConfigMutatorOptions.INSTANCE.connectionTimeout(5000),
+                                    HikariConfigMutatorOptions.INSTANCE.poolName(
+                                        "OptimizedPostgresDbPool"),
+                                    // Performance optimization
+                                    HikariConfigMutatorOptions.INSTANCE.threadFactory(
+                                        Thread.ofVirtual()
+                                            .name("hikari-virtual-", 0).factory()),
+                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                        "cachePrepStmts", "true"),
+                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                        "prepStmtCacheSize", "350"),
+                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                        "prepStmtCacheSqlLimit", "4096"),
+                                    // Optional: connection test query
+                                    HikariConfigMutatorOptions.INSTANCE.connectionTestQuery(
+                                        "SELECT 1"),
+                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                        "autoReconnect", "true")))))
+                        .set(SQLDialect.POSTGRES)
+                        .set(Executors.newVirtualThreadPerTaskExecutor())
+                    ));
         private static final Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
             Either.left(
                 new MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError(
@@ -83,37 +100,53 @@ public sealed interface CriticalConfigKey<T>
             CriticalDbSecretKey.INSTANCE.lazyLoad();
         private static final Function<IDbSecret, Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext>> DB_SECRET_TO_DSL_CONTEXT =
             iDbSecret ->
-                Either.right(DSL.using(new DefaultConfiguration()
-                    .set(HikariConfigBuilder.INSTANCE.create()
-                        // Database connection properties
-                        .withDriverClassName(iDbSecret.driverClassName())
-                        .withJdbcUrl(iDbSecret.getJdbcUrl())
-                        .withUsername(iDbSecret.username())
-                        .withPassword(iDbSecret.password())
-                        // Dynamic connection pool sizing based on available processors
-                        .withMaximumPoolSize(
-                            Math.max(10, Runtime.getRuntime().availableProcessors() * 2))
-                        .withMinimumIdle(
-                            Math.max(2, Runtime.getRuntime().availableProcessors() / 2))
-                        .withIdleTimeout(20000)
-                        .withConnectionTimeout(5000)
-                        .withPoolName("OptimizedH2DbPool")
-                        // Performance optimization
-                        .withThreadFactory(
-                            Thread.ofVirtual()
-                                .name("hikari-virtual-", 0).factory())
-                        .withDataSourceProperty("cachePrepStmts", "true")
-                        .withDataSourceProperty("prepStmtCacheSize", "350")
-                        .withDataSourceProperty("prepStmtCacheSqlLimit", "4096")
-                        // Optional: connection test query
-                        .withConnectionTestQuery("SELECT 1")
-                        .withDataSourceProperty("autoReconnect", "true")
-                        // No auto-commit for H2 db engine
-                        //.withAutoCommit(false)
-                        .buildDataSource())  // Your HikariCP or other DataSource
-                    .set(SQLDialect.H2)
-                    .set(Executors.newVirtualThreadPerTaskExecutor())
-                    .set(new Settings().withExecuteLogging(false))));
+                Either.right(
+                    DSL.using(new DefaultConfiguration()
+                        // Your HikariCP or other DataSource
+                        .set(HikariDataSourceBuilder.of(
+                            DataSourceMutatorOptions.INSTANCE.config(
+                                HikariConfigBuilder.of(
+                                    // Database connection properties
+                                    HikariConfigMutatorOptions.INSTANCE.driverClassName(
+                                        iDbSecret.driverClassName()),
+                                    HikariConfigMutatorOptions.INSTANCE.jdbcUrl(
+                                        iDbSecret.getJdbcUrl()),
+                                    HikariConfigMutatorOptions.INSTANCE.username(
+                                        iDbSecret.username()),
+                                    HikariConfigMutatorOptions.INSTANCE.password(
+                                        iDbSecret.password()),
+                                    // Dynamic connection pool sizing based on available processors
+                                    HikariConfigMutatorOptions.INSTANCE.maximumPoolSize(
+                                        Math.max(
+                                            10, Runtime.getRuntime().availableProcessors() * 2)),
+                                    HikariConfigMutatorOptions.INSTANCE.minimumIdle(
+                                        Math.max(
+                                            2, Runtime.getRuntime().availableProcessors() / 2)),
+                                    HikariConfigMutatorOptions.INSTANCE.idleTimeout(20000),
+                                    HikariConfigMutatorOptions.INSTANCE.connectionTimeout(5000),
+                                    HikariConfigMutatorOptions.INSTANCE.poolName(
+                                        "OptimizedH2DbPool"),
+                                    // Performance optimization
+                                    HikariConfigMutatorOptions.INSTANCE.threadFactory(
+                                        Thread.ofVirtual()
+                                            .name("hikari-virtual-", 0).factory()),
+                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                        "cachePrepStmts", "true"),
+                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                        "prepStmtCacheSize", "350"),
+                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                        "prepStmtCacheSqlLimit", "4096"),
+                                    // Optional: connection test query
+                                    HikariConfigMutatorOptions.INSTANCE.connectionTestQuery(
+                                        "SELECT 1"),
+                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                        "autoReconnect", "true")
+                                    // No auto-commit for H2 db engine
+                                    //,HikariConfigMutatorOptions.INSTANCE.autoCommit(false)
+                                ))))
+                        .set(SQLDialect.H2)
+                        .set(Executors.newVirtualThreadPerTaskExecutor())
+                        .set(new Settings().withExecuteLogging(false))));
         private static final Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
             Either.left(
                 new MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError(
