@@ -1,77 +1,87 @@
 package com.heyrudy.mybatissample.application;
 
+import com.heyrudy.mybatissample.domain.UtilsModule.MutatorOption;
+import java.util.Arrays;
+import java.util.Objects;
+
 public interface CityDTOModule {
 
     record CityResponseDTO(String name, String state, String country) {
 
-        public static CityResponseDTOBuilder builder() {
-            return new CityResponseDTOBuilder();
+        public CityResponseDTO() {
+            this("", "", "");
         }
 
-        public static class CityResponseDTOBuilder {
+        @SafeVarargs
+        public static CityResponseDTO of(MutatorOption<CityResponseDTO>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(new CityResponseDTO(), (model, option) -> option.apply(model),
+                    (a, b) -> a);
+        }
 
-            private String name;
-            private String state;
-            private String country;
+        public enum CityResponseDTOMutatorOptions {
+            INSTANCE;
 
-            public CityResponseDTOBuilder() {
-                super();
+            public MutatorOption<CityResponseDTO> name(String name) {
+                return MutatorOption.of(
+                    name,
+                    (it, v) -> new CityResponseDTO(v, it.state, it.country)
+                );
             }
 
-            public CityResponseDTOBuilder name(String name) {
-                this.name = name;
-                return this;
+            public MutatorOption<CityResponseDTO> state(String state) {
+                return MutatorOption.of(
+                    state,
+                    (it, v) -> new CityResponseDTO(it.name, v, it.country)
+                );
             }
 
-            public CityResponseDTOBuilder state(String state) {
-                this.state = state;
-                return this;
-            }
-
-            public CityResponseDTOBuilder country(String country) {
-                this.country = country;
-                return this;
-            }
-
-            public CityResponseDTO build() {
-                return new CityResponseDTO(name, state, country);
+            public MutatorOption<CityResponseDTO> country(String country) {
+                return MutatorOption.of(
+                    country,
+                    (it, v) -> new CityResponseDTO(it.name, it.state, v)
+                );
             }
         }
     }
 
     record CityRequestDTO(String name, String state, String country) {
 
-        public static CityRequestDTOBuilder builder() {
-            return new CityRequestDTOBuilder();
+        public CityRequestDTO() {
+            this("", "", "");
         }
 
-        public static class CityRequestDTOBuilder {
+        @SafeVarargs
+        public static CityRequestDTO of(MutatorOption<CityRequestDTO>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(new CityRequestDTO(), (model, option) -> option.apply(model),
+                    (a, b) -> a);
+        }
 
-            private String name;
-            private String state;
-            private String country;
+        public enum CityRequestDTOMutatorOptions {
+            INSTANCE;
 
-            public CityRequestDTOBuilder() {
-                super();
+            public MutatorOption<CityRequestDTO> name(String name) {
+                return MutatorOption.of(
+                    name,
+                    (it, v) -> new CityRequestDTO(v, it.state, it.country)
+                );
             }
 
-            public CityRequestDTOBuilder name(String name) {
-                this.name = name;
-                return this;
+            public MutatorOption<CityRequestDTO> state(String state) {
+                return MutatorOption.of(
+                    state,
+                    (it, v) -> new CityRequestDTO(it.name, v, it.country)
+                );
             }
 
-            public CityRequestDTOBuilder state(String state) {
-                this.state = state;
-                return this;
-            }
-
-            public CityRequestDTOBuilder country(String country) {
-                this.country = country;
-                return this;
-            }
-
-            public CityRequestDTO build() {
-                return new CityRequestDTO(name, state, country);
+            public MutatorOption<CityRequestDTO> country(String country) {
+                return MutatorOption.of(
+                    country,
+                    (it, v) -> new CityRequestDTO(it.name, it.state, v)
+                );
             }
         }
     }

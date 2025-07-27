@@ -23,7 +23,7 @@ public enum HikariDataSourceBuilder {
         public MutatorOption<HikariDataSource> config(HikariConfig config) {
             return MutatorOption.of(
                 config,
-                (it, v) -> new HikariDataSource(config)
+                (it, v) -> new HikariDataSource(v)
             );
         }
     }

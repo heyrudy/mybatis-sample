@@ -23,7 +23,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 jdbcUrl,
                 (it, v) -> {
-                    it.setJdbcUrl(jdbcUrl);
+                    it.setJdbcUrl(v);
                     return it;
                 }
             );
@@ -33,7 +33,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 driverClassName,
                 (it, v) -> {
-                    it.setDriverClassName(driverClassName);
+                    it.setDriverClassName(v);
                     return it;
                 }
             );
@@ -43,7 +43,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 username,
                 (it, v) -> {
-                    it.setUsername(username);
+                    it.setUsername(v);
                     return it;
                 }
             );
@@ -53,7 +53,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 password,
                 (it, v) -> {
-                    it.setPassword(password);
+                    it.setPassword(v);
                     return it;
                 }
             );
@@ -63,7 +63,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 maximumPoolSize,
                 (it, v) -> {
-                    it.setMaximumPoolSize(maximumPoolSize);
+                    it.setMaximumPoolSize(v);
                     return it;
                 }
             );
@@ -73,7 +73,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 minimumIdle,
                 (it, v) -> {
-                    it.setMinimumIdle(minimumIdle);
+                    it.setMinimumIdle(v);
                     return it;
                 }
             );
@@ -83,7 +83,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 idleTimeoutMs,
                 (it, v) -> {
-                    it.setIdleTimeout(idleTimeoutMs);
+                    it.setIdleTimeout(v);
                     return it;
                 }
             );
@@ -93,7 +93,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 connectionTimeoutMs,
                 (it, v) -> {
-                    it.setConnectionTimeout(connectionTimeoutMs);
+                    it.setConnectionTimeout(v);
                     return it;
                 }
             );
@@ -103,7 +103,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 poolName,
                 (it, v) -> {
-                    it.setPoolName(poolName);
+                    it.setPoolName(v);
                     return it;
                 }
             );
@@ -113,7 +113,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 threadFactory,
                 (it, v) -> {
-                    it.setThreadFactory(threadFactory);
+                    it.setThreadFactory(v);
                     return it;
                 }
             );
@@ -123,7 +123,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 testQuery,
                 (it, v) -> {
-                    it.setConnectionTestQuery(testQuery);
+                    it.setConnectionTestQuery(v);
                     return it;
                 }
             );
@@ -133,7 +133,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of2(
                 propertyName, value,
                 (it, v1, v2) -> {
-                    it.addDataSourceProperty(propertyName, value);
+                    it.addDataSourceProperty(v1, v2);
                     return it;
                 }
             );
@@ -143,7 +143,7 @@ public enum HikariConfigBuilder {
             return MutatorOption.of(
                 autoCommit,
                 (it, v) -> {
-                    it.setAutoCommit(autoCommit);
+                    it.setAutoCommit(v);
                     return it;
                 }
             );

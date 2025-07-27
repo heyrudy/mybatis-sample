@@ -27,7 +27,7 @@ public interface CityModelModule extends UtilsModule {
         implements ICity {
 
         public FullCity() {
-            this(0L, null, null, null);
+            this(0L, "", "", "");
         }
 
         @SafeVarargs
@@ -71,28 +71,28 @@ public interface CityModelModule extends UtilsModule {
             public MutatorOption<FullCity> id(Long id) {
                 return MutatorOption.of(
                     id,
-                    (it, v) -> new FullCity(id, it.name, it.state, it.country)
+                    (it, v) -> new FullCity(v, it.name, it.state, it.country)
                 );
             }
 
             public MutatorOption<FullCity> name(String name) {
                 return MutatorOption.of(
                     name,
-                    (it, v) -> new FullCity(it.id, name, it.state, it.country)
+                    (it, v) -> new FullCity(it.id, v, it.state, it.country)
                 );
             }
 
             public MutatorOption<FullCity> state(String state) {
                 return MutatorOption.of(
                     state,
-                    (it, v) -> new FullCity(it.id, it.name, state, it.country)
+                    (it, v) -> new FullCity(it.id, it.name, v, it.country)
                 );
             }
 
             public MutatorOption<FullCity> country(String country) {
                 return MutatorOption.of(
                     country,
-                    (it, v) -> new FullCity(it.id, it.name, it.state, country)
+                    (it, v) -> new FullCity(it.id, it.name, it.state, v)
                 );
             }
         }
@@ -150,7 +150,7 @@ public interface CityModelModule extends UtilsModule {
             public MutatorOption<PartialCityProxy> id(Long id) {
                 return MutatorOption.of(
                     id,
-                    (it, v) -> new PartialCityProxy(id)
+                    (it, v) -> new PartialCityProxy(v)
                 );
             }
         }
@@ -201,7 +201,7 @@ public interface CityModelModule extends UtilsModule {
             public MutatorOption<NullCity> id(Long id) {
                 return MutatorOption.of(
                     id,
-                    (it, v) -> new NullCity(id)
+                    (it, v) -> new NullCity(v)
                 );
             }
         }
@@ -234,7 +234,7 @@ public interface CityModelModule extends UtilsModule {
             public MutatorOption<CityCriteriaDetails> cityId(Long cityId) {
                 return MutatorOption.of(
                     cityId,
-                    (it, v) -> new CityCriteriaDetails(cityId)
+                    (it, v) -> new CityCriteriaDetails(v)
                 );
             }
         }

@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heyrudy.mybatissample.application.CityDTOModule.CityRequestDTO;
+import com.heyrudy.mybatissample.application.CityDTOModule.CityRequestDTO.CityRequestDTOMutatorOptions;
 import com.heyrudy.mybatissample.gateway.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,10 +39,10 @@ class CityCriticalRestAPIAdapterIntegrationTest {
     void shouldCreateCity_whenClientRequestToCreateANewCity() throws Exception {
         // ARRANGE - precondition or setup
         CityRequestDTO cityRequestDTO =
-            CityRequestDTO.builder()
-                .name("Paris")
-                .country("France")
-                .state("Paris75").build();
+            CityRequestDTO.of(
+                CityRequestDTOMutatorOptions.INSTANCE.name("Paris"),
+                CityRequestDTOMutatorOptions.INSTANCE.country("France"),
+                CityRequestDTOMutatorOptions.INSTANCE.state("Paris75"));
 
         // ACT - action or behavior that we are going to test
         // ASSERT - verify the result or output using assert statements

@@ -20,13 +20,6 @@ public interface APIErrorModule extends UtilsModule {
                     (a, b) -> a);
         }
 
-        @SafeVarargs
-        public final ApiErrorResponse with(MutatorOption<ApiErrorResponse>... options) {
-            return Arrays.stream(options)
-                .filter(Objects::nonNull)
-                .reduce(this, (model, option) -> option.apply(model), (a, b) -> a);
-        }
-
         public enum ApiErrorResponseMutatorOptions {
             INSTANCE;
 
