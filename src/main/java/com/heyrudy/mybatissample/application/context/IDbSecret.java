@@ -67,35 +67,6 @@ public sealed interface IDbSecret
         }
     }
 
-    enum IDbSecretValidator {
-        INSTANCE;
-
-        public String validateNonEmpty(String value, String propertyName) {
-            if (value == null || value.trim().isEmpty()) {
-                throw new IllegalArgumentException(
-                    "Property '%s' cannot be null or empty".formatted(propertyName));
-            }
-            return value.trim();
-        }
-
-        public int validatePort(int port, String propertyName) {
-            if (port < 1 || port > 65535) {
-                throw new IllegalArgumentException(
-                    "Property '%s' must be between 1 and 65535, got: %d"
-                        .formatted(propertyName, port));
-            }
-            return port;
-        }
-
-        public int validatePositive(int value, String propertyName) {
-            if (value <= 0) {
-                throw new IllegalArgumentException(
-                    "Property '%s' must be positive, got: %d".formatted(propertyName, value));
-            }
-            return value;
-        }
-    }
-
     record DbSecret(
         String host,
         int port,
@@ -129,10 +100,6 @@ public sealed interface IDbSecret
                 DB_SECRET_VALIDATOR.validateNonEmpty(password, "db.secret.password");
         }
 
-        public static DbSecretBuilder builder() {
-            return new DbSecretBuilder();
-        }
-
         @Override
         public String driverClassName() {
             return "";
@@ -141,61 +108,6 @@ public sealed interface IDbSecret
         @Override
         public String getJdbcUrl() {
             return "%s://%s/%s".formatted(protocol, host, schema);
-        }
-
-        public static class DbSecretBuilder {
-
-            private String protocol;
-            private String host;
-            private int port;
-            private String schema;
-            private String username;
-            private String password;
-
-            public DbSecretBuilder() {
-                super();
-            }
-
-            public DbSecretBuilder protocol(String protocol) {
-                this.protocol = protocol;
-                return this;
-            }
-
-            public DbSecretBuilder host(String host) {
-                this.host = host;
-                return this;
-            }
-
-            public DbSecretBuilder port(int port) {
-                this.port = port;
-                return this;
-            }
-
-            public DbSecretBuilder schema(String schema) {
-                this.schema = schema;
-                return this;
-            }
-
-            public DbSecretBuilder username(String username) {
-                this.username = username;
-                return this;
-            }
-
-            public DbSecretBuilder password(String password) {
-                this.password = password;
-                return this;
-            }
-
-            public DbSecret build() {
-                return new DbSecret(
-                    host,
-                    port,
-                    protocol,
-                    schema,
-                    username,
-                    password
-                );
-            }
         }
     }
 
@@ -236,10 +148,6 @@ public sealed interface IDbSecret
             this.password = password;
         }
 
-        public static H2DbSecretBuilder builder() {
-            return new H2DbSecretBuilder();
-        }
-
         @Override
         public int port() {
             return 0;
@@ -249,64 +157,34 @@ public sealed interface IDbSecret
         public String getJdbcUrl() {
             return "%s:%s".formatted(protocol, host);
         }
+    }
 
-        public static class H2DbSecretBuilder {
+    enum IDbSecretValidator {
+        INSTANCE;
 
-            private String driverClassName;
-            private String protocol;
-            private String host;
-            private String schema;
-            private String username;
-            private String password;
-
-            public H2DbSecretBuilder() {
-                super();
+        public String validateNonEmpty(String value, String propertyName) {
+            if (value == null || value.trim().isEmpty()) {
+                throw new IllegalArgumentException(
+                    "Property '%s' cannot be null or empty".formatted(propertyName));
             }
+            return value.trim();
+        }
 
-            public static H2DbSecretBuilder builder() {
-                return new H2DbSecretBuilder();
+        public int validatePort(int port, String propertyName) {
+            if (port < 1 || port > 65535) {
+                throw new IllegalArgumentException(
+                    "Property '%s' must be between 1 and 65535, got: %d"
+                        .formatted(propertyName, port));
             }
+            return port;
+        }
 
-            public H2DbSecretBuilder driverClassName(String driverClassName) {
-                this.driverClassName = driverClassName;
-                return this;
+        public int validatePositive(int value, String propertyName) {
+            if (value <= 0) {
+                throw new IllegalArgumentException(
+                    "Property '%s' must be positive, got: %d".formatted(propertyName, value));
             }
-
-            public H2DbSecretBuilder protocol(String protocol) {
-                this.protocol = protocol;
-                return this;
-            }
-
-            public H2DbSecretBuilder host(String host) {
-                this.host = host;
-                return this;
-            }
-
-            public H2DbSecretBuilder schema(String schema) {
-                this.schema = schema;
-                return this;
-            }
-
-            public H2DbSecretBuilder username(String username) {
-                this.username = username;
-                return this;
-            }
-
-            public H2DbSecretBuilder password(String password) {
-                this.password = password;
-                return this;
-            }
-
-            public H2DbSecret build() {
-                return new H2DbSecret(
-                    driverClassName,
-                    protocol,
-                    host,
-                    schema,
-                    username,
-                    password
-                );
-            }
+            return value;
         }
     }
 }
