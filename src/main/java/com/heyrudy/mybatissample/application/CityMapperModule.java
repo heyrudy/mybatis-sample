@@ -1,8 +1,6 @@
 package com.heyrudy.mybatissample.application;
 
-import com.heyrudy.mybatissample.application.CityDTOModule.CityResponseDTO.CityResponseDTOMutatorOptions;
 import com.heyrudy.mybatissample.domain.CityModelModule;
-import com.heyrudy.mybatissample.domain.CityModelModule.FullCity.FullCityMutatorOptions;
 
 public interface CityMapperModule
     extends CityModelModule,

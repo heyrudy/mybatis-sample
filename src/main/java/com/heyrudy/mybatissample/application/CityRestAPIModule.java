@@ -1,6 +1,5 @@
 package com.heyrudy.mybatissample.application;
 
-import com.heyrudy.mybatissample.application.APIErrorModule.ApiErrorResponse.ApiErrorResponseMutatorOptions;
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.gateway.file.PDFResourceModule;
@@ -43,8 +42,10 @@ public interface CityRestAPIModule
         private static final CreatePdfUtil CREATE_PDF_UTIL = CreatePdfUtil.INSTANCE;
         // A reader that always returns a specific error value
         private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_SAVED_PATH =
-            errMsg -> __ -> Either.left(
-                new DomainServiceAPIError.CityNotSavedError(errMsg));
+            Function.<String>identity()
+                .andThen(DomainServiceAPIError.CityNotSavedError::new)
+                .andThen(Either::<DomainServiceAPIError, ICity>left)
+                .andThen(either -> __ -> either);
         private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_FOUND_PATH =
             errMsg -> __ -> Either.left(
                 new DomainServiceAPIError.CityNotFoundError(errMsg));

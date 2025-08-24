@@ -1,7 +1,5 @@
 package com.heyrudy.mybatissample.application.context;
 
-import com.heyrudy.mybatissample.application.context.HikariConfigBuilder.HikariConfigMutatorOptions;
-import com.heyrudy.mybatissample.application.context.HikariDataSourceBuilder.DataSourceMutatorOptions;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.MissingCriticalConfigError;
 import cyclops.control.Reader;
@@ -15,7 +13,7 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 
 public sealed interface CriticalConfigKey<T>
-    extends ConfigKey<T>, DomainErrorModule
+    extends ConfigKey<T>, DataSourceConfigurationModule, DomainErrorModule
     permits CriticalConfigKey.CriticalPostgresDSLContextConfigKey,
     CriticalConfigKey.CriticalH2DSLContextConfigKey {
 

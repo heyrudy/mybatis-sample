@@ -2,21 +2,49 @@ package com.heyrudy.mybatissample.application.context;
 
 import com.heyrudy.mybatissample.domain.UtilsModule.MutatorOption;
 import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
+import javax.sql.DataSource;
 
-public enum HikariConfigBuilder {
-    INSTANCE;
+public interface DataSourceConfigurationModule {
 
-    @SafeVarargs
-    public static HikariConfig of(MutatorOption<HikariConfig>... options) {
-        return Arrays.stream(options)
-            .filter(Objects::nonNull)
-            .reduce(new HikariConfig(), (model, option) -> option.apply(model), (a, b) -> a);
+    enum HikariDataSourceBuilder {
+        INSTANCE;
+
+        @SafeVarargs
+        public static DataSource of(MutatorOption<HikariDataSource>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(new HikariDataSource(), (model, option) -> option.apply(model),
+                    (a, b) -> a);
+        }
     }
 
-    public enum HikariConfigMutatorOptions {
+    enum HikariConfigBuilder {
+        INSTANCE;
+
+        @SafeVarargs
+        public static HikariConfig of(MutatorOption<HikariConfig>... options) {
+            return Arrays.stream(options)
+                .filter(Objects::nonNull)
+                .reduce(new HikariConfig(), (model, option) -> option.apply(model), (a, b) -> a);
+        }
+    }
+
+    enum DataSourceMutatorOptions {
+        INSTANCE;
+
+        public MutatorOption<HikariDataSource> config(HikariConfig config) {
+            return MutatorOption.of(
+                config,
+                (it, v) -> new HikariDataSource(v)
+            );
+        }
+    }
+
+    enum HikariConfigMutatorOptions {
         INSTANCE;
 
         public MutatorOption<HikariConfig> jdbcUrl(String jdbcUrl) {

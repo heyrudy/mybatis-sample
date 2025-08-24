@@ -5,16 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.heyrudy.mybatissample.application.CityInteractorModule.CreateCityInteractor;
 import com.heyrudy.mybatissample.application.CityInteractorModule.FindCitiesInteractor;
 import com.heyrudy.mybatissample.application.CityInteractorModule.FindCityByIdInteractor;
-import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails;
-import com.heyrudy.mybatissample.domain.CityModelModule.CityCriteriaDetails.CityCriteriaDetailsMutatorOptions;
-import com.heyrudy.mybatissample.domain.CityModelModule.FullCity;
-import com.heyrudy.mybatissample.domain.CityModelModule.FullCity.FullCityMutatorOptions;
-import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
-import com.heyrudy.mybatissample.domain.CityModelModule.NullCity;
+import com.heyrudy.mybatissample.domain.CityModelModule;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
-import com.heyrudy.mybatissample.domain.DomainErrorModule.DomainServiceAPIError;
 import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDependencyLocator;
-import com.heyrudy.mybatissample.gateway.db.CityDbModule.CityRepository;
+import com.heyrudy.mybatissample.gateway.db.CityDbModule;
 import io.vavr.control.Either;
 import java.util.List;
 import org.assertj.vavr.api.VavrAssertions;
@@ -22,7 +16,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class CityInteractorModuleTest {
+class CityInteractorModuleTest
+    implements CityDbModule, CityModelModule {
 
     private static final CreateCityInteractor CREATE_CITY_INTERACTOR_INSTANCE_UNDER_TEST =
         CreateCityInteractor.INSTANCE;

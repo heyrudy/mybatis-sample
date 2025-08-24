@@ -19,16 +19,16 @@ public interface APIErrorModule extends UtilsModule {
                 .reduce(new ApiErrorResponse(), (model, option) -> option.apply(model),
                     (a, b) -> a);
         }
+    }
 
-        public enum ApiErrorResponseMutatorOptions {
-            INSTANCE;
+    enum ApiErrorResponseMutatorOptions {
+        INSTANCE;
 
-            public MutatorOption<ApiErrorResponse> reason(String reason) {
-                return MutatorOption.of(
-                    reason,
-                    (it, v) -> new ApiErrorResponse(v)
-                );
-            }
+        public MutatorOption<ApiErrorResponse> reason(String reason) {
+            return MutatorOption.of(
+                reason,
+                (it, v) -> new ApiErrorResponse(v)
+            );
         }
     }
 }

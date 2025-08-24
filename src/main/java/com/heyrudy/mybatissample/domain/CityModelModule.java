@@ -64,38 +64,6 @@ public interface CityModelModule extends UtilsModule {
         public String getCountry() {
             return country;
         }
-
-        public enum FullCityMutatorOptions {
-            INSTANCE;
-
-            public MutatorOption<FullCity> id(Long id) {
-                return MutatorOption.of(
-                    id,
-                    (it, v) -> new FullCity(v, it.name, it.state, it.country)
-                );
-            }
-
-            public MutatorOption<FullCity> name(String name) {
-                return MutatorOption.of(
-                    name,
-                    (it, v) -> new FullCity(it.id, v, it.state, it.country)
-                );
-            }
-
-            public MutatorOption<FullCity> state(String state) {
-                return MutatorOption.of(
-                    state,
-                    (it, v) -> new FullCity(it.id, it.name, v, it.country)
-                );
-            }
-
-            public MutatorOption<FullCity> country(String country) {
-                return MutatorOption.of(
-                    country,
-                    (it, v) -> new FullCity(it.id, it.name, it.state, v)
-                );
-            }
-        }
     }
 
     record PartialCityProxy(Long id) implements ICity {
@@ -143,17 +111,6 @@ public interface CityModelModule extends UtilsModule {
         public String getCountry() {
             return null;
         }
-
-        public enum PartialCityProxyMutatorOptions {
-            INSTANCE;
-
-            public MutatorOption<PartialCityProxy> id(Long id) {
-                return MutatorOption.of(
-                    id,
-                    (it, v) -> new PartialCityProxy(v)
-                );
-            }
-        }
     }
 
     record NullCity(Long id) implements ICity {
@@ -194,17 +151,6 @@ public interface CityModelModule extends UtilsModule {
         public String getCountry() {
             return "No country";
         }
-
-        public enum NullCityMutatorOptions {
-            INSTANCE;
-
-            public MutatorOption<NullCity> id(Long id) {
-                return MutatorOption.of(
-                    id,
-                    (it, v) -> new NullCity(v)
-                );
-            }
-        }
     }
 
     record CityCriteriaDetails(long cityId) {
@@ -227,16 +173,70 @@ public interface CityModelModule extends UtilsModule {
                 .filter(Objects::nonNull)
                 .reduce(this, (model, option) -> option.apply(model), (a, b) -> a);
         }
+    }
 
-        public enum CityCriteriaDetailsMutatorOptions {
-            INSTANCE;
+    enum FullCityMutatorOptions {
+        INSTANCE;
 
-            public MutatorOption<CityCriteriaDetails> cityId(Long cityId) {
-                return MutatorOption.of(
-                    cityId,
-                    (it, v) -> new CityCriteriaDetails(v)
-                );
-            }
+        public MutatorOption<FullCity> id(Long id) {
+            return MutatorOption.of(
+                id,
+                (it, v) -> new FullCity(v, it.name, it.state, it.country)
+            );
+        }
+
+        public MutatorOption<FullCity> name(String name) {
+            return MutatorOption.of(
+                name,
+                (it, v) -> new FullCity(it.id, v, it.state, it.country)
+            );
+        }
+
+        public MutatorOption<FullCity> state(String state) {
+            return MutatorOption.of(
+                state,
+                (it, v) -> new FullCity(it.id, it.name, v, it.country)
+            );
+        }
+
+        public MutatorOption<FullCity> country(String country) {
+            return MutatorOption.of(
+                country,
+                (it, v) -> new FullCity(it.id, it.name, it.state, v)
+            );
+        }
+    }
+
+    enum PartialCityProxyMutatorOptions {
+        INSTANCE;
+
+        public MutatorOption<PartialCityProxy> id(Long id) {
+            return MutatorOption.of(
+                id,
+                (it, v) -> new PartialCityProxy(v)
+            );
+        }
+    }
+
+    enum NullCityMutatorOptions {
+        INSTANCE;
+
+        public MutatorOption<NullCity> id(Long id) {
+            return MutatorOption.of(
+                id,
+                (it, v) -> new NullCity(v)
+            );
+        }
+    }
+
+    enum CityCriteriaDetailsMutatorOptions {
+        INSTANCE;
+
+        public MutatorOption<CityCriteriaDetails> cityId(Long cityId) {
+            return MutatorOption.of(
+                cityId,
+                (it, v) -> new CityCriteriaDetails(v)
+            );
         }
     }
 }

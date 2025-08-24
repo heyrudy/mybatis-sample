@@ -6,7 +6,6 @@ import static org.jooq.impl.DSL.table;
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.application.context.CriticalConfigKey.CriticalH2DSLContextConfigKey;
 import com.heyrudy.mybatissample.domain.CityModelModule;
-import com.heyrudy.mybatissample.domain.CityModelModule.FullCity.FullCityMutatorOptions;
 import com.heyrudy.mybatissample.domain.CityRepositoryError;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.DomainRepositoryError;
