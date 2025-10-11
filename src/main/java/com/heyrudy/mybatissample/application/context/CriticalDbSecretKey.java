@@ -12,7 +12,7 @@ public enum CriticalDbSecretKey
     implements CriticalSecretKey<IDbSecret> {
     INSTANCE;
 
-    private static final CriticalDbSecretNotFoundByDependencyLocatorError CRITICAL_DB_SECRET_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
+    private static final CriticalDbSecretNotFoundByDependencyLocatorError CRITICAL_DB_SECRET_NOT_FOUND_BY_DEPENDENCY_LOCATOR =
         new CriticalDbSecretNotFoundByDependencyLocatorError(
             ErrorMessage.CRITICAL_DB_SECRET_NOT_FOUND.formatted(INSTANCE));
 
@@ -22,7 +22,7 @@ public enum CriticalDbSecretKey
             Option.of(
                     appScopedDependencyLocator.getDependency(
                         IDbSecret.class, Option.of(MockedDbSecret::new)))
-                .toEither(CRITICAL_DB_SECRET_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH);
+                .toEither(CRITICAL_DB_SECRET_NOT_FOUND_BY_DEPENDENCY_LOCATOR);
     }
 
     @Override

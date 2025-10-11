@@ -29,24 +29,24 @@ public interface CityInteractorModule
     enum CreateCityInteractor {
         INSTANCE;
 
-        private static final Function<DomainRepositoryError, Either<DomainErrorModule.DomainServiceAPIError, ICity>> CITY_NOT_SAVED_PATH =
+        private static final Function<DomainRepositoryError, Either<DomainErrorModule.DomainServiceAPIError, ICity>> CITY_NOT_SAVED =
             DOMAIN_REPOSITORY_ERROR_MESSAGE
                 .andThen(DomainErrorModule.DomainServiceAPIError.CityNotSavedError::new)
                 .andThen(Either::left);
-        private static final Function<Either<DomainRepositoryError, ICity>, Either<DomainErrorModule.DomainServiceAPIError, ICity>> MAP_TO_CITY_PATH =
+        private static final Function<Either<DomainRepositoryError, ICity>, Either<DomainErrorModule.DomainServiceAPIError, ICity>> MAP_TO_CITY =
             domainRepositoryErrorICityEither ->
-                domainRepositoryErrorICityEither.fold(CITY_NOT_SAVED_PATH, Either::right);
+                domainRepositoryErrorICityEither.fold(CITY_NOT_SAVED, Either::right);
 
         public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.DomainServiceAPIError, ICity>> execute(
             final ICity iCity) {
-            return CITY_REPOSITORY_DEPENDENCY.save(iCity).map(MAP_TO_CITY_PATH);
+            return CITY_REPOSITORY_DEPENDENCY.save(iCity).map(MAP_TO_CITY);
         }
     }
 
     enum FindCityByIdInteractor {
         INSTANCE;
 
-        private static final Function<DomainRepositoryError, Either<DomainErrorModule.DomainServiceAPIError, ICity>> CITY_NOT_FOUND_BY_ID_PATH =
+        private static final Function<DomainRepositoryError, Either<DomainErrorModule.DomainServiceAPIError, ICity>> CITY_NOT_FOUND_BY_ID =
             DOMAIN_REPOSITORY_ERROR_MESSAGE
                 .andThen(DomainErrorModule.DomainServiceAPIError.CityNotFoundError::new)
                 .andThen(Either::left);
@@ -57,7 +57,7 @@ public interface CityInteractorModule
             return CITY_REPOSITORY_DEPENDENCY.findById(cityId)
                 .map(domainRepositoryErrorOptionEither ->
                     domainRepositoryErrorOptionEither.fold(
-                        CITY_NOT_FOUND_BY_ID_PATH,
+                        CITY_NOT_FOUND_BY_ID,
                         iCityOption ->
                             Match(iCityOption).of(
                                 Case($Some($()), Either::right),
@@ -73,17 +73,17 @@ public interface CityInteractorModule
 
         private static final Function<DomainErrorModule.MissingCriticalDependencyError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
             DomainErrorModule.MissingCriticalDependencyError::message;
-        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(DomainErrorModule.DomainServiceAPIError.CitiesNotFoundError::new)
                 .andThen(Either::left);
-        private static final Function<Either<MissingCriticalDependencyError, List<ICity>>, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> MAP_TO_CITIES_PATH =
+        private static final Function<Either<MissingCriticalDependencyError, List<ICity>>, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> MAP_TO_CITIES =
             missingCriticalDependencyErrorListEither ->
                 missingCriticalDependencyErrorListEither.fold(
-                    CRITICAL_DSL_CONTEXT_NOT_FOUND_PATH, Either::right);
+                    CRITICAL_DSL_CONTEXT_NOT_FOUND, Either::right);
 
         public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> execute() {
-            return CITY_REPOSITORY_DEPENDENCY.findAll().map(MAP_TO_CITIES_PATH);
+            return CITY_REPOSITORY_DEPENDENCY.findAll().map(MAP_TO_CITIES);
         }
     }
 }

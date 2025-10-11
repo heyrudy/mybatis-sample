@@ -182,27 +182,27 @@ public interface CityDbModule
                 .orElse(null);
         }
 
-        private static final Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext>> CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH =
+        private static final Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext>> CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED =
             CriticalH2DSLContextConfigKey.INSTANCE.lazyLoad();
         private static final Function<DomainErrorModule.MissingCriticalDependencyError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
             DomainErrorModule.MissingCriticalDependencyError::message;
-        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CriticalDSLContextNotFoundByDependencyLocatorError::new)
                 .andThen(Either::left);
-        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotSavedByRepositoryError::new)
                 .andThen(Either::left);
-        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, Option<ICity>>> CITY_NOT_FOUND_BY_REPOSITORY =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new)
                 .andThen(Either::left);
-        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, Integer>> CITY_NOT_DELETED_BY_REPOSITORY_PATH =
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, Integer>> CITY_NOT_DELETED_BY_REPOSITORY =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new)
                 .andThen(Either::left);
-        private static final Function<DSLContext, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> FIND_CITIES_PATH =
+        private static final Function<DSLContext, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> FIND_CITIES =
             dslContext ->
                 Either.right(dslContext.select(ID, NAME, STATE, COUNTRY)
                     .from(CITIES)
@@ -210,15 +210,15 @@ public interface CityDbModule
                     .stream()
                     .map(CityRepository::mapRecord)
                     .toList());
-        private static final Function<ICity, Option<ICity>> TO_OPTIONAL_CITY_PATH =
+        private static final Function<ICity, Option<ICity>> TO_OPTIONAL_CITY =
             Option::of;
-        private static final Function<ICity, Either<DomainRepositoryError, Option<ICity>>> TO_EITHER_CITY_PATH =
-            TO_OPTIONAL_CITY_PATH.andThen(Either::right);
+        private static final Function<ICity, Either<DomainRepositoryError, Option<ICity>>> TO_EITHER_CITY =
+            TO_OPTIONAL_CITY.andThen(Either::right);
 
         @Override
         public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, ICity>> save(
             ICity iCity) {
-            Function<DSLContext, Either<DomainRepositoryError, ICity>> saveCityPath =
+            Function<DSLContext, Either<DomainRepositoryError, ICity>> saveCity =
                 dslContext ->
                     Option.of(dslContext.insertInto(CITIES)
                             .columns(NAME, STATE, COUNTRY)
@@ -230,25 +230,25 @@ public interface CityDbModule
                             new CityRepositoryError.CityNotSavedByRepositoryError(
                                 CityRepositoryError.CityNotSavedByRepositoryError.CityNotSavedByRepositoryError.ErrorMessage.CITY_NOT_SAVED));
             // Compose operations with flatMap to explicitly avoid apply
-            return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
+            return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED
                 .map(dslContextEither ->
-                    dslContextEither.fold(CITY_NOT_SAVED_BY_REPOSITORY_PATH, saveCityPath));
+                    dslContextEither.fold(CITY_NOT_SAVED_BY_REPOSITORY, saveCity));
         }
 
         @Override
         public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, List<ICity>>> findAll() {
             // Compose operations with flatMap to explicitly avoid apply
-            return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
+            return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED
                 .map(dslContextEither ->
                     dslContextEither.fold(
-                        CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR_PATH,
-                        FIND_CITIES_PATH));
+                        CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR,
+                        FIND_CITIES));
         }
 
         @Override
         public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, Option<ICity>>> findById(
             long id) {
-            Function<DSLContext, Either<DomainRepositoryError, Option<ICity>>> findCityByIdPath =
+            Function<DSLContext, Either<DomainRepositoryError, Option<ICity>>> findCityById =
                 dslContext ->
                     Option.of(dslContext.select(ID, NAME, STATE, COUNTRY)
                             .from(CITIES)
@@ -261,15 +261,15 @@ public interface CityDbModule
                                     new CityRepositoryError.CityNotFoundByRepositoryError(
                                         CityRepositoryError.CityNotFoundByRepositoryError.CityNotFoundByRepositoryError.ErrorMessage.CITY_NOT_FOUND_BY_ID
                                             .formatted(id))),
-                            TO_EITHER_CITY_PATH);
+                            TO_EITHER_CITY);
             // Compose operations with flatMap to explicitly avoid apply
-            return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
+            return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED
                 .map(dslContextEither ->
-                    dslContextEither.fold(CITY_NOT_FOUND_BY_REPOSITORY_PATH, findCityByIdPath));
+                    dslContextEither.fold(CITY_NOT_FOUND_BY_REPOSITORY, findCityById));
         }
 
         public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, Integer>> emptyTable() {
-            Function<DSLContext, Either<DomainRepositoryError, Integer>> deleteCityByIdPath =
+            Function<DSLContext, Either<DomainRepositoryError, Integer>> deleteCityById =
                 dslContext ->
                     Try.of(() -> {
                             dslContext.truncate(CITIES).execute();
@@ -287,9 +287,9 @@ public interface CityDbModule
                                         .formatted(throwable.getMessage())),
                             Function.identity());
             // Compose operations with flatMap to explicitly avoid apply
-            return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED_PATH
+            return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED
                 .map(dslContextEither ->
-                    dslContextEither.fold(CITY_NOT_DELETED_BY_REPOSITORY_PATH, deleteCityByIdPath));
+                    dslContextEither.fold(CITY_NOT_DELETED_BY_REPOSITORY, deleteCityById));
         }
     }
 }

@@ -41,20 +41,20 @@ public interface CityRestAPIModule
         private static final FindCitiesInteractor FIND_CITIES_INTERACTOR = FindCitiesInteractor.INSTANCE;
         private static final CreatePdfUtil CREATE_PDF_UTIL = CreatePdfUtil.INSTANCE;
         // A reader that always returns a specific error value
-        private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_SAVED_PATH =
+        private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_SAVED =
             Function.<String>identity()
                 .andThen(DomainServiceAPIError.CityNotSavedError::new)
                 .andThen(Either::<DomainServiceAPIError, ICity>left)
                 .andThen(either -> __ -> either);
-        private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_FOUND_PATH =
+        private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_FOUND =
             errMsg -> __ -> Either.left(
                 new DomainServiceAPIError.CityNotFoundError(errMsg));
-        private static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_VALIDATION_OR_FIND_CITY_BY_ID_PATH =
+        private static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_VALIDATION_OR_FIND_CITY_BY_ID =
             stringCityCriteriaDetailsValidation ->
                 stringCityCriteriaDetailsValidation.fold(
-                    CITY_NEVER_FOUND_PATH, FIND_CITY_BY_ID_INTERACTOR::execute);
+                    CITY_NEVER_FOUND, FIND_CITY_BY_ID_INTERACTOR::execute);
         // Define a function to validate a DTO
-        private static final Function<CityRequestDTO, Either<String, CityRequestDTO>> VALIDATE_CITY_POST_REQUEST_DTO_PATH =
+        private static final Function<CityRequestDTO, Either<String, CityRequestDTO>> VALIDATE_CITY_POST_REQUEST_DTO =
             cityRequestDTO -> {
                 Validation<Seq<String>, CityRequestDTO> cityRequestDTOValidation =
                     CITY_REQUEST_DTO_VALIDATOR.validateCityRequestDTO(
@@ -65,16 +65,16 @@ public interface CityRestAPIModule
                         String.valueOf(cityRequestDTOValidation.toStream()
                             .reduce((a, b) -> a.equals(b) ? a : b)));
             };
-        private static final Function<Either<String, CityRequestDTO>, Either<String, CityRequestDTO>> PARSE_THEN_VALIDATE_CITY_POST_REQUEST_DTO_PATH =
-            parsedBodyEither -> parsedBodyEither.flatMap(VALIDATE_CITY_POST_REQUEST_DTO_PATH);
+        private static final Function<Either<String, CityRequestDTO>, Either<String, CityRequestDTO>> PARSE_THEN_VALIDATE_CITY_POST_REQUEST_DTO =
+            parsedBodyEither -> parsedBodyEither.flatMap(VALIDATE_CITY_POST_REQUEST_DTO);
         // Define function to transform DTO to model
-        private static final Function<CityRequestDTO, ICity> MAP_TO_CITY_PATH =
+        private static final Function<CityRequestDTO, ICity> MAP_TO_CITY =
             CITY_REQUEST_MAPPER::toModel;
-        private static final Function<Either<String, CityRequestDTO>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_TO_CREATE_OR_CREATE_CITY_PATH =
+        private static final Function<Either<String, CityRequestDTO>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_TO_CREATE_OR_CREATE_CITY =
             validatedDtoEither ->
                 validatedDtoEither.fold(
-                    CITY_NEVER_SAVED_PATH,
-                    MAP_TO_CITY_PATH.andThen(CREATE_CITY_INTERACTOR::execute));
+                    CITY_NEVER_SAVED,
+                    MAP_TO_CITY.andThen(CREATE_CITY_INTERACTOR::execute));
 
         /**
          * @param request city with all its details to persist in the database
@@ -98,8 +98,8 @@ public interface CityRestAPIModule
                         .body(CITY_RESPONSE_MAPPER.toDto(iCity));
             // Compose operations with flatMap to explicitly avoid apply
             return parseBodyReader
-                .map(PARSE_THEN_VALIDATE_CITY_POST_REQUEST_DTO_PATH)
-                .flatMap(FAILED_TO_CREATE_OR_CREATE_CITY_PATH)
+                .map(PARSE_THEN_VALIDATE_CITY_POST_REQUEST_DTO)
+                .flatMap(FAILED_TO_CREATE_OR_CREATE_CITY)
                 .map(criticalRepositoryNotFoundByDependencyLocatorErrorICityEither ->
                     criticalRepositoryNotFoundByDependencyLocatorErrorICityEither.fold(
                         createErrorResponse, createSuccessResponse));
@@ -141,7 +141,7 @@ public interface CityRestAPIModule
                     CITY_CRITERIA_VALIDATOR.validateCityCriteria(Long.parseLong(id));
             Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>> findCityByIdReader =
                 validateIdReader
-                    .flatMap(FAILED_VALIDATION_OR_FIND_CITY_BY_ID_PATH);
+                    .flatMap(FAILED_VALIDATION_OR_FIND_CITY_BY_ID);
             Function<DomainServiceAPIError, ServerResponse> createErrorResponse =
                 cityNotFoundError -> {
                     LOGGER.error(cityNotFoundError.message());
