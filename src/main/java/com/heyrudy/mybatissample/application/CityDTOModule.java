@@ -17,11 +17,9 @@ public interface CityDTOModule
         public static CityResponseDTO of(MutatorOption<CityResponseDTO>... options) {
             return Arrays.stream(options)
                 .filter(Objects::nonNull)
-                .reduce(new CityResponseDTO(), (model, option) -> option.apply(model),
+                .reduce(new CityResponseDTO(), (dto, option) -> option.apply(dto),
                     (a, b) -> a);
         }
-
-
     }
 
     record CityRequestDTO(String name, String state, String country) {
@@ -34,7 +32,7 @@ public interface CityDTOModule
         public static CityRequestDTO of(MutatorOption<CityRequestDTO>... options) {
             return Arrays.stream(options)
                 .filter(Objects::nonNull)
-                .reduce(new CityRequestDTO(), (model, option) -> option.apply(model),
+                .reduce(new CityRequestDTO(), (dto, option) -> option.apply(dto),
                     (a, b) -> a);
         }
     }

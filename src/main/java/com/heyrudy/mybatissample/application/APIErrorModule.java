@@ -16,7 +16,7 @@ public interface APIErrorModule extends UtilsModule {
         public static ApiErrorResponse of(MutatorOption<ApiErrorResponse>... options) {
             return Arrays.stream(options)
                 .filter(Objects::nonNull)
-                .reduce(new ApiErrorResponse(), (model, option) -> option.apply(model),
+                .reduce(new ApiErrorResponse(), (dto, option) -> option.apply(dto),
                     (a, b) -> a);
         }
     }

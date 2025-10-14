@@ -17,7 +17,7 @@ public interface DataSourceConfigurationModule {
         public static DataSource of(MutatorOption<HikariDataSource>... options) {
             return Arrays.stream(options)
                 .filter(Objects::nonNull)
-                .reduce(new HikariDataSource(), (model, option) -> option.apply(model),
+                .reduce(new HikariDataSource(), (config, option) -> option.apply(config),
                     (a, b) -> a);
         }
     }
@@ -29,7 +29,7 @@ public interface DataSourceConfigurationModule {
         public static HikariConfig of(MutatorOption<HikariConfig>... options) {
             return Arrays.stream(options)
                 .filter(Objects::nonNull)
-                .reduce(new HikariConfig(), (model, option) -> option.apply(model), (a, b) -> a);
+                .reduce(new HikariConfig(), (config, option) -> option.apply(config), (a, b) -> a);
         }
     }
 
