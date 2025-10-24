@@ -1,37 +1,32 @@
 package com.heyrudy.mybatissample.application;
 
-//import com.heyrudy.mybatissample.controller.rest.CityController;
 //import io.jsonwebtoken.Claims;
 //import io.jsonwebtoken.Jwts;
 //import io.vavr.control.Either;
-//import io.vavr.control.Try;
 //import java.time.Duration;
 //import java.time.Instant;
 //import java.util.List;
-//import java.util.UUID;
 //import java.util.function.Function;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.slf4j.MDC;
-//import org.springframework.context.annotation.Bean;
 
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
+import io.vavr.control.Try;
+import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.function.HandlerFilterFunction;
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.RouterFunctions;
 import org.springframework.web.servlet.function.ServerResponse;
 //import org.springframework.http.HttpStatus;
-//import org.springframework.web.servlet.function.HandlerFilterFunction;
-//import org.springframework.web.servlet.function.RouterFunction;
-//import org.springframework.web.servlet.function.RouterFunctions;
 //import org.springframework.web.servlet.function.ServerRequest;
-//import org.springframework.web.servlet.function.ServerResponse;
 
 @Configuration
 public class CityRouterConfig {
 
-//    public static final Logger logger = LoggerFactory.getLogger(RouterConfig.class);
+    public static final Logger logger = LoggerFactory.getLogger(CityRouterConfig.class);
 //    private static final String SECRET_KEY = "your-secret-key"; // Use a secure method in production
 
     private static final CityRestAPIModule.CityCriticalRestAPIAdapter CITY_CRITICAL_REST_API_ADAPTER =
@@ -64,15 +59,16 @@ public class CityRouterConfig {
             .build();
     }
 
-//    @Bean
-//    public RouterFunction<ServerResponse> routerFunctionWithFilters(
-//        RouterFunction<ServerResponse> routerFunction) {
-//        return routerFunction
-//            .filter(mdcFilter())
-//            .filter(loggingFilter())
+    @Bean
+    public RouterFunction<ServerResponse> routerFunctionWithFilters(
+        RouterFunction<ServerResponse> routerFunction) {
+        return routerFunction
+            .filter(mdcFilter())
+            .filter(loggingFilter())
 //            .filter(jwtAuthenticationFilter())
-//            .filter(metricsCollectionFilter());
-//    }
+//            .filter(metricsCollectionFilter())
+            ;
+    }
 
 //    // JWT Authentication Filter
 //    private HandlerFilterFunction<ServerResponse, ServerResponse> jwtAuthenticationFilter() {
@@ -121,43 +117,43 @@ public class CityRouterConfig {
 //
 //        };
 //    }
-//
-//    // MDC Filter
-//    private HandlerFilterFunction<ServerResponse, ServerResponse> mdcFilter() {
-//        return (request, next) -> {
-//            String requestId = UUID.randomUUID().toString();
-//
-//            // Set MDC context using vavr's Try
-//            Try.run(() -> {
-//                MDC.put("requestId", requestId);
-//                MDC.put("path", request.path());
-//                MDC.put("method", request.method().name());
-//
-//                // Add user info to MDC if available
-//                request.attribute("userId")
-//                    .ifPresent(userId -> MDC.put("userId", userId.toString()));
-//            });
-//
-//            try {
-//                return next.handle(request);
-//            } finally {
-//                MDC.clear();
-//            }
-//        };
-//    }
-//
-//    // Logging Filter
-//    private HandlerFilterFunction<ServerResponse, ServerResponse> loggingFilter() {
-//        return (request, next) -> {
-//            logger.info("Request received: {} {}", request.method().name(), request.path());
-//
-//            ServerResponse response = next.handle(request);
-//
-//            logger.info("Response status: {}", response.statusCode());
-//
-//            return response;
-//        };
-//    }
+
+    // MDC Filter
+    private HandlerFilterFunction<ServerResponse, ServerResponse> mdcFilter() {
+        return (request, next) -> {
+            String requestId = UUID.randomUUID().toString();
+
+            // Set MDC context using vavr's Try
+            Try.run(() -> {
+                MDC.put("requestId", requestId);
+                MDC.put("path", request.path());
+                MDC.put("method", request.method().name());
+
+                // Add user info to MDC if available
+                request.attribute("userId")
+                    .ifPresent(userId -> MDC.put("userId", userId.toString()));
+            });
+
+            try {
+                return next.handle(request);
+            } finally {
+                MDC.clear();
+            }
+        };
+    }
+
+    // Logging Filter
+    private HandlerFilterFunction<ServerResponse, ServerResponse> loggingFilter() {
+        return (request, next) -> {
+            logger.info("Request received: {} {}", request.method().name(), request.path());
+
+            ServerResponse response = next.handle(request);
+
+            logger.info("Response status: {}", response.statusCode());
+
+            return response;
+        };
+    }
 //
 //    // Metrics Collection Filter
 //    private HandlerFilterFunction<ServerResponse, ServerResponse> metricsCollectionFilter() {
