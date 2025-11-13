@@ -20,6 +20,12 @@ public sealed interface CityRepositoryError
     record CitiesNotFoundByRepositoryError(String message)
         implements CityRepositoryError {
 
+        public static class ErrorMessage {
+
+            public static final String CITIES_NOT_FOUND =
+                "Failed to find cities";
+        }
+
     }
 
     record CityNotSavedByRepositoryError(String message)

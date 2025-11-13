@@ -43,7 +43,7 @@ public interface CityDbModule
          *
          * @return A Reader monad that either results in an error or a list of cities
          */
-        Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> findAll();
+        Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, List<ICity>>> findAll();
 
         /**
          * Finds a city by its ID.
@@ -74,7 +74,7 @@ public interface CityDbModule
         }
 
         @Override
-        public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> findAll() {
+        public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, List<ICity>>> findAll() {
             return __ ->
                 Either.right(IN_MEMORY_DB.values().stream().toList());
         }
@@ -198,11 +198,15 @@ public interface CityDbModule
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new)
                 .andThen(Either::left);
+        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, List<ICity>>> CITIES_NOT_FOUND_BY_REPOSITORY =
+            MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
+                .andThen(CityRepositoryError.CitiesNotFoundByRepositoryError::new)
+                .andThen(Either::left);
         private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, Integer>> CITY_NOT_DELETED_BY_REPOSITORY =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotFoundByRepositoryError::new)
                 .andThen(Either::left);
-        private static final Function<DSLContext, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> FIND_CITIES =
+        private static final Function<DSLContext, Either<DomainRepositoryError, List<ICity>>> FIND_CITIES =
             dslContext ->
                 Either.right(dslContext.select(ID, NAME, STATE, COUNTRY)
                     .from(CITIES)
@@ -236,13 +240,11 @@ public interface CityDbModule
         }
 
         @Override
-        public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, List<ICity>>> findAll() {
+        public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, List<ICity>>> findAll() {
             // Compose operations with flatMap to explicitly avoid apply
             return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED
                 .map(dslContextEither ->
-                    dslContextEither.fold(
-                        CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR,
-                        FIND_CITIES));
+                    dslContextEither.fold(CITIES_NOT_FOUND_BY_REPOSITORY, FIND_CITIES));
         }
 
         @Override

@@ -71,16 +71,16 @@ public interface CityInteractorModule
     enum FindCitiesInteractor {
         INSTANCE;
 
-        private static final Function<DomainErrorModule.MissingCriticalDependencyError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
-            DomainErrorModule.MissingCriticalDependencyError::message;
-        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND =
+        private static final Function<DomainRepositoryError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
+            DomainRepositoryError::message;
+        private static final Function<DomainRepositoryError, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> CITIES_NOT_FOUND =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(DomainErrorModule.DomainServiceAPIError.CitiesNotFoundError::new)
                 .andThen(Either::left);
-        private static final Function<Either<MissingCriticalDependencyError, List<ICity>>, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> MAP_TO_CITIES =
+        private static final Function<Either<DomainRepositoryError, List<ICity>>, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> MAP_TO_CITIES =
             missingCriticalDependencyErrorListEither ->
                 missingCriticalDependencyErrorListEither.fold(
-                    CRITICAL_DSL_CONTEXT_NOT_FOUND, Either::right);
+                    CITIES_NOT_FOUND, Either::right);
 
         public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> execute() {
             return CITY_REPOSITORY_DEPENDENCY.findAll().map(MAP_TO_CITIES);
