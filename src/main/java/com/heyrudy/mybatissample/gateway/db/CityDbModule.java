@@ -9,7 +9,6 @@ import com.heyrudy.mybatissample.domain.CityModelModule;
 import com.heyrudy.mybatissample.domain.CityRepositoryError;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.DomainRepositoryError;
-import com.heyrudy.mybatissample.domain.MissingCriticalConfigError.CriticalDSLContextNotFoundByDependencyLocatorError;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -186,10 +185,6 @@ public interface CityDbModule
             CriticalH2DSLContextConfigKey.INSTANCE.lazyLoad();
         private static final Function<DomainErrorModule.MissingCriticalDependencyError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
             DomainErrorModule.MissingCriticalDependencyError::message;
-        private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainErrorModule.MissingCriticalDependencyError, List<ICity>>> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR =
-            MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
-                .andThen(CriticalDSLContextNotFoundByDependencyLocatorError::new)
-                .andThen(Either::left);
         private static final Function<DomainErrorModule.MissingCriticalDependencyError, Either<DomainRepositoryError, ICity>> CITY_NOT_SAVED_BY_REPOSITORY =
             MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
                 .andThen(CityRepositoryError.CityNotSavedByRepositoryError::new)
@@ -232,7 +227,7 @@ public interface CityDbModule
                         .map(CityRepository::mapRecord)
                         .toEither(
                             new CityRepositoryError.CityNotSavedByRepositoryError(
-                                CityRepositoryError.CityNotSavedByRepositoryError.CityNotSavedByRepositoryError.ErrorMessage.CITY_NOT_SAVED));
+                                CityRepositoryError.CityNotSavedByRepositoryError.ErrorMessage.CITY_NOT_SAVED));
             // Compose operations with flatMap to explicitly avoid apply
             return CRITICAL_DSL_CONTEXT_DEPENDENCY_LAZY_LOADED
                 .map(dslContextEither ->
@@ -261,7 +256,7 @@ public interface CityDbModule
                             () ->
                                 Either.left(
                                     new CityRepositoryError.CityNotFoundByRepositoryError(
-                                        CityRepositoryError.CityNotFoundByRepositoryError.CityNotFoundByRepositoryError.ErrorMessage.CITY_NOT_FOUND_BY_ID
+                                        CityRepositoryError.CityNotFoundByRepositoryError.ErrorMessage.CITY_NOT_FOUND_BY_ID
                                             .formatted(id))),
                             TO_EITHER_CITY);
             // Compose operations with flatMap to explicitly avoid apply
@@ -285,7 +280,7 @@ public interface CityDbModule
                         .bimap(
                             throwable ->
                                 new CityRepositoryError.CityTableNotTruncatedError(
-                                    CityRepositoryError.CityTableNotTruncatedError.CityTableNotTruncatedError.ErrorMessage.CITY_TABLE_NOT_TRUNCATED
+                                    CityRepositoryError.CityTableNotTruncatedError.ErrorMessage.CITY_TABLE_NOT_TRUNCATED
                                         .formatted(throwable.getMessage())),
                             Function.identity());
             // Compose operations with flatMap to explicitly avoid apply

@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.domain;
 
+import io.vavr.Function2;
 import io.vavr.Function3;
-import java.util.function.BiFunction;
 
 public interface UtilsModule {
 
@@ -10,7 +10,7 @@ public interface UtilsModule {
         STATE apply(STATE input);
 
         static <VALUE, STATE> MutatorOption<STATE> of(
-            VALUE value, BiFunction<STATE, VALUE, STATE> mutator) {
+            VALUE value, Function2<STATE, VALUE, STATE> mutator) {
             return input -> mutator.apply(input, value);
         }
 

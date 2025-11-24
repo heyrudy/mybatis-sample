@@ -29,13 +29,12 @@ public interface CityInteractorModule
     enum CreateCityInteractor {
         INSTANCE;
 
-        private static final Function<DomainRepositoryError, Either<DomainErrorModule.DomainServiceAPIError, ICity>> CITY_NOT_SAVED =
+        private static final Function<DomainRepositoryError, DomainErrorModule.DomainServiceAPIError> CITY_NOT_SAVED =
             DOMAIN_REPOSITORY_ERROR_MESSAGE
-                .andThen(DomainErrorModule.DomainServiceAPIError.CityNotSavedError::new)
-                .andThen(Either::left);
+                .andThen(DomainErrorModule.DomainServiceAPIError.CityNotSavedError::new);
         private static final Function<Either<DomainRepositoryError, ICity>, Either<DomainErrorModule.DomainServiceAPIError, ICity>> MAP_TO_CITY =
             domainRepositoryErrorICityEither ->
-                domainRepositoryErrorICityEither.fold(CITY_NOT_SAVED, Either::right);
+                domainRepositoryErrorICityEither.bimap(CITY_NOT_SAVED, Function.identity());
 
         public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.DomainServiceAPIError, ICity>> execute(
             final ICity iCity) {
@@ -71,16 +70,12 @@ public interface CityInteractorModule
     enum FindCitiesInteractor {
         INSTANCE;
 
-        private static final Function<DomainRepositoryError, String> MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE =
-            DomainRepositoryError::message;
-        private static final Function<DomainRepositoryError, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> CITIES_NOT_FOUND =
-            MISSING_CRITICAL_DEPENDENCY_ERROR_MESSAGE
-                .andThen(DomainErrorModule.DomainServiceAPIError.CitiesNotFoundError::new)
-                .andThen(Either::left);
+        private static final Function<DomainRepositoryError, DomainErrorModule.DomainServiceAPIError> CITIES_NOT_FOUND =
+            DOMAIN_REPOSITORY_ERROR_MESSAGE
+                .andThen(DomainErrorModule.DomainServiceAPIError.CitiesNotFoundError::new);
         private static final Function<Either<DomainRepositoryError, List<ICity>>, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> MAP_TO_CITIES =
-            missingCriticalDependencyErrorListEither ->
-                missingCriticalDependencyErrorListEither.fold(
-                    CITIES_NOT_FOUND, Either::right);
+            domainRepositoryErrorICityListEither ->
+                domainRepositoryErrorICityListEither.bimap(CITIES_NOT_FOUND, Function.identity());
 
         public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> execute() {
             return CITY_REPOSITORY_DEPENDENCY.findAll().map(MAP_TO_CITIES);

@@ -158,8 +158,7 @@ public sealed interface CriticalConfigKey<T>
 
         @Override
         public Reader<AppScopedDependencyLocator, Either<MissingCriticalDependencyError, DSLContext>> lazyLoad() {
-            return CRITICAL_DB_SECRET_DEPENDENCY_LAZY_LOADED
-                .map(DSL_CONTEXT_TRANSFORMER);
+            return CRITICAL_DB_SECRET_DEPENDENCY_LAZY_LOADED.map(DSL_CONTEXT_TRANSFORMER);
         }
 
         @Override
