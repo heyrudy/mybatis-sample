@@ -1,86 +1,90 @@
 package com.heyrudy.mybatissample.application;
 
 import com.heyrudy.mybatissample.domain.UtilsModule;
-import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public interface CityDTOModule
     extends UtilsModule {
 
     record CityResponseDTO(String name, String state, String country) {
 
-        public CityResponseDTO() {
-            this("", "", "");
+        public static CityResponseDTO empty() {
+            return new CityResponseDTO("", "", "");
         }
 
         @SafeVarargs
-        public static CityResponseDTO of(MutatorOption<CityResponseDTO>... options) {
-            return Arrays.stream(options)
+        public static CityResponseDTO of(final MutatorStage<CityResponseDTO>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(new CityResponseDTO(), (dto, option) -> option.apply(dto),
-                    (a, b) -> a);
+                .reduce(
+                    CityResponseDTO.empty(),
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
     }
 
     record CityRequestDTO(String name, String state, String country) {
 
-        public CityRequestDTO() {
-            this("", "", "");
+        public static CityRequestDTO empty() {
+            return new CityRequestDTO("", "", "");
         }
 
         @SafeVarargs
-        public static CityRequestDTO of(MutatorOption<CityRequestDTO>... options) {
-            return Arrays.stream(options)
+        public static CityRequestDTO of(final MutatorStage<CityRequestDTO>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(new CityRequestDTO(), (dto, option) -> option.apply(dto),
-                    (a, b) -> a);
+                .reduce(
+                    CityRequestDTO.empty(),
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
     }
 
-    enum CityResponseDTOMutatorOptions {
+    enum CityResponseDTOMutatorStages {
         INSTANCE;
 
-        public MutatorOption<CityResponseDTO> name(String name) {
-            return MutatorOption.of(
+        public MutatorStage<CityResponseDTO> name(final String name) {
+            return MutatorStage.of(
                 name,
                 (it, v) -> new CityResponseDTO(v, it.state, it.country)
             );
         }
 
-        public MutatorOption<CityResponseDTO> state(String state) {
-            return MutatorOption.of(
+        public MutatorStage<CityResponseDTO> state(final String state) {
+            return MutatorStage.of(
                 state,
                 (it, v) -> new CityResponseDTO(it.name, v, it.country)
             );
         }
 
-        public MutatorOption<CityResponseDTO> country(String country) {
-            return MutatorOption.of(
+        public MutatorStage<CityResponseDTO> country(final String country) {
+            return MutatorStage.of(
                 country,
                 (it, v) -> new CityResponseDTO(it.name, it.state, v)
             );
         }
     }
 
-    enum CityRequestDTOMutatorOptions {
+    enum CityRequestDTOMutatorStages {
         INSTANCE;
 
-        public MutatorOption<CityRequestDTO> name(String name) {
-            return MutatorOption.of(
+        public MutatorStage<CityRequestDTO> name(final String name) {
+            return MutatorStage.of(
                 name,
                 (it, v) -> new CityRequestDTO(v, it.state, it.country)
             );
         }
 
-        public MutatorOption<CityRequestDTO> state(String state) {
-            return MutatorOption.of(
+        public MutatorStage<CityRequestDTO> state(final String state) {
+            return MutatorStage.of(
                 state,
                 (it, v) -> new CityRequestDTO(it.name, v, it.country)
             );
         }
 
-        public MutatorOption<CityRequestDTO> country(String country) {
-            return MutatorOption.of(
+        public MutatorStage<CityRequestDTO> country(final String country) {
+            return MutatorStage.of(
                 country,
                 (it, v) -> new CityRequestDTO(it.name, it.state, v)
             );

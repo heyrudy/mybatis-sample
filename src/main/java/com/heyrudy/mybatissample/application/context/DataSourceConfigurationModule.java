@@ -1,11 +1,11 @@
 package com.heyrudy.mybatissample.application.context;
 
-import com.heyrudy.mybatissample.domain.UtilsModule.MutatorOption;
+import com.heyrudy.mybatissample.domain.UtilsModule.MutatorStage;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 
 public interface DataSourceConfigurationModule {
@@ -14,11 +14,13 @@ public interface DataSourceConfigurationModule {
         INSTANCE;
 
         @SafeVarargs
-        public static DataSource of(MutatorOption<HikariDataSource>... options) {
-            return Arrays.stream(options)
+        public static DataSource of(final MutatorStage<HikariDataSource>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(new HikariDataSource(), (config, option) -> option.apply(config),
-                    (a, b) -> a);
+                .reduce(
+                    new HikariDataSource(),
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
     }
 
@@ -26,29 +28,32 @@ public interface DataSourceConfigurationModule {
         INSTANCE;
 
         @SafeVarargs
-        public static HikariConfig of(MutatorOption<HikariConfig>... options) {
-            return Arrays.stream(options)
+        public static HikariConfig of(final MutatorStage<HikariConfig>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(new HikariConfig(), (config, option) -> option.apply(config), (a, b) -> a);
+                .reduce(
+                    new HikariConfig(),
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
     }
 
-    enum DataSourceMutatorOptions {
+    enum DataSourceMutatorStages {
         INSTANCE;
 
-        public MutatorOption<HikariDataSource> config(HikariConfig config) {
-            return MutatorOption.of(
+        public MutatorStage<HikariDataSource> config(final HikariConfig config) {
+            return MutatorStage.of(
                 config,
                 (it, v) -> new HikariDataSource(v)
             );
         }
     }
 
-    enum HikariConfigMutatorOptions {
+    enum HikariConfigMutatorStages {
         INSTANCE;
 
-        public MutatorOption<HikariConfig> jdbcUrl(String jdbcUrl) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> jdbcUrl(final String jdbcUrl) {
+            return MutatorStage.of(
                 jdbcUrl,
                 (it, v) -> {
                     it.setJdbcUrl(v);
@@ -57,8 +62,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> driverClassName(String driverClassName) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> driverClassName(final String driverClassName) {
+            return MutatorStage.of(
                 driverClassName,
                 (it, v) -> {
                     it.setDriverClassName(v);
@@ -67,8 +72,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> username(String username) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> username(final String username) {
+            return MutatorStage.of(
                 username,
                 (it, v) -> {
                     it.setUsername(v);
@@ -77,8 +82,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> password(String password) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> password(final String password) {
+            return MutatorStage.of(
                 password,
                 (it, v) -> {
                     it.setPassword(v);
@@ -87,8 +92,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> maximumPoolSize(int maximumPoolSize) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> maximumPoolSize(final int maximumPoolSize) {
+            return MutatorStage.of(
                 maximumPoolSize,
                 (it, v) -> {
                     it.setMaximumPoolSize(v);
@@ -97,8 +102,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> minimumIdle(int minimumIdle) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> minimumIdle(final int minimumIdle) {
+            return MutatorStage.of(
                 minimumIdle,
                 (it, v) -> {
                     it.setMinimumIdle(v);
@@ -107,8 +112,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> idleTimeout(long idleTimeoutMs) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> idleTimeout(final long idleTimeoutMs) {
+            return MutatorStage.of(
                 idleTimeoutMs,
                 (it, v) -> {
                     it.setIdleTimeout(v);
@@ -117,8 +122,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> connectionTimeout(long connectionTimeoutMs) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> connectionTimeout(final long connectionTimeoutMs) {
+            return MutatorStage.of(
                 connectionTimeoutMs,
                 (it, v) -> {
                     it.setConnectionTimeout(v);
@@ -127,8 +132,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> poolName(String poolName) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> poolName(final String poolName) {
+            return MutatorStage.of(
                 poolName,
                 (it, v) -> {
                     it.setPoolName(v);
@@ -137,8 +142,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> threadFactory(ThreadFactory threadFactory) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> threadFactory(final ThreadFactory threadFactory) {
+            return MutatorStage.of(
                 threadFactory,
                 (it, v) -> {
                     it.setThreadFactory(v);
@@ -147,8 +152,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> connectionTestQuery(String testQuery) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> connectionTestQuery(final String testQuery) {
+            return MutatorStage.of(
                 testQuery,
                 (it, v) -> {
                     it.setConnectionTestQuery(v);
@@ -157,8 +162,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> dataSourceProperty(String propertyName, String value) {
-            return MutatorOption.of2(
+        public MutatorStage<HikariConfig> dataSourceProperty(final String propertyName, String value) {
+            return MutatorStage.of2(
                 propertyName, value,
                 (it, v1, v2) -> {
                     it.addDataSourceProperty(v1, v2);
@@ -167,8 +172,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorOption<HikariConfig> autoCommit(boolean autoCommit) {
-            return MutatorOption.of(
+        public MutatorStage<HikariConfig> autoCommit(final boolean autoCommit) {
+            return MutatorStage.of(
                 autoCommit,
                 (it, v) -> {
                     it.setAutoCommit(v);

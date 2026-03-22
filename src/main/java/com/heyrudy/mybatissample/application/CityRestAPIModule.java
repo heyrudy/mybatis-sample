@@ -2,7 +2,7 @@ package com.heyrudy.mybatissample.application;
 
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
-import com.heyrudy.mybatissample.gateway.file.PDFResourceModule;
+import com.heyrudy.mybatissample.gateway.PDFResourceModule;
 import cyclops.control.Reader;
 import io.vavr.collection.Seq;
 import io.vavr.control.Either;
@@ -45,9 +45,9 @@ public interface CityRestAPIModule
             Function.<String>identity()
                 .andThen(DomainServiceAPIError.CityNotSavedError::new)
                 .andThen(Either::<DomainServiceAPIError, ICity>left)
-                .andThen(either -> __ -> either);
+                .andThen(either -> _ -> either);
         private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_FOUND =
-            errMsg -> __ -> Either.left(
+            errMsg -> _ -> Either.left(
                 new DomainServiceAPIError.CityNotFoundError(errMsg));
         private static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_VALIDATION_OR_FIND_CITY_BY_ID =
             stringCityCriteriaDetailsValidation ->
@@ -83,7 +83,7 @@ public interface CityRestAPIModule
         public Reader<AppScopedDependencyLocator, ServerResponse> createCity(
             ServerRequest request) {
             Reader<AppScopedDependencyLocator, Either<String, CityRequestDTO>> parseBodyReader =
-                __ ->
+                _ ->
                     Try.of(() -> request.body(CityRequestDTO.class))
                         .toEither()
                         .mapLeft(Throwable::getMessage);
@@ -137,7 +137,7 @@ public interface CityRestAPIModule
             ServerRequest request) {
             String id = request.pathVariable("cityId");
             Reader<AppScopedDependencyLocator, Validation<String, CityCriteriaDetails>> validateIdReader =
-                __ ->
+                _ ->
                     CITY_CRITERIA_VALIDATOR.validateCityCriteria(Long.parseLong(id));
             Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>> findCityByIdReader =
                 validateIdReader
@@ -148,7 +148,7 @@ public interface CityRestAPIModule
                     return ServerResponse.badRequest()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(ApiErrorResponse.of(
-                            ApiErrorResponseMutatorOptions.INSTANCE.reason(
+                            ApiErrorResponseMutatorStages.INSTANCE.reason(
                                 cityNotFoundError.message())));
                 };
             Function<ICity, ServerResponse> createSuccessResponse =

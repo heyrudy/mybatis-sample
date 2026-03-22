@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.gateway.db;
+package com.heyrudy.mybatissample.gateway;
 
 import static org.jooq.impl.DSL.field;
 import static org.jooq.impl.DSL.table;
@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.Record;
 import org.jooq.Table;
 
 public interface CityDbModule
@@ -63,7 +64,7 @@ public interface CityDbModule
         @Override
         public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, ICity>> save(
             ICity iCity) {
-            return __ -> {
+            return _ -> {
                 Function<Map<Long, ICity>, Long> idGenerator = AutoIncrementMap.atomicGenerator();
                 Long newCityId = AutoIncrementMap.putWithAutoIncrement(
                     IN_MEMORY_DB, null, iCity, idGenerator);
@@ -74,14 +75,14 @@ public interface CityDbModule
 
         @Override
         public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, List<ICity>>> findAll() {
-            return __ ->
+            return _ ->
                 Either.right(IN_MEMORY_DB.values().stream().toList());
         }
 
         @Override
         public Reader<AppScopedDependencyLocator, Either<DomainRepositoryError, Option<ICity>>> findById(
             long id) {
-            return __ ->
+            return _ ->
                 Either.right(Option.of(IN_MEMORY_DB.get(id)));
         }
 
@@ -170,14 +171,14 @@ public interface CityDbModule
         private static final Field<String> COUNTRY = field("country", String.class);
 
         // Map jOOQ Record to our domain model
-        private static ICity mapRecord(org.jooq.Record record) {
+        private static ICity mapRecord(Record record) {
             return Optional.ofNullable(record)
                 .map(it ->
                     FullCity.of(
-                        FullCityMutatorOptions.INSTANCE.id(it.get(ID)),
-                        FullCityMutatorOptions.INSTANCE.name(it.get(NAME)),
-                        FullCityMutatorOptions.INSTANCE.state(it.get(STATE)),
-                        FullCityMutatorOptions.INSTANCE.country(it.get(COUNTRY))))
+                        FullCityMutatorStages.INSTANCE.id(it.get(ID)),
+                        FullCityMutatorStages.INSTANCE.name(it.get(NAME)),
+                        FullCityMutatorStages.INSTANCE.state(it.get(STATE)),
+                        FullCityMutatorStages.INSTANCE.country(it.get(COUNTRY))))
                 .orElse(null);
         }
 

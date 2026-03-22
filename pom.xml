@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.2</version>
+        <version>4.0.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -22,8 +22,8 @@
         <project-build-encoding>UTF-8</project-build-encoding>
         <project-build-sourceEncoding>UTF-8</project-build-sourceEncoding>
         <project-reporting-encoding>UTF-8</project-reporting-encoding>
-        <java.version>21</java.version>
-        <vavr.version>0.10.4</vavr.version>
+        <java.version>24</java.version>
+        <vavr.version>0.10.6</vavr.version>
         <cyclops.version>2.1.1</cyclops.version>
         <hibernate-commons-annotations.version>5.0.4.Final</hibernate-commons-annotations.version>
 
@@ -32,17 +32,15 @@
             jdbc:h2:file:./data/demodb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
         </database.url>
         <database.username>sa</database.username>
-        <database.password></database.password>
+        <database.password/>
         <database.driver>org.h2.Driver</database.driver>
 
         <!-- Liquibase Properties -->
-        <org.liquibase.version>4.29.0</org.liquibase.version>
-        <liquibase.changeLogFile>src/main/resources/db/changelog/db.changelog-hub.xml
+        <liquibase.changeLogFile>
+            src/main/resources/db/changelog/db.changelog-hub.xml
         </liquibase.changeLogFile>
         <liquibase.contexts>test,local</liquibase.contexts>
-        <jooq.version>3.19.12</jooq.version>
-        <org.posgresql.version>42.7.3</org.posgresql.version>
-        <org.springboot.version>3.3.2</org.springboot.version>
+        <org.springboot.version>3.3.13</org.springboot.version>
         <org.springsecurity.version>6.3.0</org.springsecurity.version>
         <spring-security-oauth2-jose.version>6.0.2</spring-security-oauth2-jose.version>
 
@@ -57,6 +55,7 @@
         <pdfbox.version>2.0.27</pdfbox.version>
         <fontbox.version>2.0.11</fontbox.version>
 
+        <jqwik.version>1.9.3</jqwik.version>
         <org.instancio.version>4.8.0</org.instancio.version>
         <assertj-core.version>3.26.3</assertj-core.version>
         <assertj-vavr.version>0.4.3</assertj-vavr.version>
@@ -124,7 +123,7 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -181,31 +180,30 @@
         <!--        </dependency>-->
 
         <dependency>
-            <groupId>org.liquibase</groupId>
-            <artifactId>liquibase-core</artifactId>
-            <version>${org.liquibase.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
-            <version>${jooq.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${h2.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${org.posgresql.version}</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.4.5</version>
         </dependency>
 
         <dependency>
@@ -222,27 +220,29 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>${org.springboot.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.security</groupId>-->
-        <!--            <artifactId>spring-security-test</artifactId>-->
-        <!--            <version>${org.springsecurity.version}</version>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.instancio</groupId>-->
-        <!--            <artifactId>instancio-core</artifactId>-->
-        <!--            <version>${org.instancio.version}</version>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik</artifactId>
+            <version>${jqwik.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.instancio</groupId>
+            <artifactId>instancio-core</artifactId>
+            <version>${org.instancio.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>${assertj-core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -299,7 +299,6 @@
                     <plugin>
                         <groupId>org.liquibase</groupId>
                         <artifactId>liquibase-maven-plugin</artifactId>
-                        <version>${liquibase.version}</version>
                         <configuration>
                             <changeLogFile>${liquibase.changeLogFile}</changeLogFile>
                             <url>${database.url}</url>
@@ -382,7 +381,6 @@
                     <plugin>
                         <groupId>org.liquibase</groupId>
                         <artifactId>liquibase-maven-plugin</artifactId>
-                        <version>${liquibase.version}</version>
                         <configuration>
                             <changeLogFile>${liquibase.changeLogFile}</changeLogFile>
                             <url>${database.url}</url>
@@ -390,7 +388,7 @@
                             <password>${database.password}</password>
                             <driver>${database.driver}</driver>
                             <contexts>${liquibase.contexts}</contexts>
-                            <dropFirst>false</dropFirst>
+                            <dropFirst>true</dropFirst>
                             <logging>info</logging>
                             <verbose>true</verbose>
                         </configuration>

@@ -5,17 +5,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heyrudy.mybatissample.application.CityDTOModule.CityRequestDTO;
-import com.heyrudy.mybatissample.application.CityDTOModule.CityRequestDTOMutatorOptions;
+import com.heyrudy.mybatissample.application.CityDTOModule.CityRequestDTOMutatorStages;
 import com.heyrudy.mybatissample.gateway.config.TestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 @WebMvcTest
 @Import(
@@ -40,9 +40,9 @@ class CityCriticalRestAPIAdapterIntegrationTest {
         // ARRANGE - precondition or setup
         CityRequestDTO cityRequestDTO =
             CityRequestDTO.of(
-                CityRequestDTOMutatorOptions.INSTANCE.name("Paris"),
-                CityRequestDTOMutatorOptions.INSTANCE.country("France"),
-                CityRequestDTOMutatorOptions.INSTANCE.state("Paris75"));
+                CityRequestDTOMutatorStages.INSTANCE.name("Paris"),
+                CityRequestDTOMutatorStages.INSTANCE.country("France"),
+                CityRequestDTOMutatorStages.INSTANCE.state("Paris75"));
 
         // ACT - action or behavior that we are going to test
         // ASSERT - verify the result or output using assert statements

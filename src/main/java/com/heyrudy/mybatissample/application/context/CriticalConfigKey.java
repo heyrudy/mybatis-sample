@@ -29,40 +29,40 @@ public sealed interface CriticalConfigKey<T>
                     DSL.using(new DefaultConfiguration()
                         // Your HikariCP or other DataSource
                         .set(HikariDataSourceBuilder.of(
-                            DataSourceMutatorOptions.INSTANCE.config(
+                            DataSourceMutatorStages.INSTANCE.config(
                                 HikariConfigBuilder.of(
                                     // Database connection properties
-                                    HikariConfigMutatorOptions.INSTANCE.jdbcUrl(
+                                    HikariConfigMutatorStages.INSTANCE.jdbcUrl(
                                         iDbSecret.getJdbcUrl()),
-                                    HikariConfigMutatorOptions.INSTANCE.username(
+                                    HikariConfigMutatorStages.INSTANCE.username(
                                         iDbSecret.username()),
-                                    HikariConfigMutatorOptions.INSTANCE.password(
+                                    HikariConfigMutatorStages.INSTANCE.password(
                                         iDbSecret.password()),
                                     // Dynamic connection pool sizing based on available processors
-                                    HikariConfigMutatorOptions.INSTANCE.maximumPoolSize(
+                                    HikariConfigMutatorStages.INSTANCE.maximumPoolSize(
                                         Math.max(
                                             10, Runtime.getRuntime().availableProcessors() * 2)),
-                                    HikariConfigMutatorOptions.INSTANCE.minimumIdle(
+                                    HikariConfigMutatorStages.INSTANCE.minimumIdle(
                                         Math.max(
                                             2, Runtime.getRuntime().availableProcessors() / 2)),
-                                    HikariConfigMutatorOptions.INSTANCE.idleTimeout(20000),
-                                    HikariConfigMutatorOptions.INSTANCE.connectionTimeout(5000),
-                                    HikariConfigMutatorOptions.INSTANCE.poolName(
+                                    HikariConfigMutatorStages.INSTANCE.idleTimeout(20000),
+                                    HikariConfigMutatorStages.INSTANCE.connectionTimeout(5000),
+                                    HikariConfigMutatorStages.INSTANCE.poolName(
                                         "OptimizedPostgresDbPool"),
                                     // Performance optimization
-                                    HikariConfigMutatorOptions.INSTANCE.threadFactory(
+                                    HikariConfigMutatorStages.INSTANCE.threadFactory(
                                         Thread.ofVirtual()
                                             .name("hikari-virtual-", 0).factory()),
-                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                    HikariConfigMutatorStages.INSTANCE.dataSourceProperty(
                                         "cachePrepStmts", "true"),
-                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                    HikariConfigMutatorStages.INSTANCE.dataSourceProperty(
                                         "prepStmtCacheSize", "350"),
-                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                    HikariConfigMutatorStages.INSTANCE.dataSourceProperty(
                                         "prepStmtCacheSqlLimit", "4096"),
                                     // Optional: connection test query
-                                    HikariConfigMutatorOptions.INSTANCE.connectionTestQuery(
+                                    HikariConfigMutatorStages.INSTANCE.connectionTestQuery(
                                         "SELECT 1"),
-                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                    HikariConfigMutatorStages.INSTANCE.dataSourceProperty(
                                         "autoReconnect", "true")))))
                         .set(SQLDialect.POSTGRES)
                         .set(Executors.newVirtualThreadPerTaskExecutor())
@@ -75,7 +75,7 @@ public sealed interface CriticalConfigKey<T>
         private static final Function<Either<DomainErrorModule.MissingCriticalDependencyError, IDbSecret>, Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext>> DSL_CONTEXT_TRANSFORMER =
             missingCriticalDependencyErrorIDbSecretPropertiesEither ->
                 missingCriticalDependencyErrorIDbSecretPropertiesEither.fold(
-                    __ -> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR,
+                    _ -> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR,
                     DB_SECRET_TO_DSL_CONTEXT);
 
         @Override
@@ -102,45 +102,45 @@ public sealed interface CriticalConfigKey<T>
                     DSL.using(new DefaultConfiguration()
                         // Your HikariCP or other DataSource
                         .set(HikariDataSourceBuilder.of(
-                            DataSourceMutatorOptions.INSTANCE.config(
+                            DataSourceMutatorStages.INSTANCE.config(
                                 HikariConfigBuilder.of(
                                     // Database connection properties
-                                    HikariConfigMutatorOptions.INSTANCE.driverClassName(
+                                    HikariConfigMutatorStages.INSTANCE.driverClassName(
                                         iDbSecret.driverClassName()),
-                                    HikariConfigMutatorOptions.INSTANCE.jdbcUrl(
+                                    HikariConfigMutatorStages.INSTANCE.jdbcUrl(
                                         iDbSecret.getJdbcUrl()),
-                                    HikariConfigMutatorOptions.INSTANCE.username(
+                                    HikariConfigMutatorStages.INSTANCE.username(
                                         iDbSecret.username()),
-                                    HikariConfigMutatorOptions.INSTANCE.password(
+                                    HikariConfigMutatorStages.INSTANCE.password(
                                         iDbSecret.password()),
                                     // Dynamic connection pool sizing based on available processors
-                                    HikariConfigMutatorOptions.INSTANCE.maximumPoolSize(
+                                    HikariConfigMutatorStages.INSTANCE.maximumPoolSize(
                                         Math.max(
                                             10, Runtime.getRuntime().availableProcessors() * 2)),
-                                    HikariConfigMutatorOptions.INSTANCE.minimumIdle(
+                                    HikariConfigMutatorStages.INSTANCE.minimumIdle(
                                         Math.max(
                                             2, Runtime.getRuntime().availableProcessors() / 2)),
-                                    HikariConfigMutatorOptions.INSTANCE.idleTimeout(20000),
-                                    HikariConfigMutatorOptions.INSTANCE.connectionTimeout(5000),
-                                    HikariConfigMutatorOptions.INSTANCE.poolName(
+                                    HikariConfigMutatorStages.INSTANCE.idleTimeout(20000),
+                                    HikariConfigMutatorStages.INSTANCE.connectionTimeout(5000),
+                                    HikariConfigMutatorStages.INSTANCE.poolName(
                                         "OptimizedH2DbPool"),
                                     // Performance optimization
-                                    HikariConfigMutatorOptions.INSTANCE.threadFactory(
+                                    HikariConfigMutatorStages.INSTANCE.threadFactory(
                                         Thread.ofVirtual()
                                             .name("hikari-virtual-", 0).factory()),
-                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                    HikariConfigMutatorStages.INSTANCE.dataSourceProperty(
                                         "cachePrepStmts", "true"),
-                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                    HikariConfigMutatorStages.INSTANCE.dataSourceProperty(
                                         "prepStmtCacheSize", "350"),
-                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                    HikariConfigMutatorStages.INSTANCE.dataSourceProperty(
                                         "prepStmtCacheSqlLimit", "4096"),
                                     // Optional: connection test query
-                                    HikariConfigMutatorOptions.INSTANCE.connectionTestQuery(
+                                    HikariConfigMutatorStages.INSTANCE.connectionTestQuery(
                                         "SELECT 1"),
-                                    HikariConfigMutatorOptions.INSTANCE.dataSourceProperty(
+                                    HikariConfigMutatorStages.INSTANCE.dataSourceProperty(
                                         "autoReconnect", "true")
                                     // No auto-commit for H2 db engine
-                                    //,HikariConfigMutatorOptions.INSTANCE.autoCommit(false)
+                                    //,HikariConfigMutatorStages.INSTANCE.autoCommit(false)
                                 ))))
                         .set(SQLDialect.H2)
                         .set(Executors.newVirtualThreadPerTaskExecutor())
@@ -153,7 +153,7 @@ public sealed interface CriticalConfigKey<T>
         private static final Function<Either<DomainErrorModule.MissingCriticalDependencyError, IDbSecret>, Either<DomainErrorModule.MissingCriticalDependencyError, DSLContext>> DSL_CONTEXT_TRANSFORMER =
             missingCriticalDependencyErrorIDbSecretPropertiesEither ->
                 missingCriticalDependencyErrorIDbSecretPropertiesEither.fold(
-                    __ -> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR,
+                    _ -> CRITICAL_DSL_CONTEXT_NOT_FOUND_BY_DEPENDENCY_LOCATOR,
                     DB_SECRET_TO_DSL_CONTEXT);
 
         @Override

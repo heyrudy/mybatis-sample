@@ -1,4 +1,4 @@
-package com.heyrudy.mybatissample.gateway.file;
+package com.heyrudy.mybatissample.gateway;
 
 import com.heyrudy.mybatissample.domain.DomainErrorModule.DomainServiceSPIError.PDFDocumentCreationError;
 import io.vavr.control.Either;
@@ -17,22 +17,24 @@ public interface PDFResourceModule {
         INSTANCE;
 
         public Either<PDFDocumentCreationError, byte[]> createPdf() {
-            return Try.withResources(() -> new PDDocument())
+            return Try.withResources(PDDocument::new)
                 .of(pdfDoc -> {
                     PDPage pdfPage = createPDPage(PDRectangle.A3);
                     pdfDoc.addPage(pdfPage);
 
                     return ecrireDuTexteDansLaPAgePdf(pdfDoc, pdfPage)
-                        .flatMap(ignored -> Try.of(() -> {
-                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                            pdfDoc.save(byteArrayOutputStream);
-                            return byteArrayOutputStream.toByteArray();
-                        }));
+                        .flatMap(_ ->
+                            Try.of(() -> {
+                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                                pdfDoc.save(byteArrayOutputStream);
+                                return byteArrayOutputStream.toByteArray();
+                            }));
                 })
                 .flatMap(Function.identity())
                 .toEither()
-                .mapLeft(throwable -> new PDFDocumentCreationError(
-                    "Erreur lors de la création d'un document PDF de test"));
+                .mapLeft(_ ->
+                    new PDFDocumentCreationError(
+                        "Erreur lors de la création d'un document PDF de test"));
         }
 
         /**

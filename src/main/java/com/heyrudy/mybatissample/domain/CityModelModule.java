@@ -1,7 +1,7 @@
 package com.heyrudy.mybatissample.domain;
 
-import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public interface CityModelModule extends UtilsModule {
 
@@ -26,22 +26,28 @@ public interface CityModelModule extends UtilsModule {
         String country)
         implements ICity {
 
-        public FullCity() {
-            this(0L, "", "", "");
+        public static FullCity empty() {
+            return new FullCity(0L, "", "", "");
         }
 
         @SafeVarargs
-        public static FullCity of(MutatorOption<FullCity>... options) {
-            return Arrays.stream(options)
+        public static FullCity of(final MutatorStage<FullCity>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(new FullCity(), (model, option) -> option.apply(model), (a, b) -> a);
+                .reduce(
+                    FullCity.empty(),
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
 
         @SafeVarargs
-        public final FullCity with(MutatorOption<FullCity>... options) {
-            return Arrays.stream(options)
+        public final FullCity with(final MutatorStage<FullCity>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(this, (model, option) -> option.apply(model), (a, b) -> b);
+                .reduce(
+                    this,
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
 
         public Long getId() {
@@ -68,23 +74,28 @@ public interface CityModelModule extends UtilsModule {
 
     record PartialCityProxy(Long id) implements ICity {
 
-        public PartialCityProxy() {
-            this(0L);
+        public static PartialCityProxy empty() {
+            return new PartialCityProxy(0L);
         }
 
         @SafeVarargs
-        public static PartialCityProxy of(MutatorOption<PartialCityProxy>... options) {
-            return Arrays.stream(options)
+        public static PartialCityProxy of(final MutatorStage<PartialCityProxy>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(new PartialCityProxy(), (model, option) -> option.apply(model),
-                    (a, b) -> a);
+                .reduce(
+                    PartialCityProxy.empty(),
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
 
         @SafeVarargs
-        public final PartialCityProxy with(MutatorOption<PartialCityProxy>... options) {
-            return Arrays.stream(options)
+        public final PartialCityProxy with(final MutatorStage<PartialCityProxy>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(this, (model, option) -> option.apply(model), (a, b) -> a);
+                .reduce(
+                    this,
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
 
         @Override
@@ -115,16 +126,18 @@ public interface CityModelModule extends UtilsModule {
 
     record NullCity(Long id) implements ICity {
 
-        public NullCity() {
-            this(0L);
+        public static NullCity empty() {
+            return new NullCity(0L);
         }
 
         @SafeVarargs
-        public static NullCity of(MutatorOption<NullCity>... options) {
-            return Arrays.stream(options)
+        public static NullCity of(final MutatorStage<NullCity>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(new NullCity(), (model, option) -> option.apply(model),
-                    (a, b) -> a);
+                .reduce(
+                    NullCity.empty(),
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
 
         @Override
@@ -155,87 +168,91 @@ public interface CityModelModule extends UtilsModule {
 
     record CityCriteriaDetails(long cityId) {
 
-        public CityCriteriaDetails() {
-            this(0L);
+        public static CityCriteriaDetails empty() {
+            return new CityCriteriaDetails(0L);
         }
 
         @SafeVarargs
-        public static CityCriteriaDetails of(MutatorOption<CityCriteriaDetails>... options) {
-            return Arrays.stream(options)
+        public static CityCriteriaDetails of(final MutatorStage<CityCriteriaDetails>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(new CityCriteriaDetails(), (model, option) -> option.apply(model),
-                    (a, b) -> a);
+                .reduce(
+                    CityCriteriaDetails.empty(),
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
 
         @SafeVarargs
-        public final CityCriteriaDetails with(MutatorOption<CityCriteriaDetails>... options) {
-            return Arrays.stream(options)
+        public final CityCriteriaDetails with(final MutatorStage<CityCriteriaDetails>... stages) {
+            return Stream.of(stages)
                 .filter(Objects::nonNull)
-                .reduce(this, (model, option) -> option.apply(model), (a, b) -> a);
+                .reduce(this,
+                    (acc, stage) -> stage.apply(acc),
+                    (_, right) -> right);
         }
     }
 
-    enum FullCityMutatorOptions {
+    enum FullCityMutatorStages {
         INSTANCE;
 
-        public MutatorOption<FullCity> id(Long id) {
-            return MutatorOption.of(
+        public MutatorStage<FullCity> id(final Long id) {
+            return MutatorStage.of(
                 id,
                 (it, v) -> new FullCity(v, it.name, it.state, it.country)
             );
         }
 
-        public MutatorOption<FullCity> name(String name) {
-            return MutatorOption.of(
+        public MutatorStage<FullCity> name(final String name) {
+            return MutatorStage.of(
                 name,
                 (it, v) -> new FullCity(it.id, v, it.state, it.country)
             );
         }
 
-        public MutatorOption<FullCity> state(String state) {
-            return MutatorOption.of(
+        public MutatorStage<FullCity> state(final String state) {
+            return MutatorStage.of(
                 state,
                 (it, v) -> new FullCity(it.id, it.name, v, it.country)
             );
         }
 
-        public MutatorOption<FullCity> country(String country) {
-            return MutatorOption.of(
+        public MutatorStage<FullCity> country(final String country) {
+            return MutatorStage.of(
                 country,
                 (it, v) -> new FullCity(it.id, it.name, it.state, v)
             );
         }
     }
 
-    enum PartialCityProxyMutatorOptions {
+    enum PartialCityProxyMutatorStages {
         INSTANCE;
 
-        public MutatorOption<PartialCityProxy> id(Long id) {
-            return MutatorOption.of(
+        public MutatorStage<PartialCityProxy> id(final Long id) {
+            return MutatorStage.of(
                 id,
-                (it, v) -> new PartialCityProxy(v)
+                (_, v) -> new PartialCityProxy(v)
             );
         }
     }
 
-    enum NullCityMutatorOptions {
+    enum NullCityMutatorStages {
         INSTANCE;
 
-        public MutatorOption<NullCity> id(Long id) {
-            return MutatorOption.of(
+        public MutatorStage<NullCity> id(final Long id) {
+            return MutatorStage.of(
                 id,
-                (it, v) -> new NullCity(v)
+                (_, v) -> new NullCity(v)
             );
         }
     }
 
-    enum CityCriteriaDetailsMutatorOptions {
+    enum CityCriteriaDetailsMutatorStages {
         INSTANCE;
 
-        public MutatorOption<CityCriteriaDetails> cityId(Long cityId) {
-            return MutatorOption.of(
+        public MutatorStage<CityCriteriaDetails> cityId(final Long cityId) {
+            return MutatorStage.of(
                 cityId,
-                (it, v) -> new CityCriteriaDetails(v)
+                (_, v) -> new CityCriteriaDetails(v)
             );
         }
     }

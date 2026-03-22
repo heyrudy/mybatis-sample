@@ -10,7 +10,12 @@ import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.CityModelModule;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.DomainRepositoryError;
-import com.heyrudy.mybatissample.gateway.db.CityDbModule;
+import com.heyrudy.mybatissample.gateway.AuditModule.AuditAdapterResolver;
+import com.heyrudy.mybatissample.gateway.AuditModule.AuditContext;
+import com.heyrudy.mybatissample.gateway.AuditModule.AuditContextMutatorStages;
+import com.heyrudy.mybatissample.gateway.AuditModule.IAuditSPI;
+import com.heyrudy.mybatissample.gateway.AuditModule.Phase;
+import com.heyrudy.mybatissample.gateway.CityDbModule;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
 import java.util.List;
@@ -21,6 +26,8 @@ public interface CityInteractorModule
     CityDbModule,
     DomainErrorModule {
 
+    IAuditSPI AUDIT_DEPENDENCY =
+        AuditAdapterResolver.INSTANCE.resolve();
     ICityRepository CITY_REPOSITORY_DEPENDENCY =
         CityRepository.INSTANCE;
     Function<DomainRepositoryError, String> DOMAIN_REPOSITORY_ERROR_MESSAGE =
@@ -36,9 +43,42 @@ public interface CityInteractorModule
             domainRepositoryErrorICityEither ->
                 domainRepositoryErrorICityEither.bimap(CITY_NOT_SAVED, Function.identity());
 
+        private static Either<DomainErrorModule.DomainServiceAPIError, ICity> auditAndReturn(
+            final Either<DomainErrorModule.DomainServiceAPIError, ICity> result) {
+            result.fold(
+                _ -> {
+                    AUDIT_DEPENDENCY.auditAction(
+                        AuditContext.of(
+                            AuditContextMutatorStages.INSTANCE.outcome(result),
+                            AuditContextMutatorStages.INSTANCE.errorMapper(
+                                DomainServiceAPIError::message),
+                            AuditContextMutatorStages.INSTANCE.phase(Phase.IN_PROGRESS),
+                            AuditContextMutatorStages.INSTANCE.caller(CreateCityInteractor.class)));
+                    return null;
+                },
+                _ -> {
+                    AUDIT_DEPENDENCY.auditAction(
+                        AuditContext.of(
+                            AuditContextMutatorStages.INSTANCE.outcome(result),
+                            AuditContextMutatorStages.INSTANCE.errorMapper(
+                                DomainServiceAPIError::message),
+                            AuditContextMutatorStages.INSTANCE.phase(Phase.END),
+                            AuditContextMutatorStages.INSTANCE.caller(CreateCityInteractor.class)));
+                    return null;
+                }
+            );
+            return result;
+        }
+
         public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.DomainServiceAPIError, ICity>> execute(
             final ICity iCity) {
-            return CITY_REPOSITORY_DEPENDENCY.save(iCity).map(MAP_TO_CITY);
+            AUDIT_DEPENDENCY.auditAction(
+                AuditContext.of(
+                    AuditContextMutatorStages.INSTANCE.caller(CreateCityInteractor.class)));
+            return CITY_REPOSITORY_DEPENDENCY
+                .save(iCity)
+                .map(MAP_TO_CITY)
+                .map(CreateCityInteractor::auditAndReturn);
         }
     }
 
@@ -52,6 +92,9 @@ public interface CityInteractorModule
 
         public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.DomainServiceAPIError, ICity>> execute(
             final CityCriteriaDetails cityCriteriaDetails) {
+            AUDIT_DEPENDENCY.auditAction(
+                AuditContext.of(
+                    AuditContextMutatorStages.INSTANCE.caller(FindCityByIdInteractor.class)));
             long cityId = cityCriteriaDetails.cityId();
             return CITY_REPOSITORY_DEPENDENCY.findById(cityId)
                 .map(domainRepositoryErrorOptionEither ->
@@ -78,6 +121,9 @@ public interface CityInteractorModule
                 domainRepositoryErrorICityListEither.bimap(CITIES_NOT_FOUND, Function.identity());
 
         public Reader<AppScopedDependencyLocator, Either<DomainErrorModule.DomainServiceAPIError, List<ICity>>> execute() {
+            AUDIT_DEPENDENCY.auditAction(
+                AuditContext.of(
+                    AuditContextMutatorStages.INSTANCE.caller(FindCitiesInteractor.class)));
             return CITY_REPOSITORY_DEPENDENCY.findAll().map(MAP_TO_CITIES);
         }
     }

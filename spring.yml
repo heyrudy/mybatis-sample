@@ -1,0 +1,4 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: migrate_spring_boot_3_to_4
+recipeList:
+  - org.openrewrite.java.spring.boot4.UpgradeSpringBoot_4_0

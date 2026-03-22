@@ -2,12 +2,12 @@ package com.heyrudy.mybatissample.application.config;
 
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.application.context.SpringAppScopedDependencyLocator;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.lang.NonNull;
 
 @Configuration
 public class ApplicationConfig implements ApplicationContextAware {

@@ -11,9 +11,9 @@ public interface CityMapperModule
 
         public ICity toModel(CityRequestDTO dto) {
             return FullCity.of(
-                FullCityMutatorOptions.INSTANCE.name(dto.name()),
-                FullCityMutatorOptions.INSTANCE.state(dto.state()),
-                FullCityMutatorOptions.INSTANCE.country(dto.country()));
+                FullCityMutatorStages.INSTANCE.name(dto.name()),
+                FullCityMutatorStages.INSTANCE.state(dto.state()),
+                FullCityMutatorStages.INSTANCE.country(dto.country()));
         }
     }
 
@@ -22,9 +22,9 @@ public interface CityMapperModule
 
         public CityResponseDTO toDto(ICity model) {
             return CityResponseDTO.of(
-                CityResponseDTOMutatorOptions.INSTANCE.name(model.getName()),
-                CityResponseDTOMutatorOptions.INSTANCE.state(model.getState()),
-                CityResponseDTOMutatorOptions.INSTANCE.country(model.getCountry()));
+                CityResponseDTOMutatorStages.INSTANCE.name(model.getName()),
+                CityResponseDTOMutatorStages.INSTANCE.state(model.getState()),
+                CityResponseDTOMutatorStages.INSTANCE.country(model.getCountry()));
         }
     }
 }

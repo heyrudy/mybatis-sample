@@ -60,9 +60,8 @@ public class CityRouterConfig {
     }
 
     @Bean
-    public RouterFunction<ServerResponse> routerFunctionWithFilters(
-        RouterFunction<ServerResponse> routerFunction) {
-        return routerFunction
+    public RouterFunction<ServerResponse> routerFunctionWithFilters() {
+        return routes()
             .filter(mdcFilter())
             .filter(loggingFilter())
 //            .filter(jwtAuthenticationFilter())
