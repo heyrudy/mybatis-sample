@@ -8,9 +8,11 @@ import com.heyrudy.mybatissample.gateway.config.TestConfig.SpringTestAppScopedDe
 import io.vavr.control.Either;
 import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
+import net.jqwik.api.domains.Domain;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 
+@Domain(CityDomain.class)
 class CityInteractorOperationTests {
 
     @AfterEach
@@ -20,7 +22,7 @@ class CityInteractorOperationTests {
     }
 
     @Property
-    void insertProducesPersist(@ForAll("cities") ICity incoming) {
+    void insertProducesPersist(@ForAll ICity incoming) {
         Either<DomainServiceAPIError, ICity> result =
             CreateCityInteractor.INSTANCE.execute(incoming)
                 .apply(SpringTestAppScopedDependencyLocator.INSTANCE);

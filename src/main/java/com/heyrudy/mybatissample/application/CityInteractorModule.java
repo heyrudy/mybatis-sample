@@ -10,11 +10,7 @@ import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
 import com.heyrudy.mybatissample.domain.CityModelModule;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.DomainRepositoryError;
-import com.heyrudy.mybatissample.gateway.AuditModule.AuditAdapterResolver;
-import com.heyrudy.mybatissample.gateway.AuditModule.AuditContext;
-import com.heyrudy.mybatissample.gateway.AuditModule.AuditContextMutatorStages;
-import com.heyrudy.mybatissample.gateway.AuditModule.IAuditSPI;
-import com.heyrudy.mybatissample.gateway.AuditModule.Phase;
+import com.heyrudy.mybatissample.gateway.AuditModule;
 import com.heyrudy.mybatissample.gateway.CityDbModule;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
@@ -24,7 +20,8 @@ import java.util.function.Function;
 public interface CityInteractorModule
     extends CityModelModule,
     CityDbModule,
-    DomainErrorModule {
+    DomainErrorModule,
+    AuditModule {
 
     IAuditSPI AUDIT_DEPENDENCY =
         AuditAdapterResolver.INSTANCE.resolve();

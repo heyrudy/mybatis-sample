@@ -1,15 +1,18 @@
 package com.heyrudy.mybatissample.application.interactor;
 
 import com.heyrudy.mybatissample.domain.CityModelModule.FullCity;
+import com.heyrudy.mybatissample.domain.CityModelModule.ICity;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 import net.jqwik.api.Provide;
+import net.jqwik.api.domains.DomainContextBase;
 
-class Generators {
+public class CityDomain
+    extends DomainContextBase {
 
     @Provide
-    static Arbitrary<FullCity> cities() {
+    static Arbitrary<ICity> cities() {
         Arbitrary<String> name =
             Arbitraries.strings()
                 .alpha()
