@@ -1,7 +1,8 @@
 package com.heyrudy.mybatissample.application.context;
 
-public sealed interface EnvironmentKey
-    permits DependencyKey {
+public sealed interface CapabilityKey<T>
+    permits DependencyKey
+    , ProgramHandlerKey {
 
 //    sealed interface RestSPICriticalServiceKey<T> extends ServiceKey<T> permits CityRestSPIKey {
 //

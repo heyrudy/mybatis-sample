@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.function.Function;
 
 public interface CityInteractorModule
-    extends CityModelModule,
-    CityDbModule,
-    DomainErrorModule,
-    AuditModule {
+    extends CityModelModule
+    , CityDbModule
+    , DomainErrorModule
+    , AuditModule {
 
     IAuditSPI AUDIT_DEPENDENCY =
         AuditAdapterResolver.INSTANCE.resolve();

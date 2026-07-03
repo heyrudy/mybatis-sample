@@ -3,8 +3,8 @@ package com.heyrudy.mybatissample.application;
 import com.heyrudy.mybatissample.domain.CityModelModule;
 
 public interface CityMapperModule
-    extends CityModelModule,
-    CityDTOModule {
+    extends CityModelModule
+    , CityDTOModule {
 
     enum CityRequestMapper {
         INSTANCE;

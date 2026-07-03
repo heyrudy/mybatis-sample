@@ -1,7 +1,12 @@
 package com.heyrudy.mybatissample.application;
 
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.domain.CityProgramModule.CityRuntime;
+import com.heyrudy.mybatissample.domain.CityProgramModule.CreateCityWorkflow;
+import com.heyrudy.mybatissample.domain.CityProgramModule.FindCitiesWorkflow;
+import com.heyrudy.mybatissample.domain.CityProgramModule.FindCityByIdWorkflow;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
+import com.heyrudy.mybatissample.domain.DomainRepositoryError;
 import com.heyrudy.mybatissample.gateway.PDFResourceModule;
 import cyclops.control.Reader;
 import io.vavr.collection.Seq;
@@ -19,12 +24,12 @@ import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
 
 public interface CityRestAPIModule
-    extends CityValidatorModule,
-    CityMapperModule,
-    CityInteractorModule,
-    PDFResourceModule,
-    APIErrorModule,
-    DomainErrorModule {
+    extends CityValidatorModule
+    , CityMapperModule
+    , CityInteractorModule
+    , PDFResourceModule
+    , APIErrorModule
+    , DomainErrorModule {
 
     enum CityCriticalRestAPIAdapter {
         INSTANCE;
@@ -36,9 +41,7 @@ public interface CityRestAPIModule
         private static final CityCriteriaValidator CITY_CRITERIA_VALIDATOR = CityCriteriaValidator.INSTANCE;
         private static final CityRequestMapper CITY_REQUEST_MAPPER = CityRequestMapper.INSTANCE;
         private static final CityResponseMapper CITY_RESPONSE_MAPPER = CityResponseMapper.INSTANCE;
-        private static final CreateCityInteractor CREATE_CITY_INTERACTOR = CreateCityInteractor.INSTANCE;
-        private static final FindCityByIdInteractor FIND_CITY_BY_ID_INTERACTOR = FindCityByIdInteractor.INSTANCE;
-        private static final FindCitiesInteractor FIND_CITIES_INTERACTOR = FindCitiesInteractor.INSTANCE;
+        // private static final FindCitiesInteractor FIND_CITIES_INTERACTOR = FindCitiesInteractor.INSTANCE;
         private static final CreatePdfUtil CREATE_PDF_UTIL = CreatePdfUtil.INSTANCE;
         // A reader that always returns a specific error value
         private static final Function<String, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> CITY_NEVER_SAVED =
@@ -52,7 +55,14 @@ public interface CityRestAPIModule
         private static final Function<Validation<String, CityCriteriaDetails>, Reader<AppScopedDependencyLocator, Either<DomainServiceAPIError, ICity>>> FAILED_VALIDATION_OR_FIND_CITY_BY_ID =
             stringCityCriteriaDetailsValidation ->
                 stringCityCriteriaDetailsValidation.fold(
-                    CITY_NEVER_FOUND, FIND_CITY_BY_ID_INTERACTOR::execute);
+                    CITY_NEVER_FOUND,
+                    cityCriteriaDetails ->
+                        CityRuntime.INSTANCE.run(
+                                FindCityByIdWorkflow.INSTANCE.execute(
+                                    cityCriteriaDetails.cityId()))
+                            .map(either ->
+                                either.mapLeft(CityCriticalRestAPIAdapter::toApiError))
+                );
         // Define a function to validate a DTO
         private static final Function<CityRequestDTO, Either<String, CityRequestDTO>> VALIDATE_CITY_POST_REQUEST_DTO =
             cityRequestDTO -> {
@@ -66,7 +76,8 @@ public interface CityRestAPIModule
                             .reduce((a, b) -> a.equals(b) ? a : b)));
             };
         private static final Function<Either<String, CityRequestDTO>, Either<String, CityRequestDTO>> PARSE_THEN_VALIDATE_CITY_POST_REQUEST_DTO =
-            parsedBodyEither -> parsedBodyEither.flatMap(VALIDATE_CITY_POST_REQUEST_DTO);
+            parsedBodyEither ->
+                parsedBodyEither.flatMap(VALIDATE_CITY_POST_REQUEST_DTO);
         // Define function to transform DTO to model
         private static final Function<CityRequestDTO, ICity> MAP_TO_CITY =
             CITY_REQUEST_MAPPER::toModel;
@@ -74,7 +85,15 @@ public interface CityRestAPIModule
             validatedDtoEither ->
                 validatedDtoEither.fold(
                     CITY_NEVER_SAVED,
-                    MAP_TO_CITY.andThen(CREATE_CITY_INTERACTOR::execute));
+                    MAP_TO_CITY.andThen(iCity ->
+                        CityRuntime.INSTANCE.run(
+                                CreateCityWorkflow.INSTANCE.execute(
+                                    iCity))
+                            .map(either ->
+                                either.mapLeft(
+                                    CityCriticalRestAPIAdapter::toApiError
+                                ))
+                    ));
 
         /**
          * @param request city with all its details to persist in the database
@@ -123,7 +142,12 @@ public interface CityRestAPIModule
                             .toList());
                 };
             // Compose operations with flatMap to explicitly avoid apply
-            return FIND_CITIES_INTERACTOR.execute()
+            return CityRuntime.INSTANCE.run(
+                    FindCitiesWorkflow.INSTANCE.execute())
+                .map(either ->
+                    either.mapLeft(
+                        CityCriticalRestAPIAdapter::toApiError
+                    ))
                 .map(criticalRepositoryNotFoundByDependencyLocatorErrorListEither ->
                     criticalRepositoryNotFoundByDependencyLocatorErrorListEither.fold(
                         createErrorResponse, createSuccessResponse));
@@ -179,6 +203,28 @@ public interface CityRestAPIModule
                             .contentType(MediaType.APPLICATION_OCTET_STREAM)
                             .body(new ByteArrayResource(bytes))
                 );
+        }
+
+        private static DomainServiceAPIError toApiError(
+            DomainError error) {
+            return switch (error) {
+                case DomainServiceAPIError api -> api;
+                case MissingCriticalDependencyError dependency ->
+                    new DomainServiceAPIError.CityNotSavedError(
+                        dependency.message()
+                    );
+                case MissingCriticalProgramHandlerError handler ->
+                    new DomainServiceAPIError.CityNotSavedError(
+                        handler.message()
+                    );
+                case DomainRepositoryError repository ->
+                    new DomainServiceAPIError.CityNotSavedError(
+                        repository.message()
+                    );
+                case DomainServiceSPIError spi -> new DomainServiceAPIError.CityNotSavedError(
+                    spi.toString()
+                );
+            };
         }
     }
 }

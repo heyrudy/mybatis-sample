@@ -25,8 +25,8 @@ import org.jooq.Record;
 import org.jooq.Table;
 
 public interface CityDbModule
-    extends CityModelModule,
-    DomainErrorModule {
+    extends CityModelModule
+    , DomainErrorModule {
 
     interface ICityRepository {
 

@@ -4,7 +4,8 @@ import com.heyrudy.mybatissample.domain.UtilsModule;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public interface APIErrorModule extends UtilsModule {
+public interface APIErrorModule
+    extends UtilsModule {
 
     record ApiErrorResponse(String reason) {
 
@@ -29,7 +30,7 @@ public interface APIErrorModule extends UtilsModule {
         public MutatorStage<ApiErrorResponse> reason(final String reason) {
             return MutatorStage.of(
                 reason,
-                (it, v) -> new ApiErrorResponse(v)
+                (_, v) -> new ApiErrorResponse(v)
             );
         }
     }

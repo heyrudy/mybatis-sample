@@ -5,10 +5,10 @@ import cyclops.control.Reader;
 import io.vavr.control.Either;
 
 public sealed interface DependencyKey<T>
-    extends EnvironmentKey
-    permits ConfigKey,
-    CriticalRepositoryKey,
-    NonCriticalSPIKey {
+    extends CapabilityKey<T>
+    permits ConfigKey
+    , CriticalRepositoryKey
+    , NonCriticalSPIKey {
 
     Reader<AppScopedDependencyLocator, Either<DomainErrorModule.MissingCriticalDependencyError, T>> lazyLoad();
 }

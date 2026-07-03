@@ -5,8 +5,8 @@ import io.vavr.collection.Seq;
 import io.vavr.control.Validation;
 
 public interface CityValidatorModule
-    extends CityModelModule,
-    CityDTOModule {
+    extends CityModelModule
+    , CityDTOModule {
 
     enum CityRequestDTOValidator {
         INSTANCE;
