@@ -57,8 +57,10 @@ public interface AuditModule {
                 () -> LoggerMessages.ApiLoggerMessages.DEBUT_TRAITEMENT_API,
                 either -> either.fold(
                     error -> "%s: %s".formatted(
-                        LoggerMessages.ApiLoggerMessages.ERREUR, errorMapper.apply(error)),
-                    value -> "SUCCESS: %s".formatted(
+                        LoggerMessages.ApiLoggerMessages.ERREUR,
+                        errorMapper.apply(error)),
+                    value -> "%s: %s".formatted(
+                        LoggerMessages.ApiLoggerMessages.SUCCESS,
                         Option.of(value).map("%s"::formatted).getOrElse(""))
                 )
             );
@@ -113,6 +115,9 @@ public interface AuditModule {
 
                 // Error messages
                 public static final String ERREUR = "Erreur";
+
+                // Success messages
+                public static final String SUCCESS = "Succès";
 
                 private ApiLoggerMessages() {
                     throw new AssertionError("This class cannot be instantiated");

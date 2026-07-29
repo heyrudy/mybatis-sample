@@ -2,10 +2,10 @@ package com.heyrudy.mybatissample.domain;
 
 public sealed interface CityRepositoryError
     extends DomainRepositoryError
-    permits CityRepositoryError.CityTableNotTruncatedError,
-    CityRepositoryError.CitiesNotFoundByRepositoryError,
-    CityRepositoryError.CityNotFoundByRepositoryError,
-    CityRepositoryError.CityNotSavedByRepositoryError {
+    permits CityRepositoryError.CityTableNotTruncatedError
+    , CityRepositoryError.CitiesNotFoundByRepositoryError
+    , CityRepositoryError.CityNotFoundByRepositoryError
+    , CityRepositoryError.CityNotSavedByRepositoryError {
 
     record CityNotFoundByRepositoryError(String message)
         implements CityRepositoryError {

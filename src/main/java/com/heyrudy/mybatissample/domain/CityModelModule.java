@@ -3,10 +3,13 @@ package com.heyrudy.mybatissample.domain;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public interface CityModelModule extends UtilsModule {
+public interface CityModelModule
+    extends UtilsModule {
 
     sealed interface ICity
-        permits FullCity, PartialCityProxy, NullCity {
+        permits FullCity
+        , PartialCityProxy
+        , NullCity {
 
         Long getId();
 
@@ -72,7 +75,9 @@ public interface CityModelModule extends UtilsModule {
         }
     }
 
-    record PartialCityProxy(Long id) implements ICity {
+    record PartialCityProxy(
+        Long id
+    ) implements ICity {
 
         public static PartialCityProxy empty() {
             return new PartialCityProxy(0L);
@@ -124,7 +129,9 @@ public interface CityModelModule extends UtilsModule {
         }
     }
 
-    record NullCity(Long id) implements ICity {
+    record NullCity(
+        Long id
+    ) implements ICity {
 
         public static NullCity empty() {
             return new NullCity(0L);
@@ -166,7 +173,9 @@ public interface CityModelModule extends UtilsModule {
         }
     }
 
-    record CityCriteriaDetails(long cityId) {
+    record CityCriteriaDetails(
+        long cityId
+    ) {
 
         public static CityCriteriaDetails empty() {
             return new CityCriteriaDetails(0L);
