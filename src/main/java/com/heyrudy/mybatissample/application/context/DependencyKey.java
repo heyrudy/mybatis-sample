@@ -5,7 +5,7 @@ import cyclops.control.Reader;
 import io.vavr.control.Either;
 
 public sealed interface DependencyKey<T>
-    extends CapabilityKey<T>
+    extends CapabilityKey
     permits ConfigKey
     , CriticalRepositoryKey
     , NonCriticalSPIKey {

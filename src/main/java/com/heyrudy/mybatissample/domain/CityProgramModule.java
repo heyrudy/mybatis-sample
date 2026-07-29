@@ -7,10 +7,9 @@ import static io.vavr.Patterns.$None;
 import static io.vavr.Patterns.$Some;
 
 import com.heyrudy.mybatissample.application.context.AppScopedDependencyLocator;
+import com.heyrudy.mybatissample.application.context.AuditAction;
 import com.heyrudy.mybatissample.application.context.AuditActionHandlerKey;
-import com.heyrudy.mybatissample.application.context.FindCitiesHandlerKey;
-import com.heyrudy.mybatissample.application.context.FindCityHandlerKey;
-import com.heyrudy.mybatissample.application.context.SaveCityHandlerKey;
+import com.heyrudy.mybatissample.application.context.CityContextModule;
 import com.heyrudy.mybatissample.gateway.AuditModule;
 import cyclops.control.Reader;
 import io.vavr.control.Either;
@@ -18,53 +17,10 @@ import java.util.List;
 import java.util.function.Function;
 
 public interface CityProgramModule
-    extends CityModelModule
+    extends CityContextModule
+    , CityModelModule
     , DomainErrorModule
     , AuditModule {
-
-    sealed interface CityProgramAST
-        permits Pure
-        , CapabilityProgram {
-
-    }
-
-    record Pure<A>(
-        A value
-    ) implements CityProgramAST {
-
-    }
-
-    sealed interface CapabilityProgram
-        extends CityProgramAST
-        permits SaveCity
-        , FindCity
-        , FindCities
-        , AuditAction {
-
-    }
-
-    record SaveCity(
-        ICity city
-    ) implements CapabilityProgram {
-
-    }
-
-    record FindCity(
-        Long cityId
-    ) implements CapabilityProgram {
-
-    }
-
-    record FindCities(
-    ) implements CapabilityProgram {
-
-    }
-
-    record AuditAction<E, T>(
-        AuditContext<E, T> context
-    ) implements CapabilityProgram {
-
-    }
 
     record Program<A>(
         Reader<

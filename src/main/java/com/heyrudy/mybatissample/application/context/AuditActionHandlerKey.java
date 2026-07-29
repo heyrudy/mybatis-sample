@@ -1,7 +1,5 @@
 package com.heyrudy.mybatissample.application.context;
 
-import com.heyrudy.mybatissample.domain.CityProgramModule.AuditAction;
-import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.DomainErrorModule.MissingCriticalDependencyError;
 import com.heyrudy.mybatissample.domain.DomainErrorModule.MissingCriticalProgramHandlerError;
 import cyclops.control.Reader;
@@ -11,7 +9,7 @@ public enum AuditActionHandlerKey
     implements ProgramHandlerKey<AuditAction<?, ?>, Void> {
     INSTANCE;
 
-    private static final ProgramHandler<
+    private static final CityContextModule.CityProgramHandler<
         AuditAction<?, ?>, Void
         > AUDIT_ACTION_HANDLER =
         auditAction ->
@@ -33,14 +31,13 @@ public enum AuditActionHandlerKey
     @Override
     public Reader<
         AppScopedDependencyLocator,
-        Either<DomainErrorModule.MissingCriticalProgramHandlerError, ProgramHandler<AuditAction<?, ?>, Void>>
+        Either<MissingCriticalProgramHandlerError, CityContextModule.CityProgramHandler<AuditAction<?, ?>, Void>>
         > lazyLoad() {
         return _ ->
             Either.right(AUDIT_ACTION_HANDLER);
     }
 
-    private static MissingCriticalProgramHandlerError
-    toAuditHandlerError(
+    private static MissingCriticalProgramHandlerError toAuditHandlerError(
         MissingCriticalDependencyError error) {
         return new MissingCriticalProgramHandlerError.MissingNonCriticalAuditProgramHandlerError(
             error.message()

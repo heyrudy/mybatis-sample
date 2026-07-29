@@ -13,9 +13,11 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 
 public sealed interface CriticalConfigKey<T>
-    extends ConfigKey<T>, DataSourceConfigurationModule, DomainErrorModule
-    permits CriticalConfigKey.CriticalPostgresDSLContextConfigKey,
-    CriticalConfigKey.CriticalH2DSLContextConfigKey {
+    extends ConfigKey<T>
+    , DataSourceConfigurationModule
+    , DomainErrorModule
+    permits CriticalConfigKey.CriticalPostgresDSLContextConfigKey
+    , CriticalConfigKey.CriticalH2DSLContextConfigKey {
 
     enum CriticalPostgresDSLContextConfigKey
         implements CriticalConfigKey<DSLContext> {

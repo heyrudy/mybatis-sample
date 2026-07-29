@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.application.context;
 
-public sealed interface CapabilityKey<T>
+public sealed interface CapabilityKey
     permits DependencyKey
     , ProgramHandlerKey {
 

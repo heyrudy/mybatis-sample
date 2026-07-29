@@ -6,7 +6,9 @@ import com.heyrudy.mybatissample.application.context.IDbSecret.MockedDbSecret;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 public sealed interface IDbSecret
-    permits DbSecret, H2DbSecret, MockedDbSecret {
+    permits DbSecret
+    , H2DbSecret
+    , MockedDbSecret {
 
     String driverClassName();
 

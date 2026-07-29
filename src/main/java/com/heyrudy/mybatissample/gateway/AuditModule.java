@@ -4,7 +4,6 @@ import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.Match;
 
-import com.heyrudy.mybatissample.domain.CityProgramModule.AuditAction;
 import com.heyrudy.mybatissample.domain.UtilsModule.MutatorStage;
 import com.heyrudy.mybatissample.gateway.AuditModule.IAuditSPI.LoggerMessages;
 import io.vavr.control.Either;
@@ -169,17 +168,5 @@ public interface AuditModule {
                 ? MockedAuditAdapter.INSTANCE
                 : NoOpAuditAdapter.INSTANCE;
         }
-    }
-
-    static AuditAction<?, ?> start(
-        Class<?> caller) {
-        return new AuditAction<>(
-            AuditContext.of(
-                AuditContextMutatorStages.INSTANCE.phase(
-                    Phase.START),
-                AuditContextMutatorStages.INSTANCE.caller(
-                    caller)
-            )
-        );
     }
 }

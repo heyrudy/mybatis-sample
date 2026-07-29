@@ -1,6 +1,7 @@
 package com.heyrudy.mybatissample.application.context;
 
-import com.heyrudy.mybatissample.domain.CityProgramModule.CityProgramAST;
+import com.heyrudy.mybatissample.application.context.CityContextModule.CityProgramAST;
+import com.heyrudy.mybatissample.application.context.CityContextModule.CityProgramHandlerKey;
 import com.heyrudy.mybatissample.domain.DomainErrorModule;
 import com.heyrudy.mybatissample.domain.DomainErrorModule.DomainError;
 import com.heyrudy.mybatissample.domain.DomainErrorModule.MissingCriticalDependencyError;
@@ -10,15 +11,13 @@ import io.vavr.control.Either;
 import java.util.function.Function;
 
 public sealed interface ProgramHandlerKey<P extends CityProgramAST, R>
-    extends CapabilityKey<ProgramHandler<P, R>>
-    permits SaveCityHandlerKey
-    , FindCityHandlerKey
-    , FindCitiesHandlerKey
+    extends CapabilityKey
+    permits CityProgramHandlerKey
     , AuditActionHandlerKey {
 
     Reader<
         AppScopedDependencyLocator,
-        Either<DomainErrorModule.MissingCriticalProgramHandlerError, ProgramHandler<P, R>>
+        Either<DomainErrorModule.MissingCriticalProgramHandlerError, CityContextModule.CityProgramHandler<P, R>>
         > lazyLoad();
 
     static <E, A>

@@ -1,6 +1,6 @@
 package com.heyrudy.mybatissample.application.context;
 
-import com.heyrudy.mybatissample.domain.UtilsModule.MutatorStage;
+import com.heyrudy.mybatissample.domain.UtilsModule;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.Objects;
@@ -8,7 +8,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 
-public interface DataSourceConfigurationModule {
+public interface DataSourceConfigurationModule
+    extends UtilsModule {
 
     enum HikariDataSourceBuilder {
         INSTANCE;
@@ -44,7 +45,7 @@ public interface DataSourceConfigurationModule {
         public MutatorStage<HikariDataSource> config(final HikariConfig config) {
             return MutatorStage.of(
                 config,
-                (it, v) -> new HikariDataSource(v)
+                (_, v) -> new HikariDataSource(v)
             );
         }
     }
@@ -162,7 +163,8 @@ public interface DataSourceConfigurationModule {
             );
         }
 
-        public MutatorStage<HikariConfig> dataSourceProperty(final String propertyName, String value) {
+        public MutatorStage<HikariConfig> dataSourceProperty(final String propertyName,
+            String value) {
             return MutatorStage.of2(
                 propertyName, value,
                 (it, v1, v2) -> {
